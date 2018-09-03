@@ -29,5 +29,7 @@ public class MainActivity extends AppCompatActivity {
         System.out.println("MAMAMAMAMAMAMAAMAMAM text:"+text);
         System.out.println("MAMAMAMAMAMAMAAMAMAM uri:"+parcelableArrayListExtra);
 
+
+
     }
 }
