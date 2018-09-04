@@ -1,6 +1,11 @@
 package com.deanlib.lordshunter;
 
+import com.deanlib.lordshunter.entity.Report;
+
 import org.junit.Test;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static org.junit.Assert.*;
 
@@ -84,6 +89,15 @@ public class UtilsTest {
                 "\n" +
                 "\n";
 
-        Utils.parseText(s);
+//        Utils.parseText(s);
+    }
+
+    @Test
+    public void ocr() {
+        List<Report> list = new ArrayList<>();
+        Report report = new Report();
+        report.setImage("test/test1.jpg");
+        list.add(report);
+        Utils.ocr(list);
     }
 }

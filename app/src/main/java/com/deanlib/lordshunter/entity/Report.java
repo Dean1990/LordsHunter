@@ -5,7 +5,7 @@ import com.deanlib.ootb.entity.BaseEntity;
 import org.xutils.db.annotation.Column;
 import org.xutils.db.annotation.Table;
 
-@Table(name = "Report")
+@Table(name = "report")
 public class Report extends BaseEntity {
 
     @Column(name = "id",isId = true)
@@ -20,6 +20,19 @@ public class Report extends BaseEntity {
     String name;
     @Column(name = "image")
     String image;
+    @Column(name = "imgMd5")
+    String imgMd5;
+
+    //以下为图片识别
+    @Column(name = "imgPreyName")
+    String imgPreyName;
+    @Column(name = "imgPreyLevel")
+    int imgPreyLevel;
+    @Column(name = "imgDataTime")
+    String imgDataTime;
+
+    boolean isKill;
+
 
     public int getId() {
         return id;
@@ -67,5 +80,45 @@ public class Report extends BaseEntity {
 
     public void setImage(String image) {
         this.image = image;
+    }
+
+    public String getImgPreyName() {
+        return imgPreyName;
+    }
+
+    public void setImgPreyName(String imgPreyName) {
+        this.imgPreyName = imgPreyName;
+    }
+
+    public int getImgPreyLevel() {
+        return imgPreyLevel;
+    }
+
+    public void setImgPreyLevel(int imgPreyLevel) {
+        this.imgPreyLevel = imgPreyLevel;
+    }
+
+    public String getImgDataTime() {
+        return imgDataTime;
+    }
+
+    public void setImgDataTime(String imgDataTime) {
+        this.imgDataTime = imgDataTime;
+    }
+
+    public String getImgMd5() {
+        return imgMd5;
+    }
+
+    public void setImgMd5(String imgMd5) {
+        this.imgMd5 = imgMd5;
+    }
+
+    public boolean isKill() {
+        return isKill;
+    }
+
+    public void setKill(boolean kill) {
+        isKill = kill;
     }
 }

@@ -10,8 +10,10 @@ import com.deanlib.lordshunter.entity.Report;
 import com.deanlib.ootb.data.db.DB;
 import com.deanlib.ootb.utils.PopupUtils;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.xutils.ex.DbException;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,9 +53,14 @@ public class SavaActivity extends AppCompatActivity {
 
     private Void deal(String text, List<Uri> images){
         List<Report> reports = Utils.parseText(text,images);
-        //todo md5 重复性验证
-
+        //md5 重复性验证
+        List<Report> repets = Utils.checkRepet(reports);
+        if (repets!=null && repets.size()>0){
+            //有重复项
+            //todo
+        }
         //todo 图片识别
+        Utils.ocr(repets);
 
         for (Report report:reports) {
             try {
