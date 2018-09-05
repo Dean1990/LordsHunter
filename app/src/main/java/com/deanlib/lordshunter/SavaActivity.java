@@ -54,21 +54,21 @@ public class SavaActivity extends AppCompatActivity {
     private Void deal(String text, List<Uri> images){
         List<Report> reports = Utils.parseText(text,images);
         //md5 重复性验证
-        List<Report> repets = Utils.checkRepet(reports);
-        if (repets!=null && repets.size()>0){
-            //有重复项
-            //todo
-        }
+//        List<Report> repets = Utils.checkRepet(reports);
+//        if (repets!=null && repets.size()>0){
+//            //有重复项
+//            //todo
+//        }
         //todo 图片识别
-        Utils.ocr(repets);
+        Utils.ocr(reports);
 
-        for (Report report:reports) {
-            try {
-                DB.getDbManager().save(report);
-            } catch (DbException e) {
-                e.printStackTrace();
-            }
-        }
+//        for (Report report:reports) {
+//            try {
+//                DB.getDbManager().save(report);
+//            } catch (DbException e) {
+//                e.printStackTrace();
+//            }
+//        }
 
         return null;
     }
