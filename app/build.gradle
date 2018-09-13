@@ -26,9 +26,7 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'com.android.support.test:runner:1.0.2'
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
-    implementation('com.github.Dean1990:OOTB:2.4.9.1', {
-        exclude group: 'com.android.support'
-    })
     implementation 'com.rmtheis:tess-two:9.0.0'
     implementation files('libs/commons-codec-1.11.jar')
+    implementation 'com.github.Dean1990:ootbLite:8b84eb950b'
 }
