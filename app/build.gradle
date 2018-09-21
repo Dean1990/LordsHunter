@@ -1,4 +1,5 @@
 apply plugin: 'com.android.application'
+apply plugin: 'realm-android'
 
 android {
     compileSdkVersion 28
@@ -17,6 +18,10 @@ android {
         }
     }
     packagingOptions {exclude 'META-INF/rxjava.properties'}
+
+    realm {
+        syncEnabled = true;
+    }
 }
 
 dependencies {
@@ -29,4 +34,11 @@ dependencies {
     implementation 'com.rmtheis:tess-two:9.0.0'
     implementation files('libs/commons-codec-1.11.jar')
     implementation 'com.github.Dean1990:ootbLite:8b84eb950b'
+    implementation 'org.tensorflow:tensorflow-android:1.11.0-rc1'
+
+    //Rx
+    //RxJava https://github.com/ReactiveX/RxJava
+    implementation "io.reactivex.rxjava2:rxjava:2.2.2"
+    //RxAndroid https://github.com/ReactiveX/RxAndroid
+    implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
 }

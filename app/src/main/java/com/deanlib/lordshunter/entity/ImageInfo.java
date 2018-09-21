@@ -1,26 +1,21 @@
 package com.deanlib.lordshunter.entity;
 
-import com.deanlib.ootb.entity.BaseEntity;
 
-import org.xutils.db.annotation.Column;
-import org.xutils.db.annotation.Table;
+import io.realm.RealmObject;
+import io.realm.annotations.Index;
+import io.realm.annotations.PrimaryKey;
 
-@Table(name = "image")
-public class ImageInfo extends BaseEntity {
+public class ImageInfo extends RealmObject {
 
-    @Column(name = "id",isId = true)
+
+    @PrimaryKey
     int id;
-    @Column(name = "preyName")
     String preyName;
-    @Column(name = "preyLevel")
     int preyLevel;
-    @Column(name = "dataTime")
     String dataTime;
-    @Column(name = "uri")
     String uri;
-    @Column(name = "md5")
+    @Index
     String md5;
-
     boolean isKill;
 
     public int getId() {

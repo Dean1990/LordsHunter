@@ -1,11 +1,17 @@
 package com.deanlib.lordshunter;
 
+import android.content.res.AssetFileDescriptor;
+import android.content.res.AssetManager;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import com.deanlib.lordshunter.entity.ImageInfo;
 import com.deanlib.lordshunter.entity.Report;
-import com.deanlib.ootb.data.FileUtils;
-import com.deanlib.ootb.data.db.DB;
+import com.deanlib.ootblite.data.FileUtils;
+import com.deanlib.ootblite.data.ImageUtils;
+import com.deanlib.ootblite.utils.IOUtils;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
 import org.apache.commons.codec.digest.DigestUtils;
@@ -17,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import io.realm.Realm;
 
 public class Utils {
 
@@ -62,7 +70,9 @@ public class Utils {
                         report.setTime(reportMatcher.group(2));
                         for (Uri uri : images) {
                             if (uri.toString().endsWith(reportMatcher.group(3))) {
-                                report.setImage(uri.toString());
+                                ImageInfo image = new ImageInfo();
+                                image.setUri(uri.toString().substring(7));
+                                report.setImage(image);
                                 break;
                             }
                         }
@@ -84,12 +94,14 @@ public class Utils {
     public static List<Report> checkRepet(List<Report> list){
         if (list==null || list.size() == 0)
             return null;
-        List<Report> repetReports = new ArrayList<>();
+        List<Report> repetReports = new ArrayList<>();//重复图片
+        Realm realm = Realm.getDefaultInstance();
         for (Report report:list){
+
             try {
-                String md5 = DigestUtils.md5Hex(new FileInputStream(report.getImage()));
-                report.setImgMd5(md5);
-                Report find = DB.getDbManager().selector(Report.class).where("imgMd5","=",md5).findFirst();
+                String md5 = DigestUtils.md5Hex(new FileInputStream(report.getImage().getUri()));
+                report.getImage().setMd5(md5);
+                ImageInfo find = realm.where(ImageInfo.class).equalTo("md5", md5).findFirst();
                 if (find!=null){
                     repetReports.add(report);
                 }
@@ -100,15 +112,35 @@ public class Utils {
         return repetReports;
     }
 
+    /**
+     * 文字识别
+     * @param list
+     * @return
+     */
     public static List<Report> ocr(List<Report> list){
         if (list==null || list.size() == 0)
             return list;
         TessBaseAPI tess = new TessBaseAPI();
         String language = "eng";
-        File dir = FileUtils.createDir("lhocr");
-        tess.init(dir.getAbsolutePath(),language);
+
+        tess.init("/sdcard/datapath",language);
         for (Report report:list){
-            tess.setImage(new File(report.getImage()));
+            Bitmap bitmap = BitmapFactory.decodeFile(report.getImage().getUri());
+            float w = bitmap.getWidth();
+            float h = bitmap.getHeight();
+            bitmap = Bitmap.createBitmap(bitmap,(int)(w*0.1),(int)(h*0.12),(int)(w*0.4),(int)(h*0.05),null,false);
+            ImageUtils.saveImageFile(bitmap, FileUtils.createDir("_abc"), "abc.png", new FileUtils.FileCallback() {
+                @Override
+                public void onSuccess(File file) {
+
+                }
+
+                @Override
+                public void onFail(Exception e) {
+
+                }
+            });
+            tess.setImage(bitmap);
             String result = tess.getUTF8Text();
             System.out.println(result);
         }

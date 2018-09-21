@@ -1,38 +1,19 @@
 package com.deanlib.lordshunter.entity;
 
-import com.deanlib.ootb.entity.BaseEntity;
 
-import org.xutils.db.annotation.Column;
-import org.xutils.db.annotation.Table;
+import io.realm.RealmObject;
+import io.realm.annotations.PrimaryKey;
 
-@Table(name = "report")
-public class Report extends BaseEntity {
+public class Report extends RealmObject {
 
-    @Column(name = "id",isId = true)
+
+    @PrimaryKey
     int id;
-    @Column(name = "group")
     String group;
-    @Column(name = "data")
     String data;
-    @Column(name = "time")
     String time;
-    @Column(name = "name")
     String name;
-    @Column(name = "image")
-    String image;
-    @Column(name = "imgMd5")
-    String imgMd5;
-
-    //以下为图片识别
-    @Column(name = "imgPreyName")
-    String imgPreyName;
-    @Column(name = "imgPreyLevel")
-    int imgPreyLevel;
-    @Column(name = "imgDataTime")
-    String imgDataTime;
-
-    boolean isKill;
-
+    ImageInfo image;
 
     public int getId() {
         return id;
@@ -74,51 +55,12 @@ public class Report extends BaseEntity {
         this.name = name;
     }
 
-    public String getImage() {
+    public ImageInfo getImage() {
         return image;
     }
 
-    public void setImage(String image) {
+    public void setImage(ImageInfo image) {
         this.image = image;
     }
 
-    public String getImgPreyName() {
-        return imgPreyName;
-    }
-
-    public void setImgPreyName(String imgPreyName) {
-        this.imgPreyName = imgPreyName;
-    }
-
-    public int getImgPreyLevel() {
-        return imgPreyLevel;
-    }
-
-    public void setImgPreyLevel(int imgPreyLevel) {
-        this.imgPreyLevel = imgPreyLevel;
-    }
-
-    public String getImgDataTime() {
-        return imgDataTime;
-    }
-
-    public void setImgDataTime(String imgDataTime) {
-        this.imgDataTime = imgDataTime;
-    }
-
-    public String getImgMd5() {
-        return imgMd5;
-    }
-
-    public void setImgMd5(String imgMd5) {
-        this.imgMd5 = imgMd5;
-    }
-
-    public boolean isKill() {
-        return isKill;
-    }
-
-    public void setKill(boolean kill) {
-        isKill = kill;
-    }
 }
