@@ -9,10 +9,10 @@ public class Report extends RealmObject {
 
     @PrimaryKey
     int id;
-    String group;
-    String data;
-    String time;
-    String name;
+    String group;//组
+    String date;//日期
+    String time;//时间
+    String name;//用户名称
     ImageInfo image;
 
     public int getId() {
@@ -31,12 +31,12 @@ public class Report extends RealmObject {
         this.group = group;
     }
 
-    public String getData() {
-        return data;
+    public String getDate() {
+        return date;
     }
 
-    public void setData(String data) {
-        this.data = data;
+    public void setDate(String date) {
+        this.date = date;
     }
 
     public String getTime() {

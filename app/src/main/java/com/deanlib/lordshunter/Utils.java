@@ -1,7 +1,5 @@
 package com.deanlib.lordshunter;
 
-import android.content.res.AssetFileDescriptor;
-import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -9,16 +7,12 @@ import android.text.TextUtils;
 
 import com.deanlib.lordshunter.entity.ImageInfo;
 import com.deanlib.lordshunter.entity.Report;
-import com.deanlib.ootblite.data.FileUtils;
-import com.deanlib.ootblite.data.ImageUtils;
-import com.deanlib.ootblite.utils.IOUtils;
+import com.deanlib.ootblite.utils.DLog;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
 import org.apache.commons.codec.digest.DigestUtils;
 
-import java.io.File;
 import java.io.FileInputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -45,7 +39,7 @@ public class Utils {
         text = text.trim();
 
         Pattern groupPattern = Pattern.compile("(.+) 微信群上的聊天记录如下，请查收。");
-        Pattern dataPattern = Pattern.compile("—————  (\\d{4}-\\d{2}-\\d{2})  —————");
+        Pattern datePattern = Pattern.compile("—————  (\\d{4}-\\d{2}-\\d{2})  —————");
         Pattern reportPattern = Pattern.compile("(.+) {2}(\\d{2}:\\d{2})\\n\\n\\[图片: (\\w{32}\\.jpg)\\(\\S+\\)\\]");
         Matcher groupMatcher = groupPattern.matcher(text);
         if (groupMatcher.find()) {
@@ -56,16 +50,16 @@ public class Utils {
 
                 List<Report> list = new ArrayList<>();
                 for (String str : split) {
-                    String data = "";
-                    Matcher dataMatcher = dataPattern.matcher(str);
-                    if (dataMatcher.find()) {
-                        data = dataMatcher.group(1);
+                    String date = "";
+                    Matcher dateMatcher = datePattern.matcher(str);
+                    if (dateMatcher.find()) {
+                        date = dateMatcher.group(1);
                     }
                     Matcher reportMatcher = reportPattern.matcher(str);
                     while (reportMatcher.find()) {
                         Report report = new Report();
                         report.setGroup(group);
-                        report.setData(data);
+                        report.setDate(date);
                         report.setName(reportMatcher.group(1));
                         report.setTime(reportMatcher.group(2));
                         for (Uri uri : images) {
@@ -87,6 +81,7 @@ public class Utils {
 
     /**
      * 检查重复图片
+     * 并给传入的List 赋md5值
      * 耗时
      * @param list
      * @return 返回重复图片的report 如果有
@@ -121,29 +116,50 @@ public class Utils {
         if (list==null || list.size() == 0)
             return list;
         TessBaseAPI tess = new TessBaseAPI();
-        String language = "eng";
+        String language = "chi_sim";
 
+        //todo 字库文件怎么办
         tess.init("/sdcard/datapath",language);
         for (Report report:list){
             Bitmap bitmap = BitmapFactory.decodeFile(report.getImage().getUri());
             float w = bitmap.getWidth();
             float h = bitmap.getHeight();
             bitmap = Bitmap.createBitmap(bitmap,(int)(w*0.1),(int)(h*0.12),(int)(w*0.4),(int)(h*0.05),null,false);
-            ImageUtils.saveImageFile(bitmap, FileUtils.createDir("_abc"), "abc.png", new FileUtils.FileCallback() {
-                @Override
-                public void onSuccess(File file) {
 
-                }
+//            ImageUtils.saveImageFile(bitmap, FileUtils.createDir("_abc"), SystemClock.currentThreadTimeMillis()+".png", new FileUtils.FileCallback() {
+//                @Override
+//                public void onSuccess(File file) {
+//
+//                }
+//
+//                @Override
+//                public void onFail(Exception e) {
+//
+//                }
+//            });
 
-                @Override
-                public void onFail(Exception e) {
-
-                }
-            });
             tess.setImage(bitmap);
             String result = tess.getUTF8Text();
-            System.out.println(result);
+            DLog.d(result);
+            //清洗信息
+            Pattern pattern = Pattern.compile("[\\S\\s]*(\\d) (\\S+)");
+            Matcher matcher = pattern.matcher(result);
+            if (matcher.find()) {
+                report.getImage().setPreyName(correctPreyName(matcher.group(2)));
+                report.getImage().setPreyLevel(Integer.valueOf(matcher.group(1)));
+                report.getImage().setKill(true);//默认 true
+            }
         }
         return list;
+    }
+
+    public static String correctPreyName(String preyName){
+        String name = preyName;
+
+        if(!Constant.PREY_NAMES.contains(name)){
+            //todo 查找 对应 修复
+        }
+
+        return name;
     }
 }

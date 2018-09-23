@@ -10,10 +10,10 @@ public class ImageInfo extends RealmObject {
 
     @PrimaryKey
     int id;
-    String preyName;
-    int preyLevel;
-    String dataTime;
-    String uri;
+    String preyName;//猎物名称
+    int preyLevel;//猎物等级
+    String dataTime;//猎杀时间
+    String uri;//截图地址
     @Index
     String md5;
     boolean isKill;
