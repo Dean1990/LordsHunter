@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="app_bar_height">45dp</dimen>
+
+    <dimen name="text_size_normal_l">12sp</dimen>
+    <dimen name="text_size_normal">14sp</dimen>
+    <dimen name="text_size_normal_x">16sp</dimen>
+    <dimen name="text_size_normal_xx">18sp</dimen>
+
+    <dimen name="button_height">45sp</dimen>
+</resources>

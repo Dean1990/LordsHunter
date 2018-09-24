@@ -5,16 +5,24 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.text.TextUtils;
 
+import com.deanlib.lordshunter.app.Constant;
 import com.deanlib.lordshunter.entity.ImageInfo;
+import com.deanlib.lordshunter.entity.Prey;
 import com.deanlib.lordshunter.entity.Report;
+import com.deanlib.ootblite.data.FileUtils;
 import com.deanlib.ootblite.utils.DLog;
+import com.deanlib.ootblite.utils.MD5;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
 import org.apache.commons.codec.digest.DigestUtils;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -46,16 +54,16 @@ public class Utils {
             String group = groupMatcher.group(1);
 
             String[] split = text.split("—————  \\d{4}-\\d{2}-\\d{2}  —————");
-            if (split != null && split.length > 0) {
-
+            if (split != null && split.length > 1) {
+                Matcher dateMatcher = datePattern.matcher(text);
                 List<Report> list = new ArrayList<>();
-                for (String str : split) {
+                //直接舍弃第一个，第一个是group信息
+                for (int i = 1;i<split.length;i++) {
                     String date = "";
-                    Matcher dateMatcher = datePattern.matcher(str);
                     if (dateMatcher.find()) {
                         date = dateMatcher.group(1);
                     }
-                    Matcher reportMatcher = reportPattern.matcher(str);
+                    Matcher reportMatcher = reportPattern.matcher(split[i]);
                     while (reportMatcher.find()) {
                         Report report = new Report();
                         report.setGroup(group);
@@ -66,6 +74,7 @@ public class Utils {
                             if (uri.toString().endsWith(reportMatcher.group(3))) {
                                 ImageInfo image = new ImageInfo();
                                 image.setUri(uri.toString().substring(7));
+                                image.setDataTime(report.getDate()+" "+report.getTime());
                                 report.setImage(image);
                                 break;
                             }
@@ -84,27 +93,35 @@ public class Utils {
      * 并给传入的List 赋md5值
      * 耗时
      * @param list
-     * @return 返回重复图片的report 如果有
+     * @return
      */
     public static List<Report> checkRepet(List<Report> list){
         if (list==null || list.size() == 0)
             return null;
-        List<Report> repetReports = new ArrayList<>();//重复图片
         Realm realm = Realm.getDefaultInstance();
         for (Report report:list){
 
             try {
-                String md5 = DigestUtils.md5Hex(new FileInputStream(report.getImage().getUri()));
+                String md5 = MD5.md5(new File(report.getImage().getUri()));
                 report.getImage().setMd5(md5);
-                ImageInfo find = realm.where(ImageInfo.class).equalTo("md5", md5).findFirst();
+                ImageInfo find = realm.where(ImageInfo.class)
+                        .equalTo("md5", md5)
+                        .findFirst();
                 if (find!=null){
-                    repetReports.add(report);
+                    //排除日期相同的情况，是数据库中存在的 ，这种情况一般是用户操作不当
+                    if (find.getDataTime().equals(report.getDate()+" "+report.getTime())){
+                        report.setStatus(Report.STATUS_EXIST);
+                    }else {
+                        report.setStatus(Report.STATUS_REPET);
+                    }
+                }else {
+                    report.setStatus(Report.STATUS_NEW);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
-        return repetReports;
+        return list;
     }
 
     /**
@@ -142,7 +159,7 @@ public class Utils {
             String result = tess.getUTF8Text();
             DLog.d(result);
             //清洗信息
-            Pattern pattern = Pattern.compile("[\\S\\s]*(\\d) (\\S+)");
+            Pattern pattern = Pattern.compile("[\\S\\s]*(\\d)[ ]*(\\S+)");
             Matcher matcher = pattern.matcher(result);
             if (matcher.find()) {
                 report.getImage().setPreyName(correctPreyName(matcher.group(2)));
@@ -153,11 +170,54 @@ public class Utils {
         return list;
     }
 
+    /**
+     * 校准猎物名称
+     * @param preyName
+     * @return
+     */
     public static String correctPreyName(String preyName){
         String name = preyName;
 
         if(!Constant.PREY_NAMES.contains(name)){
-            //todo 查找 对应 修复
+            //查找 对应 修复
+            Map<Prey,Integer> scoreMap = new HashMap<>();//加权记录
+            char[] chars = name.toCharArray();
+            for (char ch : chars){
+                Set<Prey> preys = Constant.PREY_NAME_INDEX_MAP.get(ch);
+                if (preys!=null){
+                    for (Prey prey : preys){
+                        Integer score = scoreMap.get(prey);
+                        if (score==null) score = 0;
+                        score++;
+                        scoreMap.put(prey,score);
+                    }
+                }
+            }
+
+            if (scoreMap.size()>0) {
+                //查找权重最高的
+                Prey maxScorePrey = null;
+                Set<Map.Entry<Prey, Integer>> entries = scoreMap.entrySet();
+                for (Map.Entry<Prey, Integer> entry : entries) {
+                    if (maxScorePrey == null) {
+                        maxScorePrey = entry.getKey();
+                        continue;
+                    }
+                    Integer maxScore = scoreMap.get(maxScorePrey);
+                    if (maxScore==null) maxScore = 0;
+                    Integer score = entry.getValue();
+                    if (maxScore == null) score = 0;
+                    if (maxScore<score){
+                        maxScorePrey = entry.getKey();
+                    }
+                }
+                name = maxScorePrey.getNameChiSim();
+            }else {
+                //没有权重记录时，preyName 将无法确定
+                //可以统一到一个名称
+                name = "Undefined";
+            }
+
         }
 
         return name;

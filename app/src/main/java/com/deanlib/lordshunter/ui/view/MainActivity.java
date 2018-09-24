@@ -1,10 +1,12 @@
-package com.deanlib.lordshunter;
+package com.deanlib.lordshunter.ui.view;
 
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Parcelable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import com.deanlib.lordshunter.R;
 
 import java.io.File;
 import java.util.ArrayList;

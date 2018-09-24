@@ -9,7 +9,7 @@ public class ImageInfo extends RealmObject {
 
 
     @PrimaryKey
-    int id;
+    String id;
     String preyName;//猎物名称
     int preyLevel;//猎物等级
     String dataTime;//猎杀时间
@@ -18,11 +18,11 @@ public class ImageInfo extends RealmObject {
     String md5;
     boolean isKill;
 
-    public int getId() {
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(String id) {
         this.id = id;
     }
 

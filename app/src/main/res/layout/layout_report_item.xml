@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:background="@color/colorWhite"
+        android:id="@+id/layoutItem"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="120dp">
+
+        <FrameLayout
+            android:layout_weight="1"
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+            <ImageView
+                android:scaleType="centerCrop"
+                android:id="@+id/imgCover"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+            <ImageView
+                android:visibility="gone"
+                android:layout_gravity="center"
+                android:id="@+id/imgTag"
+                android:layout_width="60dp"
+                android:layout_height="60dp" />
+        </FrameLayout>
+
+
+        <LinearLayout
+            android:layout_margin="10dp"
+            android:orientation="vertical"
+            android:layout_weight="2"
+            android:layout_width="0dp"
+            android:layout_height="match_parent">
+            <TextView
+                android:singleLine="true"
+                android:textColor="@color/textBlack"
+                android:textSize="@dimen/text_size_normal_x"
+                android:id="@+id/tvName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <View
+                android:layout_marginTop="10dp"
+                android:background="@color/colorGrayTint"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"/>
+            <TextView
+                android:layout_marginTop="6dp"
+                android:singleLine="true"
+                android:textColor="@color/textBlack"
+                android:textSize="@dimen/text_size_normal"
+                android:id="@+id/tvPreyName"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <TextView
+                android:layout_marginTop="6dp"
+                android:singleLine="true"
+                android:textColor="@color/textBlack"
+                android:textSize="@dimen/text_size_normal"
+                android:layout_weight="1"
+                android:id="@+id/tvPreyLevel"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent" />
+            <TextView
+                android:gravity="right"
+                android:singleLine="true"
+                android:textColor="@color/textBlackGray"
+                android:textSize="@dimen/text_size_normal_l"
+                android:id="@+id/tvDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+    <TextView
+        android:layout_gravity="bottom"
+        android:maxLength="8"
+        android:singleLine="true"
+        android:textSize="@dimen/text_size_normal"
+        android:textColor="@color/colorWhite"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingTop="2dp"
+        android:paddingBottom="2dp"
+        android:background="@drawable/shape_r_red"
+        android:id="@+id/tvGroup"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+</FrameLayout>

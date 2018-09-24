@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    
+    <RelativeLayout
+        android:background="@color/colorPrimary"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/app_bar_height">
+        <LinearLayout
+            android:id="@+id/layoutHome"
+            android:gravity="center"
+            android:layout_width="@dimen/app_bar_height"
+            android:layout_height="@dimen/app_bar_height">
+            <ImageView
+                android:src="@mipmap/home"
+                android:layout_width="25dp"
+                android:layout_height="25dp" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_centerInParent="true"
+            android:textColor="@color/textWhite"
+            android:textSize="@dimen/text_size_normal_xx"
+            android:text="@string/data_collection"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+
+    <ListView
+        android:layout_weight="1"
+        android:divider="@null"
+        android:dividerHeight="10dp"
+        android:background="@color/colorGrayTint"
+        android:id="@+id/listView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+    <TextView
+        android:id="@+id/tvSave"
+        android:text="@string/save"
+        android:gravity="center"
+        android:textColor="@color/textWhite"
+        android:background="@color/colorPrimary"
+        android:textSize="@dimen/text_size_normal_xx"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/button_height" />
+
+</LinearLayout>
