@@ -7,6 +7,7 @@
     <color name="colorRed">#CC0033</color>
     <color name="colorWhite">#FFFFFF</color>
     <color name="colorGrayTint">#DDDDDD</color>
+    <color name="colorGray">#999999</color>
     <color name="colorBlue">#0066CC</color>
     <color name="colorBlueDark">#003399</color>
 
@@ -16,5 +17,6 @@
     <color name="textWhite">@color/colorWhite</color>
     <color name="textBlack">#333333</color>
     <color name="textBlackGray">#666666</color>
-    <color name="textGray">#999999</color>
+    <color name="textGray">@color/colorGray</color>
+    <color name="textBlue">@color/colorBlue</color>
 </resources>

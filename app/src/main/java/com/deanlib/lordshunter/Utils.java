@@ -46,6 +46,7 @@ public class Utils {
         }
         text = text.trim();
 
+        //todo 可能有繁体字问题
         Pattern groupPattern = Pattern.compile("(.+) 微信群上的聊天记录如下，请查收。");
         Pattern datePattern = Pattern.compile("—————  (\\d{4}-\\d{2}-\\d{2})  —————");
         Pattern reportPattern = Pattern.compile("(.+) {2}(\\d{2}:\\d{2})\\n\\n\\[图片: (\\w{32}\\.jpg)\\(\\S+\\)\\]");

@@ -14,4 +14,6 @@ public class Constant {
     public static final List<String> PREY_NAMES = new ArrayList<>();
     public static final Map<Character,Set<Prey>> PREY_NAME_INDEX_MAP = new HashMap<>();//文字索引 存放拆分开的文字做为Key
 
+    public static boolean isAppRunForeground = false;
+
 }

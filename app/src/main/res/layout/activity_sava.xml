@@ -37,12 +37,12 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
-    <TextView
-        android:id="@+id/tvSave"
+    <Button
+        android:id="@+id/btnSave"
         android:text="@string/save"
         android:gravity="center"
         android:textColor="@color/textWhite"
-        android:background="@color/colorPrimary"
+        android:background="@drawable/selector_button"
         android:textSize="@dimen/text_size_normal_xx"
         android:layout_width="match_parent"
         android:layout_height="@dimen/button_height" />

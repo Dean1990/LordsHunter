@@ -1,11 +1,14 @@
 package com.deanlib.lordshunter.entity;
 
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import io.realm.RealmObject;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 
-public class ImageInfo extends RealmObject {
+public class ImageInfo extends RealmObject implements Parcelable {
 
 
     @PrimaryKey
@@ -73,4 +76,46 @@ public class ImageInfo extends RealmObject {
     public void setKill(boolean kill) {
         isKill = kill;
     }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.id);
+        dest.writeString(this.preyName);
+        dest.writeInt(this.preyLevel);
+        dest.writeString(this.dataTime);
+        dest.writeString(this.uri);
+        dest.writeString(this.md5);
+        dest.writeByte(this.isKill ? (byte) 1 : (byte) 0);
+    }
+
+    public ImageInfo() {
+    }
+
+    protected ImageInfo(Parcel in) {
+        this.id = in.readString();
+        this.preyName = in.readString();
+        this.preyLevel = in.readInt();
+        this.dataTime = in.readString();
+        this.uri = in.readString();
+        this.md5 = in.readString();
+        this.isKill = in.readByte() != 0;
+    }
+
+    public static final Parcelable.Creator<ImageInfo> CREATOR = new Parcelable.Creator<ImageInfo>() {
+        @Override
+        public ImageInfo createFromParcel(Parcel source) {
+            return new ImageInfo(source);
+        }
+
+        @Override
+        public ImageInfo[] newArray(int size) {
+            return new ImageInfo[size];
+        }
+    };
 }

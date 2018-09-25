@@ -17,6 +17,9 @@ public class App extends Application {
     public void onCreate() {
         super.onCreate();
 
+        //监听app是否在前台运行
+        registerActivityLifecycleCallbacks(new ActivityLifecycleListener());
+
         OotbConfig.init(this,Constant.isDebug);
         Realm.init(this);
 
@@ -42,4 +45,5 @@ public class App extends Application {
             Constant.PREY_NAME_INDEX_MAP.put(ch,preys);
         }
     }
+
 }

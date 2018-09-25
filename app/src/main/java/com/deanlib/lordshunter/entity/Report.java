@@ -1,11 +1,14 @@
 package com.deanlib.lordshunter.entity;
 
 
+import android.os.Parcel;
+import android.os.Parcelable;
+
 import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
 
-public class Report extends RealmObject {
+public class Report extends RealmObject implements Parcelable {
 
     @Ignore
     public static final int STATUS_NEW = 0;//新增
@@ -79,4 +82,46 @@ public class Report extends RealmObject {
     public void setStatus(int status) {
         this.status = status;
     }
+
+
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(this.id);
+        dest.writeString(this.group);
+        dest.writeString(this.date);
+        dest.writeString(this.time);
+        dest.writeString(this.name);
+        dest.writeParcelable(this.image, flags);
+        dest.writeInt(this.status);
+    }
+
+    public Report() {
+    }
+
+    protected Report(Parcel in) {
+        this.id = in.readString();
+        this.group = in.readString();
+        this.date = in.readString();
+        this.time = in.readString();
+        this.name = in.readString();
+        this.image = in.readParcelable(ImageInfo.class.getClassLoader());
+        this.status = in.readInt();
+    }
+
+    public static final Parcelable.Creator<Report> CREATOR = new Parcelable.Creator<Report>() {
+        @Override
+        public Report createFromParcel(Parcel source) {
+            return new Report(source);
+        }
+
+        @Override
+        public Report[] newArray(int size) {
+            return new Report[size];
+        }
+    };
 }

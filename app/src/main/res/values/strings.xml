@@ -14,4 +14,6 @@
     <string name="save_data">保存数据...</string>
     <string name="permission_not_granted">未获得相关权限</string>
     <string name="save_success">保存成功</string>
+    <string name="collection_save">收集数据已完成，等待保存</string>
+    <string name="to_background">转到后台处理</string>
 </resources>
