@@ -9,16 +9,17 @@ import com.deanlib.lordshunter.app.Constant;
 import com.deanlib.lordshunter.entity.ImageInfo;
 import com.deanlib.lordshunter.entity.Prey;
 import com.deanlib.lordshunter.entity.Report;
-import com.deanlib.ootblite.data.FileUtils;
 import com.deanlib.ootblite.utils.DLog;
 import com.deanlib.ootblite.utils.MD5;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
-import org.apache.commons.codec.digest.DigestUtils;
-
 import java.io.File;
-import java.io.FileInputStream;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,6 +55,8 @@ public class Utils {
         if (groupMatcher.find()) {
             String group = groupMatcher.group(1);
 
+            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+
             String[] split = text.split("—————  \\d{4}-\\d{2}-\\d{2}  —————");
             if (split != null && split.length > 1) {
                 Matcher dateMatcher = datePattern.matcher(text);
@@ -79,6 +82,13 @@ public class Utils {
                                 report.setImage(image);
                                 break;
                             }
+                        }
+                        //转换时间戳
+                        try {
+                            Date parse = dateFormat.parse(report.getDate() + " " + report.getTime());
+                            report.setTimestamp(parse.getTime());
+                        } catch (ParseException e) {
+                            e.printStackTrace();
                         }
                         list.add(report);
                     }

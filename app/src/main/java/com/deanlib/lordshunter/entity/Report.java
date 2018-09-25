@@ -24,6 +24,7 @@ public class Report extends RealmObject implements Parcelable {
     String time;//时间
     String name;//用户名称
     ImageInfo image;
+    long timestamp;
     @Ignore
     int status;//添加时记录状态，用于返回信息
 
@@ -83,6 +84,14 @@ public class Report extends RealmObject implements Parcelable {
         this.status = status;
     }
 
+    public long getTimestamp() {
+        return timestamp;
+    }
+
+    public void setTimestamp(long timestamp) {
+        this.timestamp = timestamp;
+    }
+
 
     @Override
     public int describeContents() {
@@ -97,6 +106,7 @@ public class Report extends RealmObject implements Parcelable {
         dest.writeString(this.time);
         dest.writeString(this.name);
         dest.writeParcelable(this.image, flags);
+        dest.writeLong(this.timestamp);
         dest.writeInt(this.status);
     }
 
@@ -110,10 +120,11 @@ public class Report extends RealmObject implements Parcelable {
         this.time = in.readString();
         this.name = in.readString();
         this.image = in.readParcelable(ImageInfo.class.getClassLoader());
+        this.timestamp = in.readLong();
         this.status = in.readInt();
     }
 
-    public static final Parcelable.Creator<Report> CREATOR = new Parcelable.Creator<Report>() {
+    public static final Creator<Report> CREATOR = new Creator<Report>() {
         @Override
         public Report createFromParcel(Parcel source) {
             return new Report(source);
