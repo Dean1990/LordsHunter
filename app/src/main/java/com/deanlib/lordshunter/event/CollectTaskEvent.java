@@ -3,8 +3,9 @@ package com.deanlib.lordshunter.event;
 public class CollectTaskEvent {
 
     public static final int ACTION_UPDATE_UI = 1;
-    public static final int ACTION_DIALOG_MESSAGE = 2;
-    public static final int ACTION_DIALOG_DISMISS = 3;
+    public static final int ACTION_MESSAGE = 2;
+    public static final int ACTION_COMPLETE = 3;
+    public static final int ACTION_ERROR = 4;
 
     int action;
     Object obj;

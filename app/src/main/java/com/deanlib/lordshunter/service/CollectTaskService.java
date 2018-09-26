@@ -18,11 +18,9 @@ import android.support.v4.app.NotificationCompat;
 
 import com.deanlib.lordshunter.R;
 import com.deanlib.lordshunter.Utils;
-import com.deanlib.lordshunter.app.Constant;
 import com.deanlib.lordshunter.entity.Report;
 import com.deanlib.lordshunter.event.CollectTaskEvent;
 import com.deanlib.lordshunter.ui.view.SavaActivity;
-import com.deanlib.ootblite.utils.PopupUtils;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -53,18 +51,17 @@ public class CollectTaskService extends Service {
             @Override
             public void subscribe(ObservableEmitter<List<Report>> emitter) throws Exception {
                 //解析
-                EventBus.getDefault().post(new CollectTaskEvent(CollectTaskEvent.ACTION_DIALOG_MESSAGE,getString(R.string.parse_data)));
+                EventBus.getDefault().post(new CollectTaskEvent(CollectTaskEvent.ACTION_MESSAGE,getString(R.string.parse_data)));
                 List<Report> reports = Utils.parseText(CollectTaskService.this,text, images);
                 if (reports==null || reports.size() == 0){
-                    PopupUtils.sendToast(R.string.invalid_data);
-                    emitter.onError(new Throwable("invalid data"));
+                    emitter.onError(new Throwable(getString(R.string.invalid_data)));
                     return;
                 }
                 //重复性验证
-                EventBus.getDefault().post(new CollectTaskEvent(CollectTaskEvent.ACTION_DIALOG_MESSAGE,getString(R.string.repet_data)));
+                EventBus.getDefault().post(new CollectTaskEvent(CollectTaskEvent.ACTION_MESSAGE,getString(R.string.repet_data)));
                 List<Report> reports1 = Utils.checkRepet(reports);
                 //文字识别
-                EventBus.getDefault().post(new CollectTaskEvent(CollectTaskEvent.ACTION_DIALOG_MESSAGE,getString(R.string.text_extraction)));
+                EventBus.getDefault().post(new CollectTaskEvent(CollectTaskEvent.ACTION_MESSAGE,getString(R.string.text_extraction)));
                 List<Report> reports2 = Utils.ocr(reports1);
 
                 emitter.onNext(reports2);
@@ -122,12 +119,12 @@ public class CollectTaskService extends Service {
 
                     @Override
                     public void onError(Throwable e) {
-                        EventBus.getDefault().post(new CollectTaskEvent(CollectTaskEvent.ACTION_DIALOG_DISMISS,null));
+                        EventBus.getDefault().post(new CollectTaskEvent(CollectTaskEvent.ACTION_ERROR,e.getMessage()));
                     }
 
                     @Override
                     public void onComplete() {
-                        EventBus.getDefault().post(new CollectTaskEvent(CollectTaskEvent.ACTION_DIALOG_DISMISS,null));
+                        EventBus.getDefault().post(new CollectTaskEvent(CollectTaskEvent.ACTION_COMPLETE,null));
                     }
                 });
         return super.onStartCommand(intent, flags, startId);

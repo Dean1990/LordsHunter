@@ -188,7 +188,7 @@ public class SavaActivity extends AppCompatActivity {
                     btnSave.setEnabled(true);
                 }
                 break;
-            case CollectTaskEvent.ACTION_DIALOG_MESSAGE:
+            case CollectTaskEvent.ACTION_MESSAGE:
                 String msg = (String) event.getObj();
                 if (mDialog == null || !mDialog.isShowing()) {
                     View progressView = View.inflate(this,R.layout.layout_progress,null);
@@ -204,10 +204,17 @@ public class SavaActivity extends AppCompatActivity {
                     mDialog.setMessage(msg);
                 }
                 break;
-            case CollectTaskEvent.ACTION_DIALOG_DISMISS:
+            case CollectTaskEvent.ACTION_COMPLETE:
                 if (mDialog != null && mDialog.isShowing()) {
                     mDialog.dismiss();
                 }
+                break;
+            case CollectTaskEvent.ACTION_ERROR:
+                if (mDialog != null && mDialog.isShowing()) {
+                    mDialog.dismiss();
+                }
+                String errorMsg = (String) event.getObj();
+                PopupUtils.sendToast(errorMsg);
                 break;
 
         }
