@@ -50,7 +50,7 @@ public class ReportAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
         Glide.with(convertView).load(list.get(position).getImage().getUri())
-                .apply(new RequestOptions().placeholder(R.mipmap.ic_launcher).error(R.mipmap.ic_launcher))
+                .apply(new RequestOptions().placeholder(R.mipmap.default_img).error(R.mipmap.default_img))
                 .into(holder.imgCover);
         holder.tvGroup.setText(list.get(position).getGroup());
         holder.tvName.setText(list.get(position).getName());

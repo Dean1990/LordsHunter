@@ -98,10 +98,10 @@ public class CollectTaskService extends Service {
                                 PendingIntent pendingIntent = PendingIntent.getActivity(CollectTaskService.this, notifiyId, intent1, PendingIntent.FLAG_UPDATE_CURRENT);
 
                                 NotificationCompat.Builder builder = new NotificationCompat.Builder(CollectTaskService.this, "1");
-                                builder.setSmallIcon(R.mipmap.ic_launcher);
+                                builder.setSmallIcon(R.mipmap.icon);
                                 //builder.setSmallIcon(android.os.Build.VERSION.SDK_INT>20?R.drawable.ic_launcher_round:R.drawable.ic_launcher);
                                 //builder.setColor(context.getResources().getColor(R.color.icon_blue));
-                                builder.setLargeIcon(BitmapFactory.decodeResource(CollectTaskService.this.getResources(), R.mipmap.ic_launcher));
+                                builder.setLargeIcon(BitmapFactory.decodeResource(CollectTaskService.this.getResources(), R.mipmap.icon));
                                 builder.setAutoCancel(true);
                                 builder.setDefaults(Notification.DEFAULT_ALL);
                                 builder.setTicker(getString(R.string.collection_save));

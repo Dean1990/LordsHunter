@@ -34,5 +34,5 @@
     <string name="share_data_template">,该条信息由「 王国猎手App 」生成。</string>
 
     <string name="pattern_group">(.+) 微信群上的聊天记录如下，请查收。</string>
-    <string name="pattern_report">(.+) {2}(\d{2}:\d{2})\n\n\[圖片: (\w{32}\.jpg)\(\S+\)\]</string>
+    <string name="pattern_report">(.+) {2}(\\d{2}:\\d{2})\\n\\n\\[图片: (\\w{32}\\.jpg)\\(\\S+\\)\\]</string>
 </resources>
