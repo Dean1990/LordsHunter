@@ -8,6 +8,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.bumptech.glide.request.RequestOptions;
 import com.deanlib.lordshunter.R;
 import com.deanlib.lordshunter.entity.Report;
 
@@ -49,6 +50,7 @@ public class ReportAdapter extends BaseAdapter {
             holder = (ViewHolder) convertView.getTag();
         }
         Glide.with(convertView).load(list.get(position).getImage().getUri())
+                .apply(new RequestOptions().placeholder(R.mipmap.ic_launcher).error(R.mipmap.ic_launcher))
                 .into(holder.imgCover);
         holder.tvGroup.setText(list.get(position).getGroup());
         holder.tvName.setText(list.get(position).getName());

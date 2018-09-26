@@ -22,7 +22,7 @@
     </RelativeLayout>
 
     <LinearLayout
-
+        android:elevation="1dp"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:layout_width="match_parent"
@@ -53,13 +53,47 @@
 
     </LinearLayout>
 
-    <com.github.mikephil.charting.charts.LineChart
-        android:id="@+id/lineChart"
+    <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="200dp"/>
+        android:layout_height="match_parent">
 
+    <ScrollView
+        android:id="@+id/scrollViewContainer"
+        android:layout_width="match_parent"
+        android:paddingBottom="60dp"
+        android:layout_height="match_parent">
 
+    </ScrollView>
 
+    <LinearLayout
+        android:layout_gravity="bottom"
+        android:layout_margin="10dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:layout_weight="1"
+            android:id="@+id/btnShareData"
+            android:text="@string/share_data"
+            android:gravity="center"
+            android:textColor="@color/textWhite"
+            android:background="@drawable/selector_button"
+            android:textSize="@dimen/text_size_normal_xx"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/button_height" />
 
+        <Button
+            android:layout_marginLeft="10dp"
+            android:layout_weight="1"
+            android:id="@+id/btnDetail"
+            android:text="@string/read_detail"
+            android:gravity="center"
+            android:textColor="@color/textWhite"
+            android:background="@drawable/selector_button"
+            android:textSize="@dimen/text_size_normal_xx"
+            android:layout_width="match_parent"
+            android:layout_height="@dimen/button_height" />
+    </LinearLayout>
 
+    </FrameLayout>
 </LinearLayout>

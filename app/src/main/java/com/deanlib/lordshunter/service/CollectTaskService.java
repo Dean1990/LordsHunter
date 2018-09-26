@@ -22,6 +22,7 @@ import com.deanlib.lordshunter.app.Constant;
 import com.deanlib.lordshunter.entity.Report;
 import com.deanlib.lordshunter.event.CollectTaskEvent;
 import com.deanlib.lordshunter.ui.view.SavaActivity;
+import com.deanlib.ootblite.utils.PopupUtils;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -53,7 +54,12 @@ public class CollectTaskService extends Service {
             public void subscribe(ObservableEmitter<List<Report>> emitter) throws Exception {
                 //解析
                 EventBus.getDefault().post(new CollectTaskEvent(CollectTaskEvent.ACTION_DIALOG_MESSAGE,getString(R.string.parse_data)));
-                List<Report> reports = Utils.parseText(text, images);
+                List<Report> reports = Utils.parseText(CollectTaskService.this,text, images);
+                if (reports==null || reports.size() == 0){
+                    PopupUtils.sendToast(R.string.invalid_data);
+                    emitter.onError(new Throwable("invalid data"));
+                    return;
+                }
                 //重复性验证
                 EventBus.getDefault().post(new CollectTaskEvent(CollectTaskEvent.ACTION_DIALOG_MESSAGE,getString(R.string.repet_data)));
                 List<Report> reports1 = Utils.checkRepet(reports);
@@ -116,7 +122,7 @@ public class CollectTaskService extends Service {
 
                     @Override
                     public void onError(Throwable e) {
-
+                        EventBus.getDefault().post(new CollectTaskEvent(CollectTaskEvent.ACTION_DIALOG_DISMISS,null));
                     }
 
                     @Override

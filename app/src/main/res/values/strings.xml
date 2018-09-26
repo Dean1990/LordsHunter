@@ -7,6 +7,8 @@
     <string name="save">保存</string>
     <string name="prey_name_">猎物名称：%s</string>
     <string name="prey_level_">猎物等级：%d 级</string>
+    <string name="group_">群组：%s</string>
+    <string name="member_">成员：%s</string>
     <string name="data_collection">数据采集</string>
     <string name="ok">确定</string>
     <string name="cancel">取消</string>
@@ -16,4 +18,21 @@
     <string name="save_success">保存成功</string>
     <string name="collection_save">收集数据已完成，等待保存</string>
     <string name="to_background">转到后台处理</string>
+    <string name="invalid_data">无效的数据</string>
+    <string name="report">报告</string>
+    <string name="read_detail">查看详情</string>
+    <string name="share_data">分享数据</string>
+    <string name="detail">详情</string>
+    <string name="invalid_id">无效的ID</string>
+
+    <string name="correction_prey">修正猎物</string>
+    <string name="correction_level">修正等级</string>
+
+    <string name="share_data_template_1">%s ,共 %d 人上传猎魔记录</string>
+    <string name="share_data_template_2">%s级怪 %d 只</string>
+    <string name="share_data_template_3">折合一级怪 %d 只</string>
+    <string name="share_data_template">,该条信息由「 王国猎手App 」生成。</string>
+
+    <string name="pattern_group">(.+) 微信群上的聊天记录如下，请查收。</string>
+    <string name="pattern_report">(.+) {2}(\d{2}:\d{2})\n\n\[圖片: (\w{32}\.jpg)\(\S+\)\]</string>
 </resources>

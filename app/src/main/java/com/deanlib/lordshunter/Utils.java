@@ -1,5 +1,6 @@
 package com.deanlib.lordshunter;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -38,7 +39,7 @@ public class Utils {
      * @param images
      * @return
      */
-    public static List<Report> parseText(String text, List<Uri> images){
+    public static List<Report> parseText(Context context,String text, List<Uri> images){
         if (TextUtils.isEmpty(text)){
             return null;
         }
@@ -48,9 +49,11 @@ public class Utils {
         text = text.trim();
 
         //todo 可能有繁体字问题
-        Pattern groupPattern = Pattern.compile("(.+) 微信群上的聊天记录如下，请查收。");
+        Pattern groupPattern = Pattern.compile(context.getString(R.string.pattern_group));
+//        Pattern groupPattern = Pattern.compile("(.+) WeChat群組的聊天記錄如下，請查收。");
         Pattern datePattern = Pattern.compile("—————  (\\d{4}-\\d{2}-\\d{2})  —————");
-        Pattern reportPattern = Pattern.compile("(.+) {2}(\\d{2}:\\d{2})\\n\\n\\[图片: (\\w{32}\\.jpg)\\(\\S+\\)\\]");
+        Pattern reportPattern = Pattern.compile(context.getString(R.string.pattern_report));
+//        Pattern reportPattern = Pattern.compile("(.+) {2}(\\d{2}:\\d{2})\\n\\n\\[圖片: (\\w{32}\\.jpg)\\(\\S+\\)\\]");
         Matcher groupMatcher = groupPattern.matcher(text);
         if (groupMatcher.find()) {
             String group = groupMatcher.group(1);
@@ -232,5 +235,20 @@ public class Utils {
         }
 
         return name;
+    }
+
+    /**
+     * 计算折合一级怪
+     * @param level
+     * @param count
+     * @return
+     */
+    public static long equivalentLv1(int level,long count){
+        if (level != 1){
+            count*=3;
+            level--;
+            equivalentLv1(level,count);
+        }
+        return count;
     }
 }

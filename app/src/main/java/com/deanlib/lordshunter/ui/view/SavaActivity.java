@@ -17,6 +17,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 
@@ -63,6 +64,7 @@ public class SavaActivity extends AppCompatActivity {
     Button btnSave;
 
     static AlertDialog mDialog;
+    int mClickPosition = -1;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -94,6 +96,13 @@ public class SavaActivity extends AppCompatActivity {
     private void init() {
         btnSave.setEnabled(false);
         listView.setAdapter(mReportAdapter = new ReportAdapter(mReportList = new ArrayList<>()));
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                mClickPosition = (int)id;
+                ViewJump.toReportDetail(SavaActivity.this,mReportList.get(mClickPosition));
+            }
+        });
     }
 
     private void loadData() {
@@ -201,6 +210,26 @@ public class SavaActivity extends AppCompatActivity {
                 }
                 break;
 
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode == RESULT_OK){
+            switch (requestCode){
+                case ViewJump.CODE_REPORT_SAVE_TO_DETAIL:
+                    if (data!=null &&listView!=null && mReportList!=null&&mReportAdapter!=null&& mClickPosition>=0){
+                        Report report = data.getParcelableExtra("report");
+                        if (report!=null){
+                            mReportList.remove(mClickPosition);
+                            mReportList.add(mClickPosition,report);
+                            mReportAdapter.notifyDataSetChanged();
+                        }
+                    }
+                    mClickPosition = -1;
+                    break;
+            }
         }
     }
 

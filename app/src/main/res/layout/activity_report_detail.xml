@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout
+    android:background="@color/textBlackGray"
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <com.github.chrisbanes.photoview.PhotoView
+        android:layout_gravity="center"
+        android:id="@+id/photoView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
+    <RelativeLayout
+        android:layout_gravity="top"
+        android:background="@color/colorBlueAlpha"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/app_bar_height">
+        <LinearLayout
+            android:id="@+id/layoutBack"
+            android:gravity="center"
+            android:layout_width="@dimen/app_bar_height"
+            android:layout_height="@dimen/app_bar_height">
+            <ImageView
+                android:src="@mipmap/back"
+                android:layout_width="20dp"
+                android:layout_height="20dp" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_centerInParent="true"
+            android:textColor="@color/textWhite"
+            android:textSize="@dimen/text_size_normal_xx"
+            android:text="@string/detail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:elevation="1dp"
+        android:background="@color/colorGrayAlpha"
+        android:layout_gravity="bottom"
+        android:paddingLeft="10dp"
+        android:paddingRight="10dp"
+        android:paddingBottom="10dp"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <TextView
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:singleLine="true"
+            android:textColor="@color/textWhite"
+            android:textSize="@dimen/text_size_normal_x"
+            android:id="@+id/tvGroup"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <View
+            android:background="@color/colorGrayTint"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"/>
+        <TextView
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:singleLine="true"
+            android:textColor="@color/textWhite"
+            android:textSize="@dimen/text_size_normal_x"
+            android:id="@+id/tvName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <View
+            android:background="@color/colorGrayTint"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"/>
+        <TextView
+            android:drawablePadding="10dp"
+            android:drawableRight="@mipmap/go"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:singleLine="true"
+            android:textColor="@color/textWhite"
+            android:textSize="@dimen/text_size_normal"
+            android:id="@+id/tvPreyName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+        <View
+            android:background="@color/colorGrayTint"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"/>
+        <TextView
+            android:drawablePadding="10dp"
+            android:drawableRight="@mipmap/go"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:singleLine="true"
+            android:textColor="@color/textWhite"
+            android:textSize="@dimen/text_size_normal"
+            android:layout_weight="1"
+            android:id="@+id/tvPreyLevel"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" />
+        <View
+            android:background="@color/colorGrayTint"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"/>
+        <TextView
+            android:gravity="right"
+            android:paddingTop="10dp"
+            android:paddingBottom="10dp"
+            android:singleLine="true"
+            android:textColor="@color/textWhite"
+            android:textSize="@dimen/text_size_normal_l"
+            android:id="@+id/tvDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+</FrameLayout>

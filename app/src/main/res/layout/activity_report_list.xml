@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:background="@color/colorPrimary"
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/app_bar_height">
+        <LinearLayout
+            android:id="@+id/layoutBack"
+            android:gravity="center"
+            android:layout_width="@dimen/app_bar_height"
+            android:layout_height="@dimen/app_bar_height">
+            <ImageView
+                android:src="@mipmap/back"
+                android:layout_width="20dp"
+                android:layout_height="20dp" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_centerInParent="true"
+            android:textColor="@color/textWhite"
+            android:textSize="@dimen/text_size_normal_xx"
+            android:text="@string/report"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </RelativeLayout>
+
+    <com.scwang.smartrefresh.layout.SmartRefreshLayout
+        android:id="@+id/srl"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <ListView
+            android:divider="@null"
+            android:dividerHeight="10dp"
+            android:background="@color/colorGrayTint"
+            android:id="@+id/listView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+    </com.scwang.smartrefresh.layout.SmartRefreshLayout>
+
+</LinearLayout>

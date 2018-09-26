@@ -34,6 +34,9 @@
         <activity android:name=".ui.view.ReportDetailActivity"
             android:screenOrientation="portrait"
             />
+        <activity android:name=".ui.view.ReportListActivity"
+            android:screenOrientation="portrait"
+            />
 
         <service android:name=".service.CollectTaskService"/>
 
