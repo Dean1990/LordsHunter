@@ -8,6 +8,7 @@ import com.deanlib.lordshunter.Utils;
 import com.deanlib.lordshunter.entity.Prey;
 import com.deanlib.ootblite.OotbConfig;
 import com.deanlib.ootblite.data.FileUtils;
+import com.google.android.gms.ads.MobileAds;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.DefaultRefreshFooterCreator;
 import com.scwang.smartrefresh.layout.api.DefaultRefreshHeaderCreator;

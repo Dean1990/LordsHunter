@@ -35,6 +35,8 @@
     <string name="download_completed">下载完成</string>
     <string name="download_error">下载出错</string>
     <string name="doalowning_info_">文件大小 %s , 当前下载 %s , 下载速度 %s</string>
+    <string name="attention">提示</string>
+    <string name="attention_not_wifi">非WIFI网络环境，是否直接下载？</string>
 
     <string name="guide">指导</string>
     <string name="guide_download_data_package">应用需要下载数据包才能正常使用，是否要现在下载？</string>
@@ -51,4 +53,9 @@
     <string name="ocr_language">chi_sim</string>
     <string name="pattern_group">(.+) 微信群上的聊天记录如下，请查收。</string>
     <string name="pattern_report">(.+) {2}(\\d{2}:\\d{2})\\n\\n\\[图片: (\\w{32}\\.jpg)\\(\\S+\\)\\]</string>
+
+    <string name="jump_">跳过（%d）</string>
+    <string name="app_desc">王国纪元猎魔辅助工具</string>
+    <string name="specification">使用说明</string>
+    <string name="data_empty">没有数据~</string>
 </resources>

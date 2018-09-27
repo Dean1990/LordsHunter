@@ -13,8 +13,12 @@ android {
     }
     buildTypes {
         release {
+            buildConfigField "boolean", "isDebug", "false"
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+        debug {
+            buildConfigField "boolean", "isDebug", "true"
         }
     }
     lintOptions {
@@ -77,5 +81,6 @@ dependencies {
     implementation 'com.github.chrisbanes:PhotoView:2.1.4'
 
     implementation 'com.liulishuo.filedownloader:library:1.7.5'
+    implementation 'com.google.android.gms:play-services-ads:15.0.1'
 
 }

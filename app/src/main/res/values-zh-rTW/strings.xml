@@ -35,6 +35,8 @@
     <string name="download_completed">下載完成</string>
     <string name="download_error">下載出錯</string>
     <string name="doalowning_info_">文件大小 %s , 當前下載 %s , 下載速度 %s</string>
+    <string name="attention">提示</string>
+    <string name="attention_not_wifi">非WIFI網絡環境，是否直接下載？</string>
 
     <string name="guide">指導</string>
     <string name="guide_download_data_package">應用需要下載數據包才能正常使用，是否要現在下載？</string>
@@ -51,4 +53,9 @@
     <string name="ocr_language">chi_tra</string>
     <string name="pattern_group">(.+) WeChat群組的聊天記錄如下，請查收。</string>
     <string name="pattern_report">(.+) {2}(\\d{2}:\\d{2})\\n\\n\\[圖片: (\\w{32}\\.jpg)\\(\\S+\\)\\]</string>
+
+    <string name="jump_">跳過（%d）</string>
+    <string name="app_desc">王國紀元獵魔輔助工具</string>
+    <string name="specification">使用說明</string>
+    <string name="data_empty">沒有數據~</string>
 </resources>

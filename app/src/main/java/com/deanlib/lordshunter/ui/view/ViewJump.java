@@ -31,4 +31,10 @@ public class ViewJump {
         intent.putExtra("report",report);
         activity.startActivityForResult(intent,CODE_REPORT_SAVE_TO_DETAIL);
     }
+
+    public static void toWebView(Activity activity,String url){
+        Intent intent = new Intent(activity, WebViewActivity.class);
+        intent.putExtra("url",url);
+        activity.startActivity(intent);
+    }
 }

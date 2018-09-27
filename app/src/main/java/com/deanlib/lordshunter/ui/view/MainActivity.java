@@ -21,6 +21,7 @@ import com.deanlib.lordshunter.entity.Report;
 import com.deanlib.ootblite.utils.DLog;
 import com.deanlib.ootblite.utils.FormatUtils;
 import com.deanlib.ootblite.utils.PopupUtils;
+import com.deanlib.ootblite.utils.network.NetworkManager;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -102,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
                                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        downloadDataPackage();
+                                        checkWifi2DownloadDataPackage();
                                     }
                                 }).setNegativeButton(R.string.cancel,null).show();
                     }
@@ -331,13 +332,17 @@ public class MainActivity extends AppCompatActivity {
                     public boolean onMenuItemClick(MenuItem menuItem) {
                         switch (menuItem.getItemId()) {
                             case R.id.downloadData:
-
                                 //下载字库文件
                                 if (!mTraineddata.exists()) {
-                                    downloadDataPackage();
+                                    checkWifi2DownloadDataPackage();
                                 } else {
                                     PopupUtils.sendToast(R.string.data_package_exist);
                                 }
+                                break;
+                            case R.id.specification:
+                                //使用说明
+                                //todo 地址
+                                ViewJump.toWebView(MainActivity.this,"");
                                 break;
                             case R.id.shareApp:
                                 //分享应用 todo 地址没写呢
@@ -354,10 +359,25 @@ public class MainActivity extends AppCompatActivity {
                 });
                 menu.show();
 
-
                 break;
         }
 
+    }
+
+    private void checkWifi2DownloadDataPackage(){
+        if (NetworkManager.getAPNType(this)!=NetworkManager.TYPE_WIFI){
+            new AlertDialog.Builder(this).setTitle(R.string.attention)
+                    .setMessage(R.string.attention_not_wifi)
+                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            downloadDataPackage();
+                        }
+                    }).setNegativeButton(R.string.cancel,null)
+                    .show();
+        }else {
+            downloadDataPackage();
+        }
     }
 
     private void downloadDataPackage(){

@@ -5,6 +5,10 @@
         android:title="@string/download_data_package"
         />
     <item
+        android:id="@+id/specification"
+        android:title="@string/specification"
+        />
+    <item
         android:id="@+id/shareApp"
         android:title="@string/share_app"
         />

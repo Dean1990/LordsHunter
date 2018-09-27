@@ -7,6 +7,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.deanlib.lordshunter.R;
 import com.deanlib.lordshunter.entity.Report;
@@ -31,6 +32,8 @@ public class ReportListActivity extends AppCompatActivity {
     ListView listView;
     @BindView(R.id.srl)
     SmartRefreshLayout srl;
+    @BindView(R.id.tvEmpty)
+    TextView tvEmpty;
 
     long startTime, endTime;
     ReportAdapter mReportAdapter;
@@ -86,9 +89,14 @@ public class ReportListActivity extends AppCompatActivity {
 //        for (int i = mPage*mPageSize;i<(mPage+1)*mPageSize && i<reports.size();i++){
 //            mReportList.add(reports.get(i));
 //        }
-        mReportList.addAll(mReports);
-        mReportAdapter.notifyDataSetChanged();
+        if (mReports.size() == 0){
+            tvEmpty.setVisibility(View.VISIBLE);
+        }else {
+            tvEmpty.setVisibility(View.GONE);
+            mReportList.addAll(mReports);
+            mReportAdapter.notifyDataSetChanged();
 //        srl.finishLoadMore();
+        }
     }
 
     @OnClick(R.id.layoutBack)
