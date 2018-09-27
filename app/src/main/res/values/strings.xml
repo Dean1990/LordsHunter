@@ -3,7 +3,7 @@
     <string name="error_data">不可识别的数据</string>
     <string name="parse_data">解析数据...</string>
     <string name="repet_data">检查重复图片...</string>
-    <string name="text_extraction">识别图片中的文字...</string>
+    <string name="text_extraction">识别图片中的文字比较耗时，请等待...</string>
     <string name="save">保存</string>
     <string name="prey_name_">猎物名称：%s</string>
     <string name="prey_level_">猎物等级：%d 级</string>
@@ -24,15 +24,31 @@
     <string name="share_data">分享数据</string>
     <string name="detail">详情</string>
     <string name="invalid_id">无效的ID</string>
+    <string name="background_task_notify">后台将继续任务，任务完成时会发出通知</string>
 
     <string name="correction_prey">修正猎物</string>
     <string name="correction_level">修正等级</string>
 
+    <string name="download_data_package">下载数据包</string>
+    <string name="share_app">分享App</string>
+    <string name="share_app_url">游戏《王国纪元》猎魔辅助工具，「 王国猎手App 」下载地址：%s</string>
+    <string name="download_completed">下载完成</string>
+    <string name="download_error">下载出错</string>
+    <string name="doalowning_info_">文件大小 %s , 当前下载 %s , 下载速度 %s</string>
+
+    <string name="guide">指导</string>
+    <string name="guide_download_data_package">应用需要下载数据包才能正常使用，是否要现在下载？</string>
+
+    <string name="data_package_exist">数据包是存在的</string>
+    <string name="data_package_not_exist">数据包不存在，请前往首页设置中下载数据包</string>
+
+    <string name="share_data_empty">无数据可分享</string>
     <string name="share_data_template_1">%s ,共 %d 人上传猎魔记录</string>
     <string name="share_data_template_2">%s级怪 %d 只</string>
     <string name="share_data_template_3">折合一级怪 %d 只</string>
     <string name="share_data_template">,该条信息由「 王国猎手App 」生成。</string>
 
+    <string name="ocr_language">chi_sim</string>
     <string name="pattern_group">(.+) 微信群上的聊天记录如下，请查收。</string>
     <string name="pattern_report">(.+) {2}(\\d{2}:\\d{2})\\n\\n\\[图片: (\\w{32}\\.jpg)\\(\\S+\\)\\]</string>
 </resources>

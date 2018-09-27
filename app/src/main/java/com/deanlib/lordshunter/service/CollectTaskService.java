@@ -21,6 +21,7 @@ import com.deanlib.lordshunter.Utils;
 import com.deanlib.lordshunter.entity.Report;
 import com.deanlib.lordshunter.event.CollectTaskEvent;
 import com.deanlib.lordshunter.ui.view.SavaActivity;
+import com.deanlib.ootblite.utils.DLog;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -45,6 +46,7 @@ public class CollectTaskService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
+        DLog.d("onStartCommand");
         String text = intent.getStringExtra("text");
         List<Uri> images = intent.getParcelableArrayListExtra("images");
         Observable.create(new ObservableOnSubscribe<List<Report>>() {
@@ -78,11 +80,13 @@ public class CollectTaskService extends Service {
 
                     @Override
                     public void onNext(List<Report> reports) {
+                        DLog.d("next");
                         if (reports != null && reports.size() > 0) {
                             EventBus.getDefault().post(new CollectTaskEvent(CollectTaskEvent.ACTION_UPDATE_UI,reports));
 
                             //如果不是运行在前台的，发通知
                             if (!SavaActivity.isRunForeground) {
+                                DLog.d("send notification");
                                 //发通知
                                 int notifiyId = (int) SystemClock.currentThreadTimeMillis();
                                 NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -98,7 +102,7 @@ public class CollectTaskService extends Service {
                                 PendingIntent pendingIntent = PendingIntent.getActivity(CollectTaskService.this, notifiyId, intent1, PendingIntent.FLAG_UPDATE_CURRENT);
 
                                 NotificationCompat.Builder builder = new NotificationCompat.Builder(CollectTaskService.this, "1");
-                                builder.setSmallIcon(R.mipmap.icon);
+                                builder.setSmallIcon(R.mipmap.notify_icon);
                                 //builder.setSmallIcon(android.os.Build.VERSION.SDK_INT>20?R.drawable.ic_launcher_round:R.drawable.ic_launcher);
                                 //builder.setColor(context.getResources().getColor(R.color.icon_blue));
                                 builder.setLargeIcon(BitmapFactory.decodeResource(CollectTaskService.this.getResources(), R.mipmap.icon));
@@ -119,16 +123,23 @@ public class CollectTaskService extends Service {
 
                     @Override
                     public void onError(Throwable e) {
+                        e.printStackTrace();
+                        DLog.d("error:"+e.getMessage());
                         EventBus.getDefault().post(new CollectTaskEvent(CollectTaskEvent.ACTION_ERROR,e.getMessage()));
                     }
 
                     @Override
                     public void onComplete() {
+                        DLog.d("complete");
                         EventBus.getDefault().post(new CollectTaskEvent(CollectTaskEvent.ACTION_COMPLETE,null));
                     }
                 });
         return super.onStartCommand(intent, flags, startId);
     }
 
-
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        DLog.d("onDestroy");
+    }
 }

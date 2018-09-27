@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/downloadData"
+        android:title="@string/download_data_package"
+        />
+    <item
+        android:id="@+id/shareApp"
+        android:title="@string/share_app"
+        />
+</menu>

@@ -23,6 +23,7 @@ import android.widget.ListView;
 
 
 import com.deanlib.lordshunter.R;
+import com.deanlib.lordshunter.app.Constant;
 import com.deanlib.lordshunter.entity.Report;
 import com.deanlib.lordshunter.event.CollectTaskEvent;
 import com.deanlib.lordshunter.service.CollectTaskService;
@@ -34,6 +35,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -99,22 +101,28 @@ public class SavaActivity extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                mClickPosition = (int)id;
-                ViewJump.toReportDetail(SavaActivity.this,mReportList.get(mClickPosition));
+                mClickPosition = (int) id;
+                ViewJump.toReportDetail(SavaActivity.this, mReportList.get(mClickPosition));
             }
         });
     }
 
     private void loadData() {
-        if (mDataReportList!=null){
+        if (mDataReportList != null) {
             mReportList.addAll(mDataReportList);
             mReportAdapter.notifyDataSetChanged();
             btnSave.setEnabled(true);
-        }else if (!TextUtils.isEmpty(text) && images != null && images.size() > 0) {
-            Intent intent = new Intent(this, CollectTaskService.class);
-            intent.putExtra("text", text);
-            intent.putExtra("images", images);
-            startService(intent);
+        } else if (!TextUtils.isEmpty(text) && images != null && images.size() > 0) {
+            File traineddata = Constant.APP_FILE_OCR_TRAINEDDATA;
+            if (traineddata.exists()) {
+                Intent intent = new Intent(this, CollectTaskService.class);
+                intent.putExtra("text", text);
+                intent.putExtra("images", images);
+                startService(intent);
+            } else {
+                //不存在，去下载
+                PopupUtils.sendToast(R.string.data_package_not_exist);
+            }
         } else {
             PopupUtils.sendToast(R.string.error_data);
         }
@@ -177,12 +185,12 @@ public class SavaActivity extends AppCompatActivity {
     }
 
     @Subscribe(threadMode = ThreadMode.MAIN)
-    public void onCollectTaskEvent(CollectTaskEvent event){
+    public void onCollectTaskEvent(CollectTaskEvent event) {
 
-        switch (event.getAction()){
+        switch (event.getAction()) {
             case CollectTaskEvent.ACTION_UPDATE_UI:
                 List<Report> reports = (List<Report>) event.getObj();
-                if (mReportList!=null && mReportAdapter != null) {
+                if (mReportList != null && mReportAdapter != null) {
                     mReportList.addAll(reports);
                     mReportAdapter.notifyDataSetChanged();
                     btnSave.setEnabled(true);
@@ -191,15 +199,16 @@ public class SavaActivity extends AppCompatActivity {
             case CollectTaskEvent.ACTION_MESSAGE:
                 String msg = (String) event.getObj();
                 if (mDialog == null || !mDialog.isShowing()) {
-                    View progressView = View.inflate(this,R.layout.layout_progress,null);
+                    View progressView = View.inflate(this, R.layout.layout_progress, null);
                     mDialog = new AlertDialog.Builder(this).setMessage(msg).setView(progressView)
                             .setCancelable(false).setPositiveButton(R.string.to_background, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
-                            finish();
-                        }
-                    }).show();
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    PopupUtils.sendToast(R.string.background_task_notify);
+                                    dialog.dismiss();
+                                    finish();
+                                }
+                            }).show();
                 } else {
                     mDialog.setMessage(msg);
                 }
@@ -223,14 +232,14 @@ public class SavaActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
-        if (resultCode == RESULT_OK){
-            switch (requestCode){
+        if (resultCode == RESULT_OK) {
+            switch (requestCode) {
                 case ViewJump.CODE_REPORT_SAVE_TO_DETAIL:
-                    if (data!=null &&listView!=null && mReportList!=null&&mReportAdapter!=null&& mClickPosition>=0){
+                    if (data != null && listView != null && mReportList != null && mReportAdapter != null && mClickPosition >= 0) {
                         Report report = data.getParcelableExtra("report");
-                        if (report!=null){
+                        if (report != null) {
                             mReportList.remove(mClickPosition);
-                            mReportList.add(mClickPosition,report);
+                            mReportList.add(mClickPosition, report);
                             mReportAdapter.notifyDataSetChanged();
                         }
                     }

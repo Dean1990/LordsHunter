@@ -4,15 +4,21 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Environment;
 import android.text.TextUtils;
 
 import com.deanlib.lordshunter.app.Constant;
 import com.deanlib.lordshunter.entity.ImageInfo;
 import com.deanlib.lordshunter.entity.Prey;
 import com.deanlib.lordshunter.entity.Report;
+import com.deanlib.ootblite.data.FileUtils;
 import com.deanlib.ootblite.utils.DLog;
 import com.deanlib.ootblite.utils.MD5;
+import com.deanlib.ootblite.utils.PopupUtils;
 import com.googlecode.tesseract.android.TessBaseAPI;
+import com.liulishuo.filedownloader.BaseDownloadTask;
+import com.liulishuo.filedownloader.FileDownloadListener;
+import com.liulishuo.filedownloader.FileDownloader;
 
 import java.io.File;
 
@@ -35,20 +41,22 @@ public class Utils {
     /**
      * 解析微信以邮件形式发送过来的内容
      * 耗时
+     *
      * @param text
      * @param images
      * @return
      */
-    public static List<Report> parseText(Context context,String text, List<Uri> images){
-        if (TextUtils.isEmpty(text)){
+    public static List<Report> parseText(Context context, String text, List<Uri> images) {
+        DLog.d("parseText");
+        if (TextUtils.isEmpty(text)) {
             return null;
         }
-        if (images==null || images.size()==0){
+        if (images == null || images.size() == 0) {
             return null;
         }
         text = text.trim();
 
-        //todo 可能有繁体字问题
+        //有繁体字问题
         Pattern groupPattern = Pattern.compile(context.getString(R.string.pattern_group));
 //        Pattern groupPattern = Pattern.compile("(.+) WeChat群組的聊天記錄如下，請查收。");
         Pattern datePattern = Pattern.compile("—————  (\\d{4}-\\d{2}-\\d{2})  —————");
@@ -65,7 +73,7 @@ public class Utils {
                 Matcher dateMatcher = datePattern.matcher(text);
                 List<Report> list = new ArrayList<>();
                 //直接舍弃第一个，第一个是group信息
-                for (int i = 1;i<split.length;i++) {
+                for (int i = 1; i < split.length; i++) {
                     String date = "";
                     if (dateMatcher.find()) {
                         date = dateMatcher.group(1);
@@ -81,7 +89,7 @@ public class Utils {
                             if (uri.toString().endsWith(reportMatcher.group(3))) {
                                 ImageInfo image = new ImageInfo();
                                 image.setUri(uri.toString().substring(7));
-                                image.setDataTime(report.getDate()+" "+report.getTime());
+                                image.setDataTime(report.getDate() + " " + report.getTime());
                                 report.setImage(image);
                                 break;
                             }
@@ -106,14 +114,16 @@ public class Utils {
      * 检查重复图片
      * 并给传入的List 赋md5值
      * 耗时
+     *
      * @param list
      * @return
      */
-    public static List<Report> checkRepet(List<Report> list){
-        if (list==null || list.size() == 0)
+    public static List<Report> checkRepet(List<Report> list) {
+        DLog.d("checkRepet");
+        if (list == null || list.size() == 0)
             return null;
         Realm realm = Realm.getDefaultInstance();
-        for (Report report:list){
+        for (Report report : list) {
 
             try {
                 String md5 = MD5.md5(new File(report.getImage().getUri()));
@@ -121,14 +131,14 @@ public class Utils {
                 ImageInfo find = realm.where(ImageInfo.class)
                         .equalTo("md5", md5)
                         .findFirst();
-                if (find!=null){
+                if (find != null) {
                     //排除日期相同的情况，是数据库中存在的 ，这种情况一般是用户操作不当
-                    if (find.getDataTime().equals(report.getDate()+" "+report.getTime())){
+                    if (find.getDataTime().equals(report.getDate() + " " + report.getTime())) {
                         report.setStatus(Report.STATUS_EXIST);
-                    }else {
+                    } else {
                         report.setStatus(Report.STATUS_REPET);
                     }
-                }else {
+                } else {
                     report.setStatus(Report.STATUS_NEW);
                 }
             } catch (Exception e) {
@@ -140,22 +150,24 @@ public class Utils {
 
     /**
      * 文字识别
+     *
      * @param list
      * @return
      */
-    public static List<Report> ocr(List<Report> list){
-        if (list==null || list.size() == 0)
+    public static List<Report> ocr(List<Report> list) {
+        DLog.d("ocr");
+        if (list == null || list.size() == 0)
             return list;
         TessBaseAPI tess = new TessBaseAPI();
-        String language = "chi_sim";
 
-        //todo 字库文件怎么办
-        tess.init("/sdcard/datapath",language);
-        for (Report report:list){
+        //字库文件怎么办
+        File traineddata = Constant.APP_FILE_OCR_TRAINEDDATA;
+        tess.init(traineddata.getParentFile().getParent(), Constant.OCR_LANGUAGE);
+        for (Report report : list) {
             Bitmap bitmap = BitmapFactory.decodeFile(report.getImage().getUri());
             float w = bitmap.getWidth();
             float h = bitmap.getHeight();
-            bitmap = Bitmap.createBitmap(bitmap,(int)(w*0.1),(int)(h*0.12),(int)(w*0.4),(int)(h*0.05),null,false);
+            bitmap = Bitmap.createBitmap(bitmap, (int) (w * 0.1), (int) (h * 0.12), (int) (w * 0.4), (int) (h * 0.05), null, false);
 
 //            ImageUtils.saveImageFile(bitmap, FileUtils.createDir("_abc"), SystemClock.currentThreadTimeMillis()+".png", new FileUtils.FileCallback() {
 //                @Override
@@ -181,34 +193,38 @@ public class Utils {
                 report.getImage().setKill(true);//默认 true
             }
         }
+
         return list;
     }
 
+
     /**
      * 校准猎物名称
+     *
      * @param preyName
      * @return
      */
-    public static String correctPreyName(String preyName){
+    public static String correctPreyName(String preyName) {
+        DLog.d("correctPreyName");
         String name = preyName;
 
-        if(!Constant.PREY_NAMES.contains(name)){
+        if (!Constant.PREY_NAMES.contains(name)) {
             //查找 对应 修复
-            Map<Prey,Integer> scoreMap = new HashMap<>();//加权记录
+            Map<Prey, Integer> scoreMap = new HashMap<>();//加权记录
             char[] chars = name.toCharArray();
-            for (char ch : chars){
+            for (char ch : chars) {
                 Set<Prey> preys = Constant.PREY_NAME_INDEX_MAP.get(ch);
-                if (preys!=null){
-                    for (Prey prey : preys){
+                if (preys != null) {
+                    for (Prey prey : preys) {
                         Integer score = scoreMap.get(prey);
-                        if (score==null) score = 0;
+                        if (score == null) score = 0;
                         score++;
-                        scoreMap.put(prey,score);
+                        scoreMap.put(prey, score);
                     }
                 }
             }
 
-            if (scoreMap.size()>0) {
+            if (scoreMap.size() > 0) {
                 //查找权重最高的
                 Prey maxScorePrey = null;
                 Set<Map.Entry<Prey, Integer>> entries = scoreMap.entrySet();
@@ -218,15 +234,15 @@ public class Utils {
                         continue;
                     }
                     Integer maxScore = scoreMap.get(maxScorePrey);
-                    if (maxScore==null) maxScore = 0;
+                    if (maxScore == null) maxScore = 0;
                     Integer score = entry.getValue();
                     if (maxScore == null) score = 0;
-                    if (maxScore<score){
+                    if (maxScore < score) {
                         maxScorePrey = entry.getKey();
                     }
                 }
                 name = maxScorePrey.getNameChiSim();
-            }else {
+            } else {
                 //没有权重记录时，preyName 将无法确定
                 //可以统一到一个名称
                 name = "Undefined";
@@ -239,16 +255,33 @@ public class Utils {
 
     /**
      * 计算折合一级怪
+     *
      * @param level
      * @param count
      * @return
      */
-    public static long equivalentLv1(int level,long count){
-        if (level != 1){
-            count*=3;
+    public static long equivalentLv1(int level, long count) {
+        if (level != 1) {
+            count *= 3;
             level--;
-            equivalentLv1(level,count);
+            equivalentLv1(level, count);
         }
         return count;
     }
+
+    /**
+     * 获取cache路径
+     *
+     * @param context
+     * @return
+     */
+    public static String getDiskCachePath(Context context) {
+        if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
+                || !Environment.isExternalStorageRemovable()) {
+            return context.getExternalCacheDir().getPath();
+        } else {
+            return context.getCacheDir().getPath();
+        }
+    }
+
 }

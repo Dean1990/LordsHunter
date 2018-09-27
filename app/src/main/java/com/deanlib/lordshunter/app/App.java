@@ -4,8 +4,10 @@ import android.app.Application;
 import android.content.Context;
 
 import com.deanlib.lordshunter.R;
+import com.deanlib.lordshunter.Utils;
 import com.deanlib.lordshunter.entity.Prey;
 import com.deanlib.ootblite.OotbConfig;
+import com.deanlib.ootblite.data.FileUtils;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.DefaultRefreshFooterCreator;
 import com.scwang.smartrefresh.layout.api.DefaultRefreshHeaderCreator;
@@ -15,6 +17,7 @@ import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.footer.ClassicsFooter;
 import com.scwang.smartrefresh.layout.header.ClassicsHeader;
 
+import java.io.File;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -51,6 +54,10 @@ public class App extends Application {
 
         OotbConfig.init(this,Constant.isDebug);
         Realm.init(this);
+
+        Constant.OCR_LANGUAGE =getString(R.string.ocr_language);
+        Constant.APP_FILE_OCR_TRAINEDDATA = new File(Utils.getDiskCachePath(this)
+                +"/lordshunter/datapath/tessdata/"+Constant.OCR_LANGUAGE+".traineddata");
 
         String[] preyNamesChiSim = getResources().getStringArray(R.array.prey_name_chi_sim);
         String[] preyNamesChiTra = getResources().getStringArray(R.array.prey_name_chi_tra);
