@@ -91,7 +91,7 @@ public class CollectTaskService extends Service {
                                 int notifiyId = (int) SystemClock.currentThreadTimeMillis();
                                 NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                    NotificationChannel channel = new NotificationChannel("1", "Notifiy", NotificationManager.IMPORTANCE_DEFAULT);
+                                    NotificationChannel channel = new NotificationChannel(SystemClock.currentThreadTimeMillis()+"", "Notifiy", NotificationManager.IMPORTANCE_DEFAULT);
                                     mNotificationManager.createNotificationChannel(channel);
                                 }
 

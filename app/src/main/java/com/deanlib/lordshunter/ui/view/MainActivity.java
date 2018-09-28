@@ -1,15 +1,18 @@
 package com.deanlib.lordshunter.ui.view;
 
 import android.Manifest;
+import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.DatePicker;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -66,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
     long startTime, endTime;
     long grain = 60 * 60 * 1000 * 24;//颗粒度 默认 周的颗粒度是 一天
     SimpleDateFormat mDateFormat3 = new SimpleDateFormat("yyyy/M/d");
-    SimpleDateFormat mDateFormat2 = new SimpleDateFormat("M/d");
+    SimpleDateFormat mDateFormat2 = new SimpleDateFormat("M");
     SimpleDateFormat mDateFormat1 = new SimpleDateFormat("d");
     SimpleDateFormat mDateFormat0 = new SimpleDateFormat("H:mm");
     @BindView(R.id.scrollViewContainer)
@@ -79,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
     AlertDialog mDownloadDialog;
     ProgressBar mDownloadProgressBar;
     TextView tvProgressInfo;
+    Calendar mCalendar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,6 +92,11 @@ public class MainActivity extends AppCompatActivity {
 
         //字库文件
         mTraineddata = Constant.APP_FILE_OCR_TRAINEDDATA;
+
+        if (!mTraineddata.exists()){
+            //第一次使用
+            ViewJump.toWebView(MainActivity.this,"http://file2001552359.nos-eastchina1.126.net/lordshunter/readme_"+Constant.OCR_LANGUAGE+"/readme.html");
+        }
 
         RxPermissions permissions = new RxPermissions(this);
         permissions.request(Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -99,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
                     }
 
                     if (!mTraineddata.exists()){
-                        new AlertDialog.Builder(this).setTitle(R.string.guide).setMessage(R.string.guide_download_data_package)
+                        new AlertDialog.Builder(MainActivity.this).setTitle(R.string.guide).setMessage(R.string.guide_download_data_package)
                                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
@@ -108,7 +117,6 @@ public class MainActivity extends AppCompatActivity {
                                 }).setNegativeButton(R.string.cancel,null).show();
                     }
                 });
-
 
         init();
         loadData();
@@ -120,46 +128,54 @@ public class MainActivity extends AppCompatActivity {
     private void init() {
         mItems = getResources().getStringArray(R.array.span);
         tvSpan.setText(mItems[mSpanPosition]);
-        Calendar calendar = Calendar.getInstance();
-        int year = calendar.get(Calendar.YEAR);
-        int month = calendar.get(Calendar.MONTH);
-        int week = calendar.get(Calendar.DAY_OF_WEEK);
-        int date = calendar.get(Calendar.DATE);
+        if (mCalendar==null){
+            mCalendar = Calendar.getInstance();
+        }
+        int year = mCalendar.get(Calendar.YEAR);
+        int month = mCalendar.get(Calendar.MONTH);
+        int week = mCalendar.get(Calendar.DAY_OF_WEEK);
+        int date = mCalendar.get(Calendar.DATE);
+        mCalendar.set(year, month, date, 0, 0, 0);
+        mCalendar.set(Calendar.MILLISECOND,0);
         switch (mSpanPosition) {
             case 0:
                 //年
-                calendar.set(year, 0, 1, 0, 0, 0);
-                startTime = calendar.getTimeInMillis();
-                calendar.add(Calendar.YEAR, 1);
-                endTime = calendar.getTimeInMillis();
-                grain = 60 * 60 * 1000 * 24 * 15L;
+                mCalendar.set(year, 0, 1);
+                startTime = mCalendar.getTimeInMillis();
+                mCalendar.add(Calendar.YEAR, 1);
+                endTime = mCalendar.getTimeInMillis();
+                grain = 60 * 60 * 1000 * 24 * 30L;
                 break;
             case 1:
                 //月
-                calendar.set(year, month, 1, 0, 0, 0);
-                startTime = calendar.getTimeInMillis();
-                calendar.add(Calendar.MONTH, 1);
-                endTime = calendar.getTimeInMillis();
+                mCalendar.set(year, month, 1);
+                startTime = mCalendar.getTimeInMillis();
+                mCalendar.add(Calendar.MONTH, 1);
+                mCalendar.add(Calendar.DATE,-1);
+                endTime = mCalendar.getTimeInMillis();
                 grain = 60 * 60 * 1000 * 24L;
                 break;
             case 2:
                 //周
-                calendar.set(year, month, date, 0, 0, 0);
-                calendar.add(Calendar.DATE, -week + 1);
-                startTime = calendar.getTimeInMillis();
-                calendar.add(Calendar.DATE, 6);
-                endTime = calendar.getTimeInMillis();
+                mCalendar.set(year, month, date);
+                mCalendar.add(Calendar.DATE, -week + 1);
+                startTime = mCalendar.getTimeInMillis();
+                mCalendar.add(Calendar.DATE, 6);
+                endTime = mCalendar.getTimeInMillis();
                 grain = 60 * 60 * 1000 * 24L;
                 break;
             case 3:
                 //日
-                calendar.set(year, month, date, 0, 0, 0);
-                startTime = calendar.getTimeInMillis();
-                calendar.add(Calendar.DATE, 1);
-                endTime = calendar.getTimeInMillis();
+                mCalendar.set(year, month, date, 0, 0, 0);
+                startTime = mCalendar.getTimeInMillis();
+                mCalendar.add(Calendar.DATE, 1);
+                endTime = mCalendar.getTimeInMillis();
                 grain = 60 * 60 * 1000L;
                 break;
         }
+
+        //还原成初始日期
+        mCalendar.set(year, month, date, 0, 0, 0);
 
         tvDate.setText(mDateFormat3.format(new Date(startTime)) + (mSpanPosition != 3 ? (" - " + mDateFormat3.format(new Date(endTime))) : ""));
 
@@ -181,17 +197,15 @@ public class MainActivity extends AppCompatActivity {
         List<Entry> kills = new ArrayList<>();
         List<Entry> members = new ArrayList<>();
         for (long i = startTime; i <= endTime; i = i + grain) {
+            DLog.d("value:"+i);
             long start = i;
             long end = i + grain;
+            float x = (int) (i/grain)+1;
             long killNum = realm.where(Report.class).between("timestamp", start, end).count();
-            kills.add(new Entry(i, killNum));
+            kills.add(new Entry(x, killNum));
             long memberNum = realm.where(Report.class).between("timestamp", start, end).distinct("name").count();
-            members.add(new Entry(i, memberNum));
+            members.add(new Entry(x, memberNum));
         }
-
-//        lineChart.clear();
-//        lineChart.setData(new LineData());
-//        lineChart.invalidate();
 
         LineData lineData = new LineData();
         if (kills.size() > 0) {
@@ -220,18 +234,20 @@ public class MainActivity extends AppCompatActivity {
         lineChart.getXAxis().setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
+                long longValue = ((long)value) *grain;
                 switch (mSpanPosition) {
                     case 0:
-                        return mDateFormat2.format(value);
+                        return mDateFormat2.format(longValue);
                     case 1:
-                        return mDateFormat1.format(value);
+                        return mDateFormat1.format(longValue);
                     case 2:
-                        return mDateFormat1.format(value);
+                        return mDateFormat1.format(longValue);
                     case 3:
-                        return mDateFormat0.format(value);
+                        return mDateFormat0.format(longValue);
                     default:
-                        return mDateFormat1.format(value);
+                        return mDateFormat1.format(longValue);
                 }
+//                return value+"";
 
             }
         });
@@ -277,9 +293,24 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    @OnClick({R.id.tvSpan, R.id.btnShareData, R.id.btnDetail, R.id.layoutSettings})
+    @OnClick({R.id.tvSpan, R.id.btnShareData, R.id.btnDetail, R.id.layoutSettings,R.id.tvDate})
     public void onViewClicked(View view) {
         switch (view.getId()) {
+            case R.id.tvDate:
+                if (mCalendar == null)
+                    mCalendar = Calendar.getInstance();
+                mCalendar.setTimeInMillis(startTime);
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
+                        @Override
+                        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+                            mCalendar.set(year, month, dayOfMonth, 0, 0, 0);
+                            init();
+                            loadData();
+                        }
+                    },mCalendar.get(Calendar.YEAR),mCalendar.get(Calendar.MONTH),mCalendar.get(Calendar.DATE)).show();
+                }
+                break;
             case R.id.tvSpan:
                 new AlertDialog.Builder(this).setItems(mItems, new DialogInterface.OnClickListener() {
                     @Override
@@ -341,11 +372,11 @@ public class MainActivity extends AppCompatActivity {
                                 break;
                             case R.id.specification:
                                 //使用说明
-                                //todo 地址
-                                ViewJump.toWebView(MainActivity.this,"");
+                                //地址
+                                ViewJump.toWebView(MainActivity.this,"http://file2001552359.nos-eastchina1.126.net/lordshunter/readme_"+Constant.OCR_LANGUAGE+"/readme.html");
                                 break;
                             case R.id.shareApp:
-                                //分享应用 todo 地址没写呢
+                                //分享应用
                                 String data = getString(R.string.share_app_url);
                                 Intent share = new Intent(Intent.ACTION_SEND);
                                 //share.setPackage("com.tencent.mm");

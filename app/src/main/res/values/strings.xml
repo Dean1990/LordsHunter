@@ -31,7 +31,7 @@
 
     <string name="download_data_package">下载数据包</string>
     <string name="share_app">分享App</string>
-    <string name="share_app_url">游戏《王国纪元》猎魔辅助工具，「 王国猎手App 」下载地址：%s</string>
+    <string name="share_app_url">游戏《王国纪元》猎魔辅助工具，「 王国猎手App 」下载地址：https://fir.im/8xd2</string>
     <string name="download_completed">下载完成</string>
     <string name="download_error">下载出错</string>
     <string name="doalowning_info_">文件大小 %s , 当前下载 %s , 下载速度 %s</string>

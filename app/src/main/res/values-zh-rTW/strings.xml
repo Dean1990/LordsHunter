@@ -31,7 +31,7 @@
 
     <string name="download_data_package">下載數據包</string>
     <string name="share_app">分享App</string>
-    <string name="share_app_url">遊戲《王國紀元》獵魔輔助工具，「 王國獵手App 」下載地址：%s</string>
+    <string name="share_app_url">遊戲《王國紀元》獵魔輔助工具，「 王國獵手App 」下載地址：https://fir.im/8xd2</string>
     <string name="download_completed">下載完成</string>
     <string name="download_error">下載出錯</string>
     <string name="doalowning_info_">文件大小 %s , 當前下載 %s , 下載速度 %s</string>
