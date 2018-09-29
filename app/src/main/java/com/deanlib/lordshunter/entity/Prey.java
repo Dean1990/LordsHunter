@@ -6,11 +6,13 @@ package com.deanlib.lordshunter.entity;
 public class Prey{
 
     int level;//等级
+    String nameLocal;//本地语言
     String nameEng;//英文 英文暂时不做
     String nameChiSim;//简体
     String nameChiTra;//繁体
 
-    public Prey(String nameChiSim, String nameChiTra) {
+    public Prey(String nameLocal,String nameChiSim, String nameChiTra) {
+        this.nameLocal = nameLocal;
         this.nameChiSim = nameChiSim;
         this.nameChiTra = nameChiTra;
     }
@@ -24,6 +26,14 @@ public class Prey{
         }
 
         return false;
+    }
+
+    public String getNameLocal() {
+        return nameLocal;
+    }
+
+    public void setNameLocal(String nameLocal) {
+        this.nameLocal = nameLocal;
     }
 
     public int getLevel() {

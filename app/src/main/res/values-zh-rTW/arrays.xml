@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array name="prey_name">
+        <item>女王峰</item>
+        <item>布萊斯</item>
+        <item>格裏芬</item>
+        <item>機關木馬</item>
+        <item>翡翠雲蛟</item>
+        <item>貪食天使</item>
+        <item>獨眼巨人</item>
+        <item>冰霜翼龍</item>
+        <item>地獄公爵</item>
+        <item>大腳雪怪</item>
+        <item>潮汐巨人</item>
+        <item>荊棘花妖</item>
+        <item>哈普剛肯</item>
+        <item>掘地蛆蟲</item>
+        <item>雙頭冥龍</item>
+        <item>巫毒薩滿</item>
+        <item>奪魂使者</item>
+        <item>遠古魔像</item>
+    </string-array>
+
+    <string-array name="span">
+        <item>年</item>
+        <item>月</item>
+        <item>周</item>
+        <item>日</item>
+    </string-array>
+
+    <string-array name="chi_num">
+        <item>五</item>
+        <item>四</item>
+        <item>三</item>
+        <item>二</item>
+        <item>壹</item>
+    </string-array>
+
+</resources>

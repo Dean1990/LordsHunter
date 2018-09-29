@@ -1,9 +1,15 @@
 package com.deanlib.lordshunter.ui.view;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.os.Parcelable;
 
 import com.deanlib.lordshunter.entity.Report;
+import com.deanlib.lordshunter.service.CollectTaskService;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ViewJump {
 
@@ -36,5 +42,13 @@ public class ViewJump {
         Intent intent = new Intent(activity, WebViewActivity.class);
         intent.putExtra("url",url);
         activity.startActivity(intent);
+    }
+
+    public static Intent getSaveIntent(Context context, List<Report> reports){
+        Intent intent = new Intent();
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        intent.setClass(context, SavaActivity.class);
+        intent.putParcelableArrayListExtra("reports", (ArrayList<? extends Parcelable>) reports);
+        return intent;
     }
 }

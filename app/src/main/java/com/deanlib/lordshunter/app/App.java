@@ -60,13 +60,14 @@ public class App extends Application {
         Constant.APP_FILE_OCR_TRAINEDDATA = new File(Utils.getDiskCachePath(this)
                 +"/lordshunter/datapath/tessdata/"+Constant.OCR_LANGUAGE+".traineddata");
 
+        String[] preyNames = getResources().getStringArray(R.array.prey_name);
         String[] preyNamesChiSim = getResources().getStringArray(R.array.prey_name_chi_sim);
         String[] preyNamesChiTra = getResources().getStringArray(R.array.prey_name_chi_tra);
 
         for (int i = 0;i < preyNamesChiSim.length;i++) {
             Constant.PREY_NAMES.add(preyNamesChiSim[i]);
             Constant.PREY_NAMES.add(preyNamesChiTra[i]);
-            Prey prey = new Prey(preyNamesChiSim[i],preyNamesChiTra[i]);
+            Prey prey = new Prey(preyNames[i],preyNamesChiSim[i],preyNamesChiTra[i]);
             initNameIndex(preyNamesChiSim[i].toCharArray(),prey);
             initNameIndex(preyNamesChiTra[i].toCharArray(),prey);
         }

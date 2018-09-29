@@ -6,7 +6,7 @@
     <string name="text_extraction">識別圖片中的文字比較耗時，請等待...</string>
     <string name="save">保存</string>
     <string name="prey_name_">獵物名稱：%s</string>
-    <string name="prey_level_">獵物等級：%d 级</string>
+    <string name="prey_level_">獵物等級：%d 級</string>
     <string name="group_">群組：%s</string>
     <string name="member_">成員：%s</string>
     <string name="data_collection">數據采集</string>
@@ -16,6 +16,7 @@
     <string name="save_data">保存數據...</string>
     <string name="permission_not_granted">未獲得相關權限</string>
     <string name="save_success">保存成功</string>
+    <string name="collection_working">收集數據中，請耐心等待</string>
     <string name="collection_save">收集數據已完成，等待保存</string>
     <string name="to_background">轉到後臺處理</string>
     <string name="invalid_data">無效的數據</string>
@@ -52,10 +53,11 @@
 
     <string name="ocr_language">chi_tra</string>
     <string name="pattern_group">(.+) WeChat群組的聊天記錄如下，請查收。</string>
-    <string name="pattern_report">(.+) {2}(\\d{2}:\\d{2})\\n\\n\\[圖片: (\\w{32}\\.jpg)\\(\\S+\\)\\]</string>
+    <string name="pattern_report">(.+) {2}(\\d{2}:\\d{2})\\n\\n\\[圖片: (\\S+\\.((jpg)|(png)))\\(\\S+\\)\\]</string>
 
     <string name="jump_">跳過（%d）</string>
     <string name="app_desc">王國紀元獵魔輔助工具</string>
     <string name="specification">使用說明</string>
     <string name="data_empty">沒有數據~</string>
+    <string name="data_not_save">上次采集數據未保存，是否現在保存</string>
 </resources>

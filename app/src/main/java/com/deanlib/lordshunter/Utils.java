@@ -183,6 +183,7 @@ public class Utils {
 
             tess.setImage(bitmap);
             String result = tess.getUTF8Text();
+            bitmap = null;
             DLog.d(result);
             //清洗信息
             Pattern pattern = Pattern.compile("[\\S\\s]*(\\d)[ ]*(\\S+)");
@@ -241,7 +242,7 @@ public class Utils {
                         maxScorePrey = entry.getKey();
                     }
                 }
-                name = maxScorePrey.getNameChiSim();
+                name = maxScorePrey.getNameLocal();
             } else {
                 //没有权重记录时，preyName 将无法确定
                 //可以统一到一个名称

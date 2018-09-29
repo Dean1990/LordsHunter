@@ -16,6 +16,7 @@
     <string name="save_data">保存数据...</string>
     <string name="permission_not_granted">未获得相关权限</string>
     <string name="save_success">保存成功</string>
+    <string name="collection_working">收集数据中，请耐心等待</string>
     <string name="collection_save">收集数据已完成，等待保存</string>
     <string name="to_background">转到后台处理</string>
     <string name="invalid_data">无效的数据</string>
@@ -52,10 +53,11 @@
 
     <string name="ocr_language">chi_sim</string>
     <string name="pattern_group">(.+) 微信群上的聊天记录如下，请查收。</string>
-    <string name="pattern_report">(.+) {2}(\\d{2}:\\d{2})\\n\\n\\[图片: (\\w{32}\\.jpg)\\(\\S+\\)\\]</string>
+    <string name="pattern_report">(.+) {2}(\\d{2}:\\d{2})\\n\\n\\[图片: (\\S+\\.((jpg)|(png)))\\(\\S+\\)\\]</string>
 
     <string name="jump_">跳过（%d）</string>
     <string name="app_desc">王国纪元猎魔辅助工具</string>
     <string name="specification">使用说明</string>
     <string name="data_empty">没有数据~</string>
+    <string name="data_not_save">上次采集数据未保存，是否现在保存</string>
 </resources>

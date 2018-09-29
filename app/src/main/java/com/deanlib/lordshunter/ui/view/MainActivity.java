@@ -17,10 +17,12 @@ import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.alibaba.fastjson.JSON;
 import com.deanlib.lordshunter.R;
 import com.deanlib.lordshunter.Utils;
 import com.deanlib.lordshunter.app.Constant;
 import com.deanlib.lordshunter.entity.Report;
+import com.deanlib.ootblite.data.SharedPUtils;
 import com.deanlib.ootblite.utils.DLog;
 import com.deanlib.ootblite.utils.FormatUtils;
 import com.deanlib.ootblite.utils.PopupUtils;
@@ -118,11 +120,31 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
+        //查看是否有缓存
+        SharedPUtils sharedPUtils = new SharedPUtils();
+        List<Report> reports = JSON.parseArray(sharedPUtils.getCache("unsavareports"),Report.class);
+        if (reports!=null){
+            new AlertDialog.Builder(this).setTitle(R.string.attention).setMessage(R.string.data_not_save)
+                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            startActivity(ViewJump.getSaveIntent(MainActivity.this,reports));
+                        }
+                    }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    sharedPUtils.remove("unsavareports");
+                }
+            }).show();
+        }
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         init();
         loadData();
-
-
-
     }
 
     private void init() {

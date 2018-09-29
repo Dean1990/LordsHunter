@@ -1,26 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="prey_name">
-        <item>女王峰</item>
-        <item>布莱斯</item>
-        <item>格里芬</item>
-        <item>机关木马</item>
-        <item>翡翠云蛟</item>
-        <item>贪食天使</item>
-        <item>独眼巨人</item>
-        <item>冰霜翼龙</item>
-        <item>地狱公爵</item>
-        <item>大脚雪怪</item>
-        <item>潮汐巨人</item>
-        <item>荆棘花妖</item>
-        <item>哈普刚肯</item>
-        <item>掘地蛆虫</item>
-        <item>双头冥龙</item>
-        <item>巫毒萨满</item>
-        <item>夺魂使者</item>
-        <item>远古魔像</item>
-    </string-array>
-
     <string-array name="prey_name_chi_sim">
         <item>女王峰</item>
         <item>布莱斯</item>
@@ -62,20 +41,4 @@
         <item>奪魂使者</item>
         <item>遠古魔像</item>
     </string-array>
-
-    <string-array name="span">
-        <item>年</item>
-        <item>月</item>
-        <item>周</item>
-        <item>日</item>
-    </string-array>
-
-    <string-array name="chi_num">
-        <item>五</item>
-        <item>四</item>
-        <item>三</item>
-        <item>二</item>
-        <item>一</item>
-    </string-array>
-
 </resources>

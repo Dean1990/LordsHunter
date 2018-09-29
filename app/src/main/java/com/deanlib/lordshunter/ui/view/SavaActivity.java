@@ -23,11 +23,13 @@ import android.widget.ListView;
 
 
 import com.deanlib.lordshunter.R;
+import com.deanlib.lordshunter.Utils;
 import com.deanlib.lordshunter.app.Constant;
 import com.deanlib.lordshunter.entity.Report;
 import com.deanlib.lordshunter.event.CollectTaskEvent;
 import com.deanlib.lordshunter.service.CollectTaskService;
 import com.deanlib.lordshunter.ui.adapter.ReportAdapter;
+import com.deanlib.ootblite.data.SharedPUtils;
 import com.deanlib.ootblite.utils.PopupUtils;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
@@ -43,6 +45,13 @@ import java.util.UUID;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.reactivex.Observable;
+import io.reactivex.ObservableEmitter;
+import io.reactivex.ObservableOnSubscribe;
+import io.reactivex.Observer;
+import io.reactivex.android.schedulers.AndroidSchedulers;
+import io.reactivex.disposables.Disposable;
+import io.reactivex.schedulers.Schedulers;
 import io.realm.Realm;
 
 /**
@@ -79,9 +88,25 @@ public class SavaActivity extends AppCompatActivity {
         text = intent.getStringExtra(Intent.EXTRA_TEXT);
         images = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
 
-        //从广播传过来的数据
+        //从通知传过来的数据
         mDataReportList = intent.getParcelableArrayListExtra("reports");
 
+    }
+
+    @Override
+    protected void onNewIntent(Intent intent) {
+        super.onNewIntent(intent);
+        text = intent.getStringExtra(Intent.EXTRA_TEXT);
+        images = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
+
+        //从通知传过来的数据
+        mDataReportList = intent.getParcelableArrayListExtra("reports");
+
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
         init();
         RxPermissions permissions = new RxPermissions(this);
         permissions.request(Manifest.permission.READ_EXTERNAL_STORAGE)
@@ -92,7 +117,6 @@ public class SavaActivity extends AppCompatActivity {
                         PopupUtils.sendToast(R.string.permission_not_granted);
                     }
                 });
-
     }
 
     private void init() {
@@ -109,9 +133,41 @@ public class SavaActivity extends AppCompatActivity {
 
     private void loadData() {
         if (mDataReportList != null) {
-            mReportList.addAll(mDataReportList);
-            mReportAdapter.notifyDataSetChanged();
-            btnSave.setEnabled(true);
+            Observable.create(new ObservableOnSubscribe<List<Report>>() {
+                @Override
+                public void subscribe(ObservableEmitter<List<Report>> emitter) throws Exception {
+                    //重复性验证
+                    EventBus.getDefault().post(new CollectTaskEvent(CollectTaskEvent.ACTION_MESSAGE,getString(R.string.repet_data)));
+                    List<Report> reports = Utils.checkRepet(mDataReportList);
+                    emitter.onNext(reports);
+                    emitter.onComplete();
+                }
+            }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+                    .subscribe(new Observer<List<Report>>() {
+                @Override
+                public void onSubscribe(Disposable d) {
+
+                }
+
+                @Override
+                public void onNext(List<Report> reports) {
+                    mReportList.addAll(reports);
+                    mReportAdapter.notifyDataSetChanged();
+                    btnSave.setEnabled(true);
+                }
+
+                @Override
+                public void onError(Throwable e) {
+                    e.printStackTrace();
+                    EventBus.getDefault().post(new CollectTaskEvent(CollectTaskEvent.ACTION_ERROR,e.getMessage()));
+                }
+
+                @Override
+                public void onComplete() {
+                    EventBus.getDefault().post(new CollectTaskEvent(CollectTaskEvent.ACTION_COMPLETE,null));
+                }
+            });
+
         } else if (!TextUtils.isEmpty(text) && images != null && images.size() > 0) {
             File traineddata = Constant.APP_FILE_OCR_TRAINEDDATA;
             if (traineddata.exists()) {
@@ -166,6 +222,10 @@ public class SavaActivity extends AppCompatActivity {
                             }
                         }).setNegativeButton(R.string.cancel, null).show();
 
+                //清缓存
+                SharedPUtils sharedPUtils = new SharedPUtils();
+                sharedPUtils.remove("unsavareports");
+
                 break;
         }
     }
@@ -190,13 +250,18 @@ public class SavaActivity extends AppCompatActivity {
         switch (event.getAction()) {
             case CollectTaskEvent.ACTION_UPDATE_UI:
                 List<Report> reports = (List<Report>) event.getObj();
-                if (mReportList != null && mReportAdapter != null) {
-                    mReportList.addAll(reports);
-                    mReportAdapter.notifyDataSetChanged();
-                    btnSave.setEnabled(true);
-                }
+                mDataReportList = reports;
+                mReportList.clear();
+                loadData();
                 break;
             case CollectTaskEvent.ACTION_MESSAGE:
+                if (mDialog != null && mDialog.isShowing()) {
+                    mDialog.dismiss();
+                }
+                String msg2 = (String) event.getObj();
+                mDialog = ProgressDialog.show(this,"",msg2);
+                break;
+            case CollectTaskEvent.ACTION_SERVICE_MESSAGE:
                 String msg = (String) event.getObj();
                 if (mDialog == null || !mDialog.isShowing()) {
                     View progressView = View.inflate(this, R.layout.layout_progress, null);
