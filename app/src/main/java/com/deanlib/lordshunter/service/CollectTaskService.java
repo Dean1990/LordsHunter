@@ -84,6 +84,7 @@ public class CollectTaskService extends Service {
                         if (reports != null && reports.size() > 0) {
                             EventBus.getDefault().post(new CollectTaskEvent(CollectTaskEvent.ACTION_UPDATE_UI,reports));
 
+                            DLog.d("SavaActivity.isRunForeground ："+SavaActivity.isRunForeground);
                             //如果不是运行在前台的，发通知
                             if (!SavaActivity.isRunForeground) {
                                 DLog.d("send notification");
@@ -91,7 +92,7 @@ public class CollectTaskService extends Service {
                                 int notifiyId = (int) SystemClock.currentThreadTimeMillis();
                                 NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                    NotificationChannel channel = new NotificationChannel(SystemClock.currentThreadTimeMillis()+"", "Notifiy", NotificationManager.IMPORTANCE_DEFAULT);
+                                    NotificationChannel channel = new NotificationChannel("1", "Notifiy", NotificationManager.IMPORTANCE_DEFAULT);
                                     mNotificationManager.createNotificationChannel(channel);
                                 }
 
