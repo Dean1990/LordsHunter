@@ -14,7 +14,6 @@ import android.os.Bundle;
 
 import android.support.annotation.Nullable;
 
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
@@ -45,13 +44,6 @@ import java.util.UUID;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.reactivex.Observable;
-import io.reactivex.ObservableEmitter;
-import io.reactivex.ObservableOnSubscribe;
-import io.reactivex.Observer;
-import io.reactivex.android.schedulers.AndroidSchedulers;
-import io.reactivex.disposables.Disposable;
-import io.reactivex.schedulers.Schedulers;
 import io.realm.Realm;
 
 /**
@@ -60,7 +52,7 @@ import io.realm.Realm;
  * @author dean
  * @time 2018/9/4 下午5:26
  */
-public class SavaActivity extends AppCompatActivity {
+public class SavaActivity extends BaseActivity {
 
     public static boolean isRunForeground = false;
 
@@ -83,32 +75,44 @@ public class SavaActivity extends AppCompatActivity {
         setContentView(R.layout.activity_sava);
         ButterKnife.bind(this);
 
-        Intent intent = getIntent();
-//        String subject = intent.getStringExtra(Intent.EXTRA_SUBJECT);
-        text = intent.getStringExtra(Intent.EXTRA_TEXT);
-        images = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
-
-        //从通知传过来的数据
-        mDataReportList = intent.getParcelableArrayListExtra("reports");
+        getData(getIntent());
 
     }
 
     @Override
     protected void onNewIntent(Intent intent) {
         super.onNewIntent(intent);
-        text = intent.getStringExtra(Intent.EXTRA_TEXT);
-        images = intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
 
-        //从通知传过来的数据
-        mDataReportList = intent.getParcelableArrayListExtra("reports");
-
+        getData(intent);
     }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        init();
+    private void getData(Intent data){
+        //String subject = intent.getStringExtra(Intent.EXTRA_SUBJECT);
+        text = data.getStringExtra(Intent.EXTRA_TEXT);
+        images = data.getParcelableArrayListExtra(Intent.EXTRA_STREAM);
+
+        //从通知传过来的数据
+        mDataReportList = data.getParcelableArrayListExtra("reports");
+
         RxPermissions permissions = new RxPermissions(this);
+//        todo 抓日志
+//        permissions.request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+//                .subscribe(granted -> {
+//                    if (granted) {
+//                        DLog log = DLog.getInstance();
+//                        try {
+//                            File file = FileUtils.createDir("/lordshunter");
+//                            log.openWriteLog(file.getAbsolutePath());
+//                            DLog.i("text:"+text);
+//                            DLog.i("images:"+images);
+//                            log.closeWriteLog();
+//                        } catch (Exception e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
+//                });
+
+        init();
         permissions.request(Manifest.permission.READ_EXTERNAL_STORAGE)
                 .subscribe(granted -> {
                     if (granted) {
@@ -117,6 +121,7 @@ public class SavaActivity extends AppCompatActivity {
                         PopupUtils.sendToast(R.string.permission_not_granted);
                     }
                 });
+
     }
 
     private void init() {
@@ -133,40 +138,48 @@ public class SavaActivity extends AppCompatActivity {
 
     private void loadData() {
         if (mDataReportList != null) {
-            Observable.create(new ObservableOnSubscribe<List<Report>>() {
-                @Override
-                public void subscribe(ObservableEmitter<List<Report>> emitter) throws Exception {
-                    //重复性验证
-                    EventBus.getDefault().post(new CollectTaskEvent(CollectTaskEvent.ACTION_MESSAGE,getString(R.string.repet_data)));
-                    List<Report> reports = Utils.checkRepet(mDataReportList);
-                    emitter.onNext(reports);
-                    emitter.onComplete();
-                }
-            }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-                    .subscribe(new Observer<List<Report>>() {
-                @Override
-                public void onSubscribe(Disposable d) {
+            //重复性验证
+            EventBus.getDefault().post(new CollectTaskEvent(CollectTaskEvent.ACTION_MESSAGE,getString(R.string.repet_data)));
+            List<Report> reports = Utils.checkRepet(mDataReportList);
+            mReportList.addAll(reports);
+            mReportAdapter.notifyDataSetChanged();
+            btnSave.setEnabled(true);
+            EventBus.getDefault().post(new CollectTaskEvent(CollectTaskEvent.ACTION_COMPLETE,null));
 
-                }
-
-                @Override
-                public void onNext(List<Report> reports) {
-                    mReportList.addAll(reports);
-                    mReportAdapter.notifyDataSetChanged();
-                    btnSave.setEnabled(true);
-                }
-
-                @Override
-                public void onError(Throwable e) {
-                    e.printStackTrace();
-                    EventBus.getDefault().post(new CollectTaskEvent(CollectTaskEvent.ACTION_ERROR,e.getMessage()));
-                }
-
-                @Override
-                public void onComplete() {
-                    EventBus.getDefault().post(new CollectTaskEvent(CollectTaskEvent.ACTION_COMPLETE,null));
-                }
-            });
+//            Observable.create(new ObservableOnSubscribe<List<Report>>() {
+//                @Override
+//                public void subscribe(ObservableEmitter<List<Report>> emitter) throws Exception {
+//                    //重复性验证
+//                    EventBus.getDefault().post(new CollectTaskEvent(CollectTaskEvent.ACTION_MESSAGE,getString(R.string.repet_data)));
+//                    List<Report> reports = Utils.checkRepet(mDataReportList);
+//                    emitter.onNext(reports);
+//                    emitter.onComplete();
+//                }
+//            }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
+//                    .subscribe(new Observer<List<Report>>() {
+//                @Override
+//                public void onSubscribe(Disposable d) {
+//
+//                }
+//
+//                @Override
+//                public void onNext(List<Report> reports) {
+//                    mReportList.addAll(reports);
+//                    mReportAdapter.notifyDataSetChanged();
+//                    btnSave.setEnabled(true);
+//                }
+//
+//                @Override
+//                public void onError(Throwable e) {
+//                    e.printStackTrace();
+//                    EventBus.getDefault().post(new CollectTaskEvent(CollectTaskEvent.ACTION_ERROR,e.getMessage()));
+//                }
+//
+//                @Override
+//                public void onComplete() {
+//                    EventBus.getDefault().post(new CollectTaskEvent(CollectTaskEvent.ACTION_COMPLETE,null));
+//                }
+//            });
 
         } else if (!TextUtils.isEmpty(text) && images != null && images.size() > 0) {
             File traineddata = Constant.APP_FILE_OCR_TRAINEDDATA;

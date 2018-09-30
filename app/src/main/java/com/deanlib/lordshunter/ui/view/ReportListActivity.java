@@ -1,9 +1,7 @@
 package com.deanlib.lordshunter.ui.view;
 
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -13,8 +11,6 @@ import com.deanlib.lordshunter.R;
 import com.deanlib.lordshunter.entity.Report;
 import com.deanlib.lordshunter.ui.adapter.ReportAdapter;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
-import com.scwang.smartrefresh.layout.api.RefreshLayout;
-import com.scwang.smartrefresh.layout.listener.OnLoadMoreListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -26,7 +22,7 @@ import io.realm.Realm;
 import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 
-public class ReportListActivity extends AppCompatActivity {
+public class ReportListActivity extends BaseActivity {
 
     @BindView(R.id.listView)
     ListView listView;

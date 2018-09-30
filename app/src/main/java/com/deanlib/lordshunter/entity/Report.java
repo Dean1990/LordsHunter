@@ -135,4 +135,18 @@ public class Report extends RealmObject implements Parcelable {
             return new Report[size];
         }
     };
+
+    @Override
+    public String toString() {
+        return "Report{" +
+                "id='" + id + '\'' +
+                ", group='" + group + '\'' +
+                ", date='" + date + '\'' +
+                ", time='" + time + '\'' +
+                ", name='" + name + '\'' +
+                ", image=" + image +
+                ", timestamp=" + timestamp +
+                ", status=" + status +
+                '}';
+    }
 }

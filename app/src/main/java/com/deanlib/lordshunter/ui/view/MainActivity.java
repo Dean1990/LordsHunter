@@ -1,14 +1,11 @@
 package com.deanlib.lordshunter.ui.view;
 
 import android.Manifest;
-import android.app.DatePickerDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.PopupMenu;
 import android.view.MenuItem;
 import android.view.View;
@@ -59,7 +56,7 @@ import butterknife.OnClick;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     @BindView(R.id.tvDate)
     TextView tvDate;
@@ -85,6 +82,7 @@ public class MainActivity extends AppCompatActivity {
     ProgressBar mDownloadProgressBar;
     TextView tvProgressInfo;
     Calendar mCalendar;
+    long selectTime;//选中日期
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -92,12 +90,14 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
 
+        selectTime = System.currentTimeMillis();
+
         //字库文件
         mTraineddata = Constant.APP_FILE_OCR_TRAINEDDATA;
 
-        if (!mTraineddata.exists()){
+        if (!mTraineddata.exists()) {
             //第一次使用
-            ViewJump.toWebView(MainActivity.this,"http://file2001552359.nos-eastchina1.126.net/lordshunter/readme_"+Constant.OCR_LANGUAGE+"/readme.html");
+            ViewJump.toWebView(MainActivity.this, "http://file2001552359.nos-eastchina1.126.net/lordshunter/readme_" + Constant.OCR_LANGUAGE + "/readme.html");
         }
 
         RxPermissions permissions = new RxPermissions(this);
@@ -109,26 +109,26 @@ public class MainActivity extends AppCompatActivity {
 //                        PopupUtils.sendToast(R.string.permission_not_granted);
                     }
 
-                    if (!mTraineddata.exists()){
+                    if (!mTraineddata.exists()) {
                         new AlertDialog.Builder(MainActivity.this).setTitle(R.string.guide).setMessage(R.string.guide_download_data_package)
                                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
                                         checkWifi2DownloadDataPackage();
                                     }
-                                }).setNegativeButton(R.string.cancel,null).show();
+                                }).setNegativeButton(R.string.cancel, null).show();
                     }
                 });
 
         //查看是否有缓存
         SharedPUtils sharedPUtils = new SharedPUtils();
-        List<Report> reports = JSON.parseArray(sharedPUtils.getCache("unsavareports"),Report.class);
-        if (reports!=null){
+        List<Report> reports = JSON.parseArray(sharedPUtils.getCache("unsavareports"), Report.class);
+        if (reports != null) {
             new AlertDialog.Builder(this).setTitle(R.string.attention).setMessage(R.string.data_not_save)
                     .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialog, int which) {
-                            startActivity(ViewJump.getSaveIntent(MainActivity.this,reports));
+                            startActivity(ViewJump.getSaveIntent(MainActivity.this, reports));
                         }
                     }).setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                 @Override
@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
     private void init() {
         mItems = getResources().getStringArray(R.array.span);
         tvSpan.setText(mItems[mSpanPosition]);
-        if (mCalendar==null){
+        if (mCalendar == null) {
             mCalendar = Calendar.getInstance();
         }
         int year = mCalendar.get(Calendar.YEAR);
@@ -158,7 +158,7 @@ public class MainActivity extends AppCompatActivity {
         int week = mCalendar.get(Calendar.DAY_OF_WEEK);
         int date = mCalendar.get(Calendar.DATE);
         mCalendar.set(year, month, date, 0, 0, 0);
-        mCalendar.set(Calendar.MILLISECOND,0);
+        mCalendar.set(Calendar.MILLISECOND, 0);
         switch (mSpanPosition) {
             case 0:
                 //年
@@ -173,7 +173,7 @@ public class MainActivity extends AppCompatActivity {
                 mCalendar.set(year, month, 1);
                 startTime = mCalendar.getTimeInMillis();
                 mCalendar.add(Calendar.MONTH, 1);
-                mCalendar.add(Calendar.DATE,-1);
+                mCalendar.add(Calendar.DATE, -1);
                 endTime = mCalendar.getTimeInMillis();
                 grain = 60 * 60 * 1000 * 24L;
                 break;
@@ -219,10 +219,10 @@ public class MainActivity extends AppCompatActivity {
         List<Entry> kills = new ArrayList<>();
         List<Entry> members = new ArrayList<>();
         for (long i = startTime; i <= endTime; i = i + grain) {
-            DLog.d("value:"+i);
+            DLog.d("value:" + i);
             long start = i;
             long end = i + grain;
-            float x = (int) (i/grain)+1;
+            float x = (int) (i / grain) + 1;
             long killNum = realm.where(Report.class).between("timestamp", start, end).count();
             kills.add(new Entry(x, killNum));
             long memberNum = realm.where(Report.class).between("timestamp", start, end).distinct("name").count();
@@ -256,7 +256,7 @@ public class MainActivity extends AppCompatActivity {
         lineChart.getXAxis().setValueFormatter(new IAxisValueFormatter() {
             @Override
             public String getFormattedValue(float value, AxisBase axis) {
-                long longValue = ((long)value) *grain;
+                long longValue = ((long) value) * grain;
                 switch (mSpanPosition) {
                     case 0:
                         return mDateFormat2.format(longValue);
@@ -288,7 +288,12 @@ public class MainActivity extends AppCompatActivity {
         int[] nums = new int[5];
         //共5个等级
         for (Report report : reports) {
-            nums[report.getImage().getPreyLevel() - 1] = nums[report.getImage().getPreyLevel() - 1] + 1;
+            int i = report.getImage().getPreyLevel() - 1;
+            if (i < 0)
+                i = 0;
+            else if (i > 4)
+                i = 4;
+            nums[i] = nums[i] + 1;
         }
 
         for (int i = 0; i < nums.length; i++) {
@@ -315,23 +320,42 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    @OnClick({R.id.tvSpan, R.id.btnShareData, R.id.btnDetail, R.id.layoutSettings,R.id.tvDate})
+    @OnClick({R.id.tvSpan, R.id.btnShareData, R.id.btnDetail, R.id.layoutSettings, R.id.tvDate})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.tvDate:
                 if (mCalendar == null)
                     mCalendar = Calendar.getInstance();
-                mCalendar.setTimeInMillis(startTime);
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-                    new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
-                        @Override
-                        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
-                            mCalendar.set(year, month, dayOfMonth, 0, 0, 0);
-                            init();
-                            loadData();
-                        }
-                    },mCalendar.get(Calendar.YEAR),mCalendar.get(Calendar.MONTH),mCalendar.get(Calendar.DATE)).show();
-                }
+                mCalendar.setTimeInMillis(selectTime);
+                View dateLayout = View.inflate(this, R.layout.layout_date, null);
+                DatePicker datePicker = dateLayout.findViewById(R.id.datePicker);
+                datePicker.init(mCalendar.get(Calendar.YEAR), mCalendar.get(Calendar.MONTH), mCalendar.get(Calendar.DATE),
+                        new DatePicker.OnDateChangedListener() {
+                            @Override
+                            public void onDateChanged(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
+                                mCalendar.set(year, monthOfYear, dayOfMonth, 0, 0, 0);
+                                selectTime = mCalendar.getTimeInMillis();
+                            }
+                        });
+                new AlertDialog.Builder(this).setView(dateLayout)
+                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                init();
+                                loadData();
+                            }
+                        })
+                        .setNegativeButton(R.string.cancel, null).show();
+//                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+//                    new DatePickerDialog(this, new DatePickerDialog.OnDateSetListener() {
+//                        @Override
+//                        public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
+//                            mCalendar.set(year, month, dayOfMonth, 0, 0, 0);
+//                            init();
+//                            loadData();
+//                        }
+//                    },mCalendar.get(Calendar.YEAR),mCalendar.get(Calendar.MONTH),mCalendar.get(Calendar.DATE)).show();
+//                }
                 break;
             case R.id.tvSpan:
                 new AlertDialog.Builder(this).setItems(mItems, new DialogInterface.OnClickListener() {
@@ -369,7 +393,7 @@ public class MainActivity extends AppCompatActivity {
                     share.setType("text/plain");
                     share.putExtra(Intent.EXTRA_TEXT, data.toString());
                     startActivity(Intent.createChooser(share, getString(R.string.share_data)));
-                }else {
+                } else {
                     PopupUtils.sendToast(R.string.share_data_empty);
                 }
                 break;
@@ -395,7 +419,7 @@ public class MainActivity extends AppCompatActivity {
                             case R.id.specification:
                                 //使用说明
                                 //地址
-                                ViewJump.toWebView(MainActivity.this,"http://file2001552359.nos-eastchina1.126.net/lordshunter/readme_"+Constant.OCR_LANGUAGE+"/readme.html");
+                                ViewJump.toWebView(MainActivity.this, "http://file2001552359.nos-eastchina1.126.net/lordshunter/readme_" + Constant.OCR_LANGUAGE + "/readme.html");
                                 break;
                             case R.id.shareApp:
                                 //分享应用
@@ -417,8 +441,8 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    private void checkWifi2DownloadDataPackage(){
-        if (NetworkManager.getAPNType(this)!=NetworkManager.TYPE_WIFI){
+    private void checkWifi2DownloadDataPackage() {
+        if (NetworkManager.getAPNType(this) != NetworkManager.TYPE_WIFI) {
             new AlertDialog.Builder(this).setTitle(R.string.attention)
                     .setMessage(R.string.attention_not_wifi)
                     .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
@@ -426,21 +450,21 @@ public class MainActivity extends AppCompatActivity {
                         public void onClick(DialogInterface dialog, int which) {
                             downloadDataPackage();
                         }
-                    }).setNegativeButton(R.string.cancel,null)
+                    }).setNegativeButton(R.string.cancel, null)
                     .show();
-        }else {
+        } else {
             downloadDataPackage();
         }
     }
 
-    private void downloadDataPackage(){
+    private void downloadDataPackage() {
         FileDownloader.setup(MainActivity.this);
         FileDownloader.getImpl().create("http://file2001552359.nos-eastchina1.126.net/tessdata/" + Constant.OCR_LANGUAGE + ".traineddata")
                 .setPath(mTraineddata.getAbsolutePath()).setListener(new FileDownloadListener() {
             @Override
             protected void pending(BaseDownloadTask task, int soFarBytes, int totalBytes) {
                 DLog.d("FileDownloadListener.pending");
-                View progressView = View.inflate(MainActivity.this,R.layout.layout_progress2,null);
+                View progressView = View.inflate(MainActivity.this, R.layout.layout_progress2, null);
                 mDownloadProgressBar = progressView.findViewById(R.id.progress);
                 tvProgressInfo = progressView.findViewById(R.id.tvProgressInfo);
                 mDownloadDialog = new AlertDialog.Builder(MainActivity.this)
@@ -458,13 +482,13 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             protected void progress(BaseDownloadTask task, int soFarBytes, int totalBytes) {
-                DLog.d("FileDownloadListener.progress ->"+soFarBytes+"   total:"+totalBytes);
-                if (mDownloadDialog!=null && mDownloadDialog.isShowing()
-                        && mDownloadProgressBar!=null && tvProgressInfo!=null){
+                DLog.d("FileDownloadListener.progress ->" + soFarBytes + "   total:" + totalBytes);
+                if (mDownloadDialog != null && mDownloadDialog.isShowing()
+                        && mDownloadProgressBar != null && tvProgressInfo != null) {
                     tvProgressInfo.setText(getString(R.string.doalowning_info_,
                             FormatUtils.formatFileSize(totalBytes),
                             FormatUtils.formatFileSize(soFarBytes),
-                            task.getSpeed()+"KB/s"));
+                            task.getSpeed() + "KB/s"));
                     mDownloadProgressBar.setMax(totalBytes);
                     mDownloadProgressBar.setProgress(soFarBytes);
                 }
@@ -474,7 +498,7 @@ public class MainActivity extends AppCompatActivity {
             protected void completed(BaseDownloadTask task) {
                 DLog.d("FileDownloadListener.completed");
                 FileDownloader.getImpl().clearAllTaskData();
-                if (mDownloadDialog!=null && mDownloadDialog.isShowing()){
+                if (mDownloadDialog != null && mDownloadDialog.isShowing()) {
                     PopupUtils.sendToast(R.string.download_completed);
                     mDownloadDialog.dismiss();
                 }
@@ -483,7 +507,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             protected void paused(BaseDownloadTask task, int soFarBytes, int totalBytes) {
                 DLog.d("FileDownloadListener.paused");
-                if (mTraineddata.exists()){
+                if (mTraineddata.exists()) {
                     mTraineddata.delete();
                 }
                 FileDownloader.getImpl().clearAllTaskData();
@@ -493,12 +517,12 @@ public class MainActivity extends AppCompatActivity {
             protected void error(BaseDownloadTask task, Throwable e) {
                 e.printStackTrace();
                 DLog.d("FileDownloadListener.error");
-                if (mTraineddata.exists()){
+                if (mTraineddata.exists()) {
                     mTraineddata.delete();
                 }
                 FileDownloader.getImpl().clearAllTaskData();
                 PopupUtils.sendToast(R.string.download_error);
-                if (mDownloadDialog!=null && mDownloadDialog.isShowing()){
+                if (mDownloadDialog != null && mDownloadDialog.isShowing()) {
                     mDownloadDialog.dismiss();
                 }
             }

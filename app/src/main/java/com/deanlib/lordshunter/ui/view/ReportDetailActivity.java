@@ -7,7 +7,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.TextView;
@@ -21,19 +20,12 @@ import com.deanlib.lordshunter.entity.Report;
 import com.deanlib.ootblite.utils.PopupUtils;
 import com.github.chrisbanes.photoview.PhotoView;
 
-import org.greenrobot.eventbus.Subscribe;
-
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import io.realm.ObjectChangeSet;
 import io.realm.Realm;
-import io.realm.RealmChangeListener;
-import io.realm.RealmModel;
-import io.realm.RealmObject;
-import io.realm.RealmObjectChangeListener;
 
-public class ReportDetailActivity extends AppCompatActivity {
+public class ReportDetailActivity extends BaseActivity {
 
     @BindView(R.id.photoView)
     PhotoView photoView;

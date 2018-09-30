@@ -32,7 +32,7 @@
 
     <string name="download_data_package">下載數據包</string>
     <string name="share_app">分享App</string>
-    <string name="share_app_url">遊戲《王國紀元》獵魔輔助工具，「 王國獵手App 」下載地址：https://play.google.com/store/apps/details?id=com.deanlib.lordshunter</string>
+    <string name="share_app_url">遊戲《王國征戰》獵魔輔助工具，「 王國獵手App 」下載地址：https://play.google.com/store/apps/details?id=com.deanlib.lordshunter</string>
     <string name="download_completed">下載完成</string>
     <string name="download_error">下載出錯</string>
     <string name="doalowning_info_">文件大小 %s , 當前下載 %s , 下載速度 %s</string>
@@ -52,7 +52,7 @@
     <string name="share_data_template">,該條信息由「 王國獵手App 」生成。</string>
 
     <string name="ocr_language">chi_tra</string>
-    <string name="pattern_group">(.+) WeChat群組的聊天記錄如下，請查收。</string>
+    <string name="pattern_group">(.+) WeChat聊天室的聊天記錄如下，請查收。</string>
     <string name="pattern_report">(.+) {2}(\\d{2}:\\d{2})\\n\\n\\[圖片: (\\S+\\.((jpg)|(png)))\\(\\S+\\)\\]</string>
 
     <string name="jump_">跳過（%d）</string>

@@ -11,7 +11,6 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.IBinder;
-import android.os.SystemClock;
 import android.support.annotation.Nullable;
 import android.support.v4.app.NotificationCompat;
 
@@ -49,7 +48,7 @@ public class CollectTaskService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         DLog.d("onStartCommand");
 
-        int notifiyId = (int) SystemClock.currentThreadTimeMillis();
+        int notifiyId = (int) System.currentTimeMillis();
 //        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
 //            NotificationChannel channel = new NotificationChannel("1", "Notifiy", NotificationManager.IMPORTANCE_DEFAULT);
@@ -118,7 +117,7 @@ public class CollectTaskService extends Service {
                             if (!SavaActivity.isRunForeground) {
                                 DLog.d("send notification");
                                 //发通知
-                                int notifiyId = (int) SystemClock.currentThreadTimeMillis();
+                                int notifiyId = (int) System.currentTimeMillis();
                                 NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                                     NotificationChannel channel = new NotificationChannel("1", "Notifiy", NotificationManager.IMPORTANCE_DEFAULT);

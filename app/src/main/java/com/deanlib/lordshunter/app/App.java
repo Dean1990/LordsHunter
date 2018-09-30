@@ -2,6 +2,7 @@ package com.deanlib.lordshunter.app;
 
 import android.app.Application;
 import android.content.Context;
+import android.support.multidex.MultiDexApplication;
 
 import com.deanlib.lordshunter.R;
 import com.deanlib.lordshunter.Utils;
@@ -17,6 +18,7 @@ import com.scwang.smartrefresh.layout.api.RefreshHeader;
 import com.scwang.smartrefresh.layout.api.RefreshLayout;
 import com.scwang.smartrefresh.layout.footer.ClassicsFooter;
 import com.scwang.smartrefresh.layout.header.ClassicsHeader;
+import com.umeng.commonsdk.UMConfigure;
 
 import java.io.File;
 import java.util.HashSet;
@@ -24,7 +26,7 @@ import java.util.Set;
 
 import io.realm.Realm;
 
-public class App extends Application {
+public class App extends MultiDexApplication {
 
     //static 代码段可以防止内存泄露
     static {
@@ -55,6 +57,9 @@ public class App extends Application {
 
         OotbConfig.init(this,Constant.isDebug);
         Realm.init(this);
+
+        UMConfigure.init(this, "5bb07c3db465f56d3400000c", "channel", UMConfigure.DEVICE_TYPE_PHONE, "");
+        UMConfigure.setLogEnabled(Constant.isDebug);
 
         Constant.OCR_LANGUAGE =getString(R.string.ocr_language);
         Constant.APP_FILE_OCR_TRAINEDDATA = new File(Utils.getDiskCachePath(this)

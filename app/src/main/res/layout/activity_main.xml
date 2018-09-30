@@ -8,64 +8,71 @@
     tools:context=".ui.view.MainActivity">
 
     <RelativeLayout
-        android:background="@color/colorPrimary"
         android:layout_width="match_parent"
-        android:layout_height="@dimen/app_bar_height">
+        android:layout_height="@dimen/app_bar_height"
+        android:background="@color/colorPrimary">
 
         <TextView
-            android:layout_centerInParent="true"
-            android:textColor="@color/textWhite"
-            android:textSize="@dimen/text_size_normal_xx"
-            android:text="@string/app_name"
             android:layout_width="wrap_content"
-            android:layout_height="wrap_content" />
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/app_name"
+            android:textColor="@color/textWhite"
+            android:textSize="@dimen/text_size_normal_xx" />
 
         <LinearLayout
-            android:gravity="center"
             android:id="@+id/layoutSettings"
-            android:layout_centerVertical="true"
-            android:layout_alignParentRight="true"
             android:layout_width="@dimen/app_bar_height"
-            android:layout_height="@dimen/app_bar_height">
+            android:layout_height="@dimen/app_bar_height"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:gravity="center">
+
             <ImageView
-                android:src="@mipmap/settings"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content" />
+                android:layout_height="wrap_content"
+                android:src="@mipmap/settings" />
         </LinearLayout>
 
     </RelativeLayout>
 
     <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:elevation="1dp"
         android:gravity="center_vertical"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/tvDate"
-        android:gravity="center_vertical"
-        android:padding="10dp"
-        android:textColor="@color/textBlack"
-        android:textSize="@dimen/text_size_normal_x"
-        android:layout_weight="2"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:drawablePadding="10dp"
-        android:drawableRight="@mipmap/triangle"
-         />
+        <TextView
+            android:id="@+id/tvDate"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="2"
+            android:drawablePadding="10dp"
+            android:drawableRight="@mipmap/triangle"
+            android:gravity="center_vertical"
+            android:padding="10dp"
+            android:singleLine="true"
+            android:textColor="@color/textBlack"
+            android:textSize="@dimen/text_size_normal_x" />
 
-    <TextView
-        android:id="@+id/tvSpan"
-        android:gravity="center"
-        android:drawablePadding="10dp"
-        android:padding="10dp"
-        android:drawableRight="@mipmap/triangle"
-        android:textColor="@color/textBlue"
-        android:textSize="@dimen/text_size_normal_x"
-        android:layout_weight="1"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content" />
+        <View
+            android:layout_width="1dp"
+            android:layout_height="20dp"
+            android:background="@color/colorPrimaryDark" />
+
+        <TextView
+            android:id="@+id/tvSpan"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:drawablePadding="10dp"
+            android:drawableRight="@mipmap/triangle"
+            android:gravity="center"
+            android:padding="10dp"
+            android:singleLine="true"
+            android:textColor="@color/textBlue"
+            android:textSize="@dimen/text_size_normal_x" />
 
     </LinearLayout>
 
@@ -73,43 +80,44 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-    <ScrollView
-        android:id="@+id/scrollViewContainer"
-        android:layout_width="match_parent"
-        android:paddingBottom="60dp"
-        android:layout_height="match_parent">
-
-    </ScrollView>
-
-    <LinearLayout
-        android:layout_gravity="bottom"
-        android:layout_margin="10dp"
-        android:orientation="horizontal"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content">
-        <Button
-            android:layout_weight="1"
-            android:id="@+id/btnShareData"
-            android:text="@string/share_data"
-            android:gravity="center"
-            android:textColor="@color/textWhite"
-            android:background="@drawable/selector_button"
-            android:textSize="@dimen/text_size_normal_xx"
+        <ScrollView
+            android:id="@+id/scrollViewContainer"
             android:layout_width="match_parent"
-            android:layout_height="@dimen/button_height" />
+            android:layout_height="match_parent"
+            android:paddingBottom="60dp">
 
-        <Button
-            android:layout_marginLeft="10dp"
-            android:layout_weight="1"
-            android:id="@+id/btnDetail"
-            android:text="@string/read_detail"
-            android:gravity="center"
-            android:textColor="@color/textWhite"
-            android:background="@drawable/selector_button"
-            android:textSize="@dimen/text_size_normal_xx"
+        </ScrollView>
+
+        <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="@dimen/button_height" />
-    </LinearLayout>
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_margin="10dp"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnShareData"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/button_height"
+                android:layout_weight="1"
+                android:background="@drawable/selector_button"
+                android:gravity="center"
+                android:text="@string/share_data"
+                android:textColor="@color/textWhite"
+                android:textSize="@dimen/text_size_normal_xx" />
+
+            <Button
+                android:id="@+id/btnDetail"
+                android:layout_width="match_parent"
+                android:layout_height="@dimen/button_height"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="1"
+                android:background="@drawable/selector_button"
+                android:gravity="center"
+                android:text="@string/read_detail"
+                android:textColor="@color/textWhite"
+                android:textSize="@dimen/text_size_normal_xx" />
+        </LinearLayout>
 
     </FrameLayout>
 </LinearLayout>

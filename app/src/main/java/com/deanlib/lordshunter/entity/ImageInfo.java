@@ -118,4 +118,17 @@ public class ImageInfo extends RealmObject implements Parcelable {
             return new ImageInfo[size];
         }
     };
+
+    @Override
+    public String toString() {
+        return "ImageInfo{" +
+                "id='" + id + '\'' +
+                ", preyName='" + preyName + '\'' +
+                ", preyLevel=" + preyLevel +
+                ", dataTime='" + dataTime + '\'' +
+                ", uri='" + uri + '\'' +
+                ", md5='" + md5 + '\'' +
+                ", isKill=" + isKill +
+                '}';
+    }
 }

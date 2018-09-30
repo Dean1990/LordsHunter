@@ -124,14 +124,17 @@ public class Utils {
             return null;
         Realm realm = Realm.getDefaultInstance();
         for (Report report : list) {
-
+            DLog.d(report.toString());
             try {
                 String md5 = MD5.md5(new File(report.getImage().getUri()));
+                DLog.d("md5:"+md5);
                 report.getImage().setMd5(md5);
                 ImageInfo find = realm.where(ImageInfo.class)
                         .equalTo("md5", md5)
                         .findFirst();
+
                 if (find != null) {
+                    DLog.d(find.toString());
                     //排除日期相同的情况，是数据库中存在的 ，这种情况一般是用户操作不当
                     if (find.getDataTime().equals(report.getDate() + " " + report.getTime())) {
                         report.setStatus(Report.STATUS_EXIST);
@@ -168,18 +171,6 @@ public class Utils {
             float w = bitmap.getWidth();
             float h = bitmap.getHeight();
             bitmap = Bitmap.createBitmap(bitmap, (int) (w * 0.1), (int) (h * 0.12), (int) (w * 0.4), (int) (h * 0.05), null, false);
-
-//            ImageUtils.saveImageFile(bitmap, FileUtils.createDir("_abc"), SystemClock.currentThreadTimeMillis()+".png", new FileUtils.FileCallback() {
-//                @Override
-//                public void onSuccess(File file) {
-//
-//                }
-//
-//                @Override
-//                public void onFail(Exception e) {
-//
-//                }
-//            });
 
             tess.setImage(bitmap);
             String result = tess.getUTF8Text();
