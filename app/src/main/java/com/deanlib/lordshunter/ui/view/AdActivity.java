@@ -14,7 +14,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class LaunchActivity extends BaseActivity {
+public class AdActivity extends BaseActivity {
 
     @BindView(R.id.tvJump)
     TextView tvJump;
@@ -51,7 +51,7 @@ public class LaunchActivity extends BaseActivity {
     @OnClick(R.id.tvJump)
     public void onViewClicked() {
         cdt.cancel();
-        ViewJump.toMain(this);
+//        ViewJump.toMain(this);
         finish();
     }
 }

@@ -138,6 +138,8 @@ public class MainActivity extends BaseActivity {
             }).show();
         }
 
+        startActivity(new Intent(this,AdActivity.class));
+
     }
 
     @Override

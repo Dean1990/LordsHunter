@@ -16,14 +16,9 @@
         android:supportsRtl="true"
         android:name=".app.App"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.view.LaunchActivity"
+        <activity android:name=".ui.view.AdActivity"
             android:screenOrientation="portrait"
-            >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
+            />
         <activity android:name=".ui.view.SavaActivity"
             android:screenOrientation="portrait"
             android:launchMode="singleInstance"
@@ -36,8 +31,13 @@
         </activity>
         <activity android:name=".ui.view.MainActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop"
-            />
+            android:launchMode="singleTask"
+            >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity android:name=".ui.view.ReportDetailActivity"
             android:screenOrientation="portrait"
             />
