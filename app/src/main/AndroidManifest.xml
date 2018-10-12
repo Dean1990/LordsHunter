@@ -47,6 +47,9 @@
         <activity android:name=".ui.view.WebViewActivity"
             android:screenOrientation="portrait"
             />
+        <activity android:name=".ui.view.MemberReportListActivity"
+            android:screenOrientation="portrait"
+            />
 
         <service android:name=".service.CollectTaskService"/>
 

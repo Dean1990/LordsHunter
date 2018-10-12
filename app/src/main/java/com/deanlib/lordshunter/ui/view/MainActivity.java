@@ -220,31 +220,53 @@ public class MainActivity extends BaseActivity {
         //线性表
         List<Entry> kills = new ArrayList<>();
         List<Entry> members = new ArrayList<>();
+        List<Entry> equivalents = new ArrayList<>();//等效1级
+        String[] chiNum = getResources().getStringArray(R.array.chi_num);
         for (long i = startTime; i <= endTime; i = i + grain) {
             DLog.d("value:" + i);
             long start = i;
             long end = i + grain;
             float x = (int) (i / grain) + 1;
-            long killNum = realm.where(Report.class).between("timestamp", start, end).count();
-            kills.add(new Entry(x, killNum));
-            long memberNum = realm.where(Report.class).between("timestamp", start, end).distinct("name").count();
-            members.add(new Entry(x, memberNum));
+            long killCount = realm.where(Report.class).between("timestamp", start, end).count();
+            kills.add(new Entry(x, killCount));
+
+            long memberCount = realm.where(Report.class).between("timestamp", start, end).distinct("name").count();
+            members.add(new Entry(x, memberCount));
+
+            long euivalentCount = 0;
+            for (int j = 0; j < chiNum.length; j++) {
+                int level = chiNum.length - j;
+                long count = realm.where(Report.class).between("timestamp", start, end)
+                        .and().equalTo("image.preyLevel", level)
+                        .count();
+                if (count != 0) {
+                    euivalentCount += Utils.equivalentLv1(level, count);
+                }
+            }
+            equivalents.add(new Entry(x,euivalentCount));
+
         }
 
         LineData lineData = new LineData();
         if (kills.size() > 0) {
 
             int killColor = Color.RED;
-            LineDataSet killSet = new LineDataSet(kills, "kill");
+            LineDataSet killSet = new LineDataSet(kills, "Kill");
             killSet.setColor(killColor);
             killSet.setValueTextColor(killColor);
             lineData.addDataSet(killSet);
 
             int memberColor = Color.BLUE;
-            LineDataSet memberSet = new LineDataSet(members, "member");
+            LineDataSet memberSet = new LineDataSet(members, "Member");
             memberSet.setColor(memberColor);
             memberSet.setValueTextColor(memberColor);
             lineData.addDataSet(memberSet);
+
+            int equivalentColor = Color.GREEN;
+            LineDataSet equivalentSet = new LineDataSet(equivalents, "Eq Lv.1");
+            equivalentSet.setColor(equivalentColor);
+            equivalentSet.setValueTextColor(equivalentColor);
+            lineData.addDataSet(equivalentSet);
 
         }
         lineData.setValueFormatter(new IValueFormatter() {
@@ -279,7 +301,6 @@ public class MainActivity extends BaseActivity {
         lineChart.getAxisLeft().setAxisMinimum(0f);
         lineChart.getAxisLeft().setGranularity(1f);
         lineChart.getAxisRight().setEnabled(false);
-
 
         lineChart.setDescription(null);
         lineChart.setData(lineData);
@@ -400,7 +421,7 @@ public class MainActivity extends BaseActivity {
                 }
                 break;
             case R.id.btnDetail:
-                ViewJump.toReportList(this, startTime, endTime);
+                ViewJump.toMemberReportList(this, startTime, endTime);
                 break;
             case R.id.layoutSettings:
 

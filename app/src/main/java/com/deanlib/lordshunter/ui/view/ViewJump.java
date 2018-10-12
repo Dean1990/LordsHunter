@@ -51,4 +51,11 @@ public class ViewJump {
         intent.putParcelableArrayListExtra("reports", (ArrayList<? extends Parcelable>) reports);
         return intent;
     }
+
+    public static void toMemberReportList(Activity activity,long startTime,long endTime){
+        Intent intent = new Intent(activity,MemberReportListActivity.class);
+        intent.putExtra("startTime",startTime);
+        intent.putExtra("endTime",endTime);
+        activity.startActivity(intent);
+    }
 }
