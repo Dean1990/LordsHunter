@@ -61,7 +61,11 @@ public class ReportAdapter extends BaseAdapter {
         switch (list.get(position).getStatus()) {
             case Report.STATUS_NEW:
                 holder.imgTag.setVisibility(View.GONE);
-                holder.layoutItem.setBackgroundResource(R.color.colorWhite);
+                if (list.get(position).getImage().getPreyLevel() == 0 || list.get(position).getImage().getPreyName() == null){
+                    holder.layoutItem.setBackgroundResource(R.color.colorYellowAlpha);
+                }else {
+                    holder.layoutItem.setBackgroundResource(R.color.colorWhite);
+                }
                 break;
             case Report.STATUS_EXIST:
                 holder.imgTag.setImageResource(R.mipmap.repeat);

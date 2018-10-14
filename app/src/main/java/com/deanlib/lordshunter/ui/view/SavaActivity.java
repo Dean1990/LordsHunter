@@ -209,36 +209,48 @@ public class SavaActivity extends BaseActivity {
                 break;
             case R.id.btnSave:
                 //保存数据到数据库
-                new AlertDialog.Builder(this).setTitle(R.string.save)
-                        .setMessage(R.string.save_tag)
-                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                ProgressDialog dialog1 = ProgressDialog.show(SavaActivity.this, "", getString(R.string.save_data));
-                                Realm realm = Realm.getDefaultInstance();
-                                realm.executeTransaction(new Realm.Transaction() {
-                                    @Override
-                                    public void execute(Realm realm) {
-                                        for (Report report : mReportList) {
-                                            if (report.getStatus() == Report.STATUS_NEW) {
-                                                report.setId(UUID.randomUUID().toString());
-                                                report.getImage().setId(UUID.randomUUID().toString());
-                                                realm.copyToRealm(report);
+                int unidentificationPosition = -1;//未识别的list的位置
+                for (int i = 0;i < mReportList.size();i++) {
+                    if (mReportList.get(i).getImage().getPreyLevel() == 0 || mReportList.get(i).getImage().getPreyName() == null) {
+                        unidentificationPosition = i;
+                        break;
+                    }
+                }
+                if (unidentificationPosition>=0){
+                    listView.setSelection(unidentificationPosition);
+                    PopupUtils.sendToast(R.string.unidentification_tag);
+                }else {
+                    new AlertDialog.Builder(this).setTitle(R.string.save)
+                            .setMessage(R.string.save_tag)
+                            .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    ProgressDialog dialog1 = ProgressDialog.show(SavaActivity.this, "", getString(R.string.save_data));
+                                    Realm realm = Realm.getDefaultInstance();
+                                    realm.executeTransaction(new Realm.Transaction() {
+                                        @Override
+                                        public void execute(Realm realm) {
+                                            for (Report report : mReportList) {
+                                                if (report.getStatus() == Report.STATUS_NEW) {
+                                                    report.setId(UUID.randomUUID().toString());
+                                                    report.getImage().setId(UUID.randomUUID().toString());
+                                                    realm.copyToRealm(report);
+                                                }
                                             }
                                         }
-                                    }
-                                });
-                                dialog1.dismiss();
-                                PopupUtils.sendToast(R.string.save_success);
-                                ViewJump.toMain(SavaActivity.this);
-                                finish();
-                            }
-                        }).setNegativeButton(R.string.cancel, null).show();
+                                    });
+                                    dialog1.dismiss();
+                                    PopupUtils.sendToast(R.string.save_success);
+                                    ViewJump.toMain(SavaActivity.this);
+                                    finish();
+                                }
+                            }).setNegativeButton(R.string.cancel, null).show();
 
-                //清缓存
-                SharedPUtils sharedPUtils = new SharedPUtils();
-                sharedPUtils.remove("unsavareports");
+                    //清缓存
+                    SharedPUtils sharedPUtils = new SharedPUtils();
+                    sharedPUtils.remove("unsavareports");
 
+                }
                 break;
         }
     }

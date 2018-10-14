@@ -22,6 +22,7 @@ import com.deanlib.lordshunter.app.Constant;
 import com.deanlib.lordshunter.data.Persistence;
 import com.deanlib.lordshunter.data.entity.ImageInfo;
 import com.deanlib.lordshunter.data.entity.Report;
+import com.deanlib.ootblite.OotbConfig;
 import com.deanlib.ootblite.data.SharedPUtils;
 import com.deanlib.ootblite.utils.DLog;
 import com.deanlib.ootblite.utils.FormatUtils;
@@ -102,7 +103,12 @@ public class MainActivity extends BaseActivity {
 
         if (!mTraineddata.exists()) {
             //第一次使用
-            ViewJump.toWebView(MainActivity.this, "http://file2001552359.nos-eastchina1.126.net/lordshunter/readme_" + Constant.OCR_LANGUAGE + "/readme.html");
+            OotbConfig.task().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    ViewJump.toWebView(MainActivity.this, "http://file2001552359.nos-eastchina1.126.net/lordshunter/readme_" + Constant.OCR_LANGUAGE + "/readme.html");
+                }
+            },2000);
         }
 
         RxPermissions permissions = new RxPermissions(this);
@@ -143,7 +149,7 @@ public class MainActivity extends BaseActivity {
             }).show();
         }
 
-        startActivity(new Intent(this,AdActivity.class));
+        //startActivity(new Intent(this,AdActivity.class));
 
     }
 
@@ -445,11 +451,13 @@ public class MainActivity extends BaseActivity {
                                 }
                                 break;
                             case R.id.exportData:
-                                //导出用户数据
+                                //导出猎魔数据
                                 RxPermissions rxPermissions1 = new RxPermissions(MainActivity.this);
                                 rxPermissions1.request(Manifest.permission.WRITE_EXTERNAL_STORAGE).subscribe(granted->{
                                     if (granted){
-                                        new AlertDialog.Builder(MainActivity.this).setMessage(getString(R.string.export_data_date_,tvDate.getText().toString())).setPositiveButton(R.string.export, new DialogInterface.OnClickListener() {
+                                        new AlertDialog.Builder(MainActivity.this).setTitle(R.string.attention)
+                                                .setMessage(getString(R.string.export_data_date_,tvDate.getText().toString()))
+                                                .setPositiveButton(R.string.export, new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
                                                 Realm realm = Realm.getDefaultInstance();
@@ -458,6 +466,7 @@ public class MainActivity extends BaseActivity {
                                                     PopupUtils.sendToast(R.string.invalid_data);
                                                 }else {
                                                     FilePicker picker = new FilePicker(MainActivity.this, FilePicker.DIRECTORY);
+                                                    picker.setFillScreen(true);
                                                     picker.setOnFilePickListener(new FilePicker.OnFilePickListener() {
                                                         @Override
                                                         public void onFilePicked(String currentPath) {
@@ -483,12 +492,13 @@ public class MainActivity extends BaseActivity {
 
                                 break;
                             case R.id.importData:
-                                //导入用户数据
+                                //导入猎魔数据
                                 RxPermissions rxPermissions2 = new RxPermissions(MainActivity.this);
                                 rxPermissions2.request(Manifest.permission.READ_EXTERNAL_STORAGE).subscribe(granted->{
                                     if (granted){
                                         Realm realm = Realm.getDefaultInstance();
                                         FilePicker picker = new FilePicker(MainActivity.this,FilePicker.FILE);
+                                        picker.setFillScreen(true);
                                         picker.setOnFilePickListener(new FilePicker.OnFilePickListener() {
                                             @Override
                                             public void onFilePicked(String currentPath) {
@@ -508,10 +518,14 @@ public class MainActivity extends BaseActivity {
                                                             insertCount++;
                                                         }else {
                                                             //重复
+                                                            DLog.d(report.getImage().toString());
+                                                            DLog.d(find.toString());
                                                             repetCount++;
                                                         }
                                                     }
                                                     realm.commitTransaction();
+                                                    init();
+                                                    loadData();
                                                     PopupUtils.sendToast(getString(R.string.import_data_success,reports.size(),insertCount,repetCount), Toast.LENGTH_LONG);
                                                 }else {
                                                     PopupUtils.sendToast(R.string.invalid_data);
@@ -521,6 +535,26 @@ public class MainActivity extends BaseActivity {
                                         picker.show();
                                     }
                                 });
+                                break;
+                            case R.id.deleteData:
+                                new AlertDialog.Builder(MainActivity.this).setTitle(R.string.attention)
+                                        .setMessage(getString(R.string.delete_data_tag,tvDate.getText().toString()))
+                                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                Realm realm1 = Realm.getDefaultInstance();
+                                                RealmResults<Report> reports = realm1.where(Report.class).between("timestamp", startTime, endTime).findAll();
+                                                realm1.executeTransaction(new Realm.Transaction() {
+                                                    @Override
+                                                    public void execute(Realm realm) {
+                                                        reports.deleteAllFromRealm();
+                                                        init();
+                                                        loadData();
+                                                        PopupUtils.sendToast(R.string.delete_success);
+                                                    }
+                                                });
+                                            }
+                                        }).setNegativeButton(R.string.cancel,null).show();
                                 break;
                             case R.id.specification:
                                 //使用说明

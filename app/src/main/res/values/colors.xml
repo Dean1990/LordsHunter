@@ -13,6 +13,7 @@
 
     <color name="colorRedAlpha">#55CC0033</color>
     <color name="colorBlueAlpha">#550066CC</color>
+    <color name="colorYellowAlpha">#55FFFF00</color>
     <color name="colorGrayAlpha">#99999999</color>
 
     <color name="textWhite">@color/colorWhite</color>

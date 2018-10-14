@@ -13,6 +13,10 @@
         android:title="@string/import_data"
         />
     <item
+        android:id="@+id/deleteData"
+        android:title="@string/delete_data"
+        />
+    <item
         android:id="@+id/specification"
         android:title="@string/specification"
         />

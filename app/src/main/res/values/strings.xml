@@ -64,12 +64,16 @@
     <string name="equivalent_lv1">等效统计(Lv.1)</string>
     <string name="esc_order">升序</string>
     <string name="desc_order">降序</string>
-    <string name="export_data">导出用户数据</string>
+    <string name="export_data">导出猎魔数据</string>
     <string name="export_data_success">导出成功，数据文件：%s</string>
     <string name="export_data_fail">导出失败</string>
-    <string name="import_data">导入用户数据</string>
+    <string name="import_data">导入猎魔数据</string>
     <string name="import_data_success">检索到数据 %d 条，成功导入 %d 条，重复未导入 %d 条</string>
     <string name="import_data_fail">导入失败</string>
     <string name="export_data_date_">导出当前数据：%s</string>
     <string name="export">导出</string>
+    <string name="unidentification_tag">请帮我识别未能识别的图片～</string>
+    <string name="delete_data">删除数据</string>
+    <string name="delete_data_tag">确定要删除 %s 的数据吗?</string>
+    <string name="delete_success">删除成功</string>
 </resources>

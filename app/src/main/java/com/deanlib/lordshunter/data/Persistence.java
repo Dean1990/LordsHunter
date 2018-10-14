@@ -38,7 +38,7 @@ public class Persistence {
                 dirFile.mkdirs();
             }
 
-            File file = new File(dirFile,FormatUtils.convertDateTimestampToString(System.currentTimeMillis(),FormatUtils.DATE_FORMAT_YMDHMS)+".lh");
+            File file = new File(dirFile,FormatUtils.convertDateTimestampToString(System.currentTimeMillis(),"yyyy-MM-dd-HH-mm-ss")+".lhdata");
             try {
                 PropertyPreFilter filter = new SimplePropertyPreFilter(Report.class,"id","group","date","time","name","image","timestamp");
                 IOUtils.writeStr(new FileOutputStream(file),JSON.toJSONString(reports,filter));
@@ -58,7 +58,7 @@ public class Persistence {
      */
     public static List<Report> importData(String filepath) {
         List<Report> reports = null;
-        if (!TextUtils.isEmpty(filepath) && filepath.endsWith(".lh")) {
+        if (!TextUtils.isEmpty(filepath) && filepath.endsWith(".lhdata")) {
             File file = new File(filepath);
             if (file.exists()) {
                 try {
