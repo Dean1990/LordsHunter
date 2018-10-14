@@ -1,13 +1,6 @@
 package com.deanlib.lordshunter;
 
-import com.deanlib.lordshunter.entity.Report;
-
 import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.*;
 
 public class UtilsTest {
 

@@ -4,27 +4,26 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import com.deanlib.lordshunter.R;
 import com.deanlib.lordshunter.Utils;
-import com.deanlib.lordshunter.entity.Member;
-import com.deanlib.lordshunter.entity.Report;
+import com.deanlib.lordshunter.data.entity.Member;
+import com.deanlib.lordshunter.data.entity.Report;
 import com.deanlib.lordshunter.ui.adapter.MemberReportAdapter;
-import com.deanlib.lordshunter.ui.adapter.ReportAdapter;
+import com.deanlib.ootblite.utils.DLog;
+import com.deanlib.ootblite.utils.PopupUtils;
 
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.realm.Realm;
-import io.realm.RealmChangeListener;
 import io.realm.RealmResults;
 
 /**
@@ -43,6 +42,10 @@ public class MemberReportListActivity extends BaseActivity {
     long startTime, endTime;
     List<Member> mMemberList;
     MemberReportAdapter mMemberReportAdapter;
+    @BindView(R.id.imgSort)
+    ImageView imgSort;
+
+    boolean isDescSort = true;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -58,6 +61,7 @@ public class MemberReportListActivity extends BaseActivity {
     }
 
     private void init() {
+
         listView.setAdapter(mMemberReportAdapter = new MemberReportAdapter(mMemberList = new ArrayList<>()));
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
@@ -72,7 +76,7 @@ public class MemberReportListActivity extends BaseActivity {
     private void loadData() {
         String[] chiNum = getResources().getStringArray(R.array.chi_num);
         Realm realm = Realm.getDefaultInstance();
-        RealmResults<Report> nameResults = realm.where(Report.class).between("timestamp", startTime, endTime).distinct("name").findAll();
+        RealmResults<Report> nameResults = realm.where(Report.class).between("timestamp", startTime, endTime).distinct("name", "group").findAll();
         for (Report report : nameResults) {
             long total = 0;
             for (int j = 0; j < chiNum.length; j++) {
@@ -80,11 +84,12 @@ public class MemberReportListActivity extends BaseActivity {
                 long count = realm.where(Report.class).between("timestamp", startTime, endTime).and().equalTo("name", report.getName())
                         .and().equalTo("group", report.getGroup()).and().equalTo("image.preyLevel", level)
                         .count();
+                DLog.d("name:" + report.getName() + "  level:" + level + "  count:" + count);
                 if (count != 0) {
                     total += Utils.equivalentLv1(level, count);
                 }
             }
-            mMemberList.add(new Member(report.getName(),report.getGroup(), total));
+            mMemberList.add(new Member(report.getName(), report.getGroup(), total));
         }
 
 
@@ -97,9 +102,27 @@ public class MemberReportListActivity extends BaseActivity {
         }
     }
 
-    @OnClick(R.id.layoutBack)
-    public void onViewClicked() {
-        finish();
-    }
 
+    @OnClick({R.id.layoutBack, R.id.layoutSort})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.layoutBack:
+                finish();
+                break;
+            case R.id.layoutSort:
+                //排序
+                isDescSort = !isDescSort;
+                if (isDescSort){
+                    imgSort.setImageResource(R.mipmap.desc);
+                    PopupUtils.sendToast(R.string.desc_order);
+                }else {
+                    imgSort.setImageResource(R.mipmap.esc);
+                    PopupUtils.sendToast(R.string.esc_order);
+                }
+                Collections.reverse(mMemberList);
+                mMemberReportAdapter.notifyDataSetChanged();
+
+                break;
+        }
+    }
 }

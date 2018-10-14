@@ -16,7 +16,7 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomViewTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.deanlib.lordshunter.R;
-import com.deanlib.lordshunter.entity.Report;
+import com.deanlib.lordshunter.data.entity.Report;
 import com.deanlib.ootblite.utils.PopupUtils;
 import com.github.chrisbanes.photoview.PhotoView;
 

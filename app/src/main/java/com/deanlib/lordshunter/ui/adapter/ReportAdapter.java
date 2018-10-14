@@ -10,7 +10,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.deanlib.lordshunter.R;
-import com.deanlib.lordshunter.entity.Report;
+import com.deanlib.lordshunter.data.entity.Report;
 
 import java.util.List;
 

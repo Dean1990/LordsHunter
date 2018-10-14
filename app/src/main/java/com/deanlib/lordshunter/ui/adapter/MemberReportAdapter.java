@@ -6,7 +6,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 import com.deanlib.lordshunter.R;
-import com.deanlib.lordshunter.entity.Member;
+import com.deanlib.lordshunter.data.entity.Member;
 
 import java.util.List;
 

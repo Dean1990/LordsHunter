@@ -8,17 +8,12 @@ import android.os.Environment;
 import android.text.TextUtils;
 
 import com.deanlib.lordshunter.app.Constant;
-import com.deanlib.lordshunter.entity.ImageInfo;
-import com.deanlib.lordshunter.entity.Prey;
-import com.deanlib.lordshunter.entity.Report;
-import com.deanlib.ootblite.data.FileUtils;
+import com.deanlib.lordshunter.data.entity.ImageInfo;
+import com.deanlib.lordshunter.data.entity.Prey;
+import com.deanlib.lordshunter.data.entity.Report;
 import com.deanlib.ootblite.utils.DLog;
 import com.deanlib.ootblite.utils.MD5;
-import com.deanlib.ootblite.utils.PopupUtils;
 import com.googlecode.tesseract.android.TessBaseAPI;
-import com.liulishuo.filedownloader.BaseDownloadTask;
-import com.liulishuo.filedownloader.FileDownloadListener;
-import com.liulishuo.filedownloader.FileDownloader;
 
 import java.io.File;
 

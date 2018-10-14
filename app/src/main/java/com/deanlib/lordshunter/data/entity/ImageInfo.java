@@ -1,4 +1,4 @@
-package com.deanlib.lordshunter.entity;
+package com.deanlib.lordshunter.data.entity;
 
 
 import android.os.Parcel;

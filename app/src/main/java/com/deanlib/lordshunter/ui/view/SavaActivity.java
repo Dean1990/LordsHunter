@@ -24,7 +24,7 @@ import android.widget.ListView;
 import com.deanlib.lordshunter.R;
 import com.deanlib.lordshunter.Utils;
 import com.deanlib.lordshunter.app.Constant;
-import com.deanlib.lordshunter.entity.Report;
+import com.deanlib.lordshunter.data.entity.Report;
 import com.deanlib.lordshunter.event.CollectTaskEvent;
 import com.deanlib.lordshunter.service.CollectTaskService;
 import com.deanlib.lordshunter.ui.adapter.ReportAdapter;

@@ -8,7 +8,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.deanlib.lordshunter.R;
-import com.deanlib.lordshunter.entity.Report;
+import com.deanlib.lordshunter.data.entity.Report;
 import com.deanlib.lordshunter.ui.adapter.ReportAdapter;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 

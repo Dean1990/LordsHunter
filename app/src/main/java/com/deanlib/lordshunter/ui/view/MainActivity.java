@@ -13,12 +13,15 @@ import android.widget.DatePicker;
 import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.deanlib.lordshunter.R;
 import com.deanlib.lordshunter.Utils;
 import com.deanlib.lordshunter.app.Constant;
-import com.deanlib.lordshunter.entity.Report;
+import com.deanlib.lordshunter.data.Persistence;
+import com.deanlib.lordshunter.data.entity.ImageInfo;
+import com.deanlib.lordshunter.data.entity.Report;
 import com.deanlib.ootblite.data.SharedPUtils;
 import com.deanlib.ootblite.utils.DLog;
 import com.deanlib.ootblite.utils.FormatUtils;
@@ -49,10 +52,12 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import cn.qqtheme.framework.picker.FilePicker;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
@@ -438,6 +443,84 @@ public class MainActivity extends BaseActivity {
                                 } else {
                                     PopupUtils.sendToast(R.string.data_package_exist);
                                 }
+                                break;
+                            case R.id.exportData:
+                                //导出用户数据
+                                RxPermissions rxPermissions1 = new RxPermissions(MainActivity.this);
+                                rxPermissions1.request(Manifest.permission.WRITE_EXTERNAL_STORAGE).subscribe(granted->{
+                                    if (granted){
+                                        new AlertDialog.Builder(MainActivity.this).setMessage(getString(R.string.export_data_date_,tvDate.getText().toString())).setPositiveButton(R.string.export, new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                Realm realm = Realm.getDefaultInstance();
+                                                RealmResults<Report> reports = realm.where(Report.class).between("timestamp", startTime, endTime).findAll();
+                                                if (reports == null || reports.size()==0){
+                                                    PopupUtils.sendToast(R.string.invalid_data);
+                                                }else {
+                                                    FilePicker picker = new FilePicker(MainActivity.this, FilePicker.DIRECTORY);
+                                                    picker.setOnFilePickListener(new FilePicker.OnFilePickListener() {
+                                                        @Override
+                                                        public void onFilePicked(String currentPath) {
+                                                            //realm 区分托管对象和非托管对象，托管对象及查询出的对象，自动更新，自动持久化
+                                                            //非托管对象及java new出的普通对象
+                                                            //二者可以通过Realm.copyToRealm和Realm.copyFromRealm相互转换
+                                                            //托管对象是不能直接访问成员变量的，会返回null,访问需要使用get方式，当Realm.close()的时候，托管对象失效，访问get方法会报错。
+                                                            List<Report> temp = realm.copyFromRealm(reports);
+                                                            String filepath = Persistence.exportData(temp, currentPath);
+                                                            if (filepath != null) {
+                                                                PopupUtils.sendToast(getString(R.string.export_data_success, filepath),Toast.LENGTH_LONG);
+                                                            } else {
+                                                                PopupUtils.sendToast(R.string.export_data_fail);
+                                                            }
+                                                        }
+                                                    });
+                                                    picker.show();
+                                                }
+                                            }
+                                        }).setNegativeButton(R.string.cancel,null).show();
+                                    }
+                                });
+
+                                break;
+                            case R.id.importData:
+                                //导入用户数据
+                                RxPermissions rxPermissions2 = new RxPermissions(MainActivity.this);
+                                rxPermissions2.request(Manifest.permission.READ_EXTERNAL_STORAGE).subscribe(granted->{
+                                    if (granted){
+                                        Realm realm = Realm.getDefaultInstance();
+                                        FilePicker picker = new FilePicker(MainActivity.this,FilePicker.FILE);
+                                        picker.setOnFilePickListener(new FilePicker.OnFilePickListener() {
+                                            @Override
+                                            public void onFilePicked(String currentPath) {
+                                                List<Report> reports = Persistence.importData(currentPath);
+                                                if (reports!=null && reports.size()>0){
+                                                    int insertCount = 0;
+                                                    int repetCount = 0;
+                                                    realm.beginTransaction();
+                                                    for (Report report : reports) {
+                                                        ImageInfo find = realm.where(ImageInfo.class)
+                                                                .equalTo("md5", report.getImage().getMd5())
+                                                                .findFirst();
+                                                        if (find==null) {
+//                                                                    report.setId(UUID.randomUUID().toString());
+//                                                                    report.getImage().setId(UUID.randomUUID().toString());
+                                                            realm.copyToRealm(report);
+                                                            insertCount++;
+                                                        }else {
+                                                            //重复
+                                                            repetCount++;
+                                                        }
+                                                    }
+                                                    realm.commitTransaction();
+                                                    PopupUtils.sendToast(getString(R.string.import_data_success,reports.size(),insertCount,repetCount), Toast.LENGTH_LONG);
+                                                }else {
+                                                    PopupUtils.sendToast(R.string.invalid_data);
+                                                }
+                                            }
+                                        });
+                                        picker.show();
+                                    }
+                                });
                                 break;
                             case R.id.specification:
                                 //使用说明

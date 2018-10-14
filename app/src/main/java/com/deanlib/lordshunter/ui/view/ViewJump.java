@@ -5,8 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Parcelable;
 
-import com.deanlib.lordshunter.entity.Report;
-import com.deanlib.lordshunter.service.CollectTaskService;
+import com.deanlib.lordshunter.data.entity.Report;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -1,4 +1,4 @@
-package com.deanlib.lordshunter.entity;
+package com.deanlib.lordshunter.data.entity;
 
 import android.support.annotation.NonNull;
 
@@ -40,6 +40,6 @@ public class Member implements Comparable<Member> {
 
     @Override
     public int compareTo(@NonNull Member o) {
-        return this.count>0?1:-1;
+        return this.count>o.getCount()?-1:1;
     }
 }

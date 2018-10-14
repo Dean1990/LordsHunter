@@ -1,8 +1,7 @@
 package com.deanlib.lordshunter.app;
 
 import com.deanlib.lordshunter.BuildConfig;
-import com.deanlib.lordshunter.entity.Prey;
-import com.deanlib.ootblite.data.FileUtils;
+import com.deanlib.lordshunter.data.entity.Prey;
 
 import java.io.File;
 import java.util.ArrayList;

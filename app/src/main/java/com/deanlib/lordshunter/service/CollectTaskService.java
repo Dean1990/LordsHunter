@@ -16,7 +16,7 @@ import android.support.v4.app.NotificationCompat;
 
 import com.deanlib.lordshunter.R;
 import com.deanlib.lordshunter.Utils;
-import com.deanlib.lordshunter.entity.Report;
+import com.deanlib.lordshunter.data.entity.Report;
 import com.deanlib.lordshunter.event.CollectTaskEvent;
 import com.deanlib.lordshunter.ui.view.SavaActivity;
 import com.deanlib.lordshunter.ui.view.ViewJump;
