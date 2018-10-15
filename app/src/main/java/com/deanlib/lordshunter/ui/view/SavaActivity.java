@@ -93,26 +93,8 @@ public class SavaActivity extends BaseActivity {
 
         //从通知传过来的数据
         mDataReportList = data.getParcelableArrayListExtra("reports");
-
-        RxPermissions permissions = new RxPermissions(this);
-//        todo 抓日志
-//        permissions.request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-//                .subscribe(granted -> {
-//                    if (granted) {
-//                        DLog log = DLog.getInstance();
-//                        try {
-//                            File file = FileUtils.createDir("/lordshunter");
-//                            log.openWriteLog(file.getAbsolutePath());
-//                            DLog.i("text:"+text);
-//                            DLog.i("images:"+images);
-//                            log.closeWriteLog();
-//                        } catch (Exception e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                });
-
         init();
+        RxPermissions permissions = new RxPermissions(this);
         permissions.request(Manifest.permission.READ_EXTERNAL_STORAGE)
                 .subscribe(granted -> {
                     if (granted) {

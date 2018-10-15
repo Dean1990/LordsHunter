@@ -7,16 +7,16 @@ import android.text.TextUtils;
 import android.view.KeyEvent;
 import android.view.View;
 
+import android.webkit.JsResult;
+import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.deanlib.lordshunter.R;
 import com.deanlib.ootblite.utils.DLog;
-import com.tencent.smtt.export.external.interfaces.JsResult;
-import com.tencent.smtt.sdk.WebChromeClient;
-import com.tencent.smtt.sdk.WebSettings;
-import com.tencent.smtt.sdk.WebView;
-import com.tencent.smtt.sdk.WebViewClient;
 
 import java.util.regex.Pattern;
 

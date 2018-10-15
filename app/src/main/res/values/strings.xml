@@ -70,10 +70,11 @@
     <string name="import_data">导入猎魔数据</string>
     <string name="import_data_success">检索到数据 %d 条，成功导入 %d 条，重复未导入 %d 条</string>
     <string name="import_data_fail">导入失败</string>
-    <string name="export_data_date_">导出当前数据：%s</string>
+    <string name="export_data_date_">导出当前数据：%s ，导出数据不会保存图片信息，以节省空间</string>
     <string name="export">导出</string>
     <string name="unidentification_tag">请帮我识别未能识别的图片～</string>
-    <string name="delete_data">删除数据</string>
+    <string name="delete_data">清除数据</string>
     <string name="delete_data_tag">确定要删除 %s 的数据吗?</string>
     <string name="delete_success">删除成功</string>
+    <string name="list">列表</string>
 </resources>

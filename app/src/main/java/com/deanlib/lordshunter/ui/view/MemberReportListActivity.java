@@ -66,8 +66,7 @@ public class MemberReportListActivity extends BaseActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-//                ViewJump.toReportDetail(MemberReportListActivity.this, mMemberList.get((int) id).getId());
-                //todo
+                ViewJump.toReportList(MemberReportListActivity.this,mMemberList.get((int)id).getGroup(), mMemberList.get((int) id).getName(),startTime,endTime);
             }
         });
 

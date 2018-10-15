@@ -60,4 +60,21 @@
     <string name="specification">使用說明</string>
     <string name="data_empty">沒有數據~</string>
     <string name="data_not_save">上次采集數據未保存，是否現在保存</string>
+
+    <string name="equivalent_lv1">等效統計(Lv.1)</string>
+    <string name="esc_order">升序</string>
+    <string name="desc_order">降序</string>
+    <string name="export_data">導出獵魔數據</string>
+    <string name="export_data_success">導出成功，數據文件：%s</string>
+    <string name="export_data_fail">導出失敗</string>
+    <string name="import_data">導入獵魔數據</string>
+    <string name="import_data_success">檢索到數據 %d 條，成功導入 %d 條，重復未導入 %d 條</string>
+    <string name="import_data_fail">導入失敗</string>
+    <string name="export_data_date_">導出當前數據：%s ，導出數據不會保存圖片信息，以節省空間</string>
+    <string name="export">導出</string>
+    <string name="unidentification_tag">請幫我識別未能識別的圖片～</string>
+    <string name="delete_data">清除數據</string>
+    <string name="delete_data_tag">確定要刪除 %s 的數據嗎?</string>
+    <string name="delete_success">刪除成功</string>
+    <string name="list">列表</string>
 </resources>

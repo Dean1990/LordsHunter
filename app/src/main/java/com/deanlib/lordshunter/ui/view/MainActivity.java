@@ -106,7 +106,7 @@ public class MainActivity extends BaseActivity {
             OotbConfig.task().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    ViewJump.toWebView(MainActivity.this, "http://file2001552359.nos-eastchina1.126.net/lordshunter/readme_" + Constant.OCR_LANGUAGE + "/readme.html");
+                    ViewJump.toWebView(MainActivity.this, Constant.README_URL_HEADER + "readme_"+Constant.OCR_LANGUAGE+".html");
                 }
             },2000);
         }
@@ -547,6 +547,12 @@ public class MainActivity extends BaseActivity {
                                                 realm1.executeTransaction(new Realm.Transaction() {
                                                     @Override
                                                     public void execute(Realm realm) {
+                                                        for (Report report : reports){
+                                                            ImageInfo imageInfo = realm.where(ImageInfo.class)
+                                                                    .equalTo("md5", report.getImage().getMd5())
+                                                                    .findFirst();
+                                                            imageInfo.deleteFromRealm();
+                                                        }
                                                         reports.deleteAllFromRealm();
                                                         init();
                                                         loadData();
@@ -559,7 +565,7 @@ public class MainActivity extends BaseActivity {
                             case R.id.specification:
                                 //使用说明
                                 //地址
-                                ViewJump.toWebView(MainActivity.this, "http://file2001552359.nos-eastchina1.126.net/lordshunter/readme_" + Constant.OCR_LANGUAGE + "/readme.html");
+                                ViewJump.toWebView(MainActivity.this, Constant.README_URL_HEADER + "readme_"+Constant.OCR_LANGUAGE+".html");
                                 break;
                             case R.id.shareApp:
                                 //分享应用

@@ -18,8 +18,10 @@ public class ViewJump {
         activity.startActivity(new Intent(activity,MainActivity.class));
     }
 
-    public static void toReportList(Activity activity,long startTime,long endTime){
+    public static void toReportList(Activity activity,String group,String name,long startTime,long endTime){
         Intent intent = new Intent(activity,ReportListActivity.class);
+        intent.putExtra("group",group);
+        intent.putExtra("name",name);
         intent.putExtra("startTime",startTime);
         intent.putExtra("endTime",endTime);
         activity.startActivity(intent);

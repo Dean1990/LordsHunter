@@ -118,31 +118,43 @@ public class Utils {
         if (list == null || list.size() == 0)
             return null;
         Realm realm = Realm.getDefaultInstance();
+        //对同一批次(此时未保存到数据库)的MD5保存，用以判断同一批次重复图片的问题
+        Map<String,Report> md5Map = new HashMap<>();
         for (Report report : list) {
             DLog.d(report.toString());
             try {
                 String md5 = MD5.md5(new File(report.getImage().getUri()));
                 DLog.d("md5:"+md5);
                 report.getImage().setMd5(md5);
-                ImageInfo find = realm.where(ImageInfo.class)
-                        .equalTo("md5", md5)
-                        .findFirst();
+                //判断重复性
+                //本批次判断
+                if(md5Map.containsKey(md5)){
+                    //重复
+                    report.setStatus(Report.STATUS_REPET);
+                }else {
+                    md5Map.put(md5, report);
+                    //数据库判断
+                    ImageInfo find = realm.where(ImageInfo.class)
+                            .equalTo("md5", md5)
+                            .findFirst();
 
-                if (find != null) {
-                    DLog.d(find.toString());
-                    //排除日期相同的情况，是数据库中存在的 ，这种情况一般是用户操作不当
-                    if (find.getDataTime().equals(report.getDate() + " " + report.getTime())) {
-                        report.setStatus(Report.STATUS_EXIST);
+                    if (find != null) {
+                        DLog.d(find.toString());
+                        //排除日期相同的情况，是数据库中存在的 ，这种情况一般是用户操作不当
+                        if (find.getDataTime().equals(report.getDate() + " " + report.getTime())) {
+                            report.setStatus(Report.STATUS_EXIST);
+                        } else {
+                            report.setStatus(Report.STATUS_REPET);
+                        }
                     } else {
-                        report.setStatus(Report.STATUS_REPET);
+                        report.setStatus(Report.STATUS_NEW);
                     }
-                } else {
-                    report.setStatus(Report.STATUS_NEW);
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
         }
+        md5Map = null;
         return list;
     }
 
@@ -265,7 +277,9 @@ public class Utils {
     public static String getDiskCachePath(Context context) {
         if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
                 || !Environment.isExternalStorageRemovable()) {
-            return context.getExternalCacheDir().getPath();
+            if (context.getExternalCacheDir() != null)
+                return context.getExternalCacheDir().getPath();
+            else return context.getCacheDir().getPath();
         } else {
             return context.getCacheDir().getPath();
         }
