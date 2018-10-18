@@ -193,7 +193,7 @@ public class SavaActivity extends BaseActivity {
                 //保存数据到数据库
                 int unidentificationPosition = -1;//未识别的list的位置
                 for (int i = 0;i < mReportList.size();i++) {
-                    if (mReportList.get(i).getImage().getPreyLevel() == 0 || mReportList.get(i).getImage().getPreyName() == null) {
+                    if (mReportList.get(i).getStatus() == Report.STATUS_NEW && (mReportList.get(i).getImage().getPreyLevel() == 0 || mReportList.get(i).getImage().getPreyName() == null)) {
                         unidentificationPosition = i;
                         break;
                     }
