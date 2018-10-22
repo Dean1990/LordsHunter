@@ -77,4 +77,7 @@
     <string name="delete_data_tag">確定要刪除 %s 的數據嗎?</string>
     <string name="delete_success">刪除成功</string>
     <string name="list">列表</string>
+
+    <string name="delete">删除</string>
+    <string name="delete_item_tag">確定要刪除該條嗎</string>
 </resources>

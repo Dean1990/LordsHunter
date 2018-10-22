@@ -18,9 +18,12 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.ListView;
 
 
+import com.baoyz.swipemenulistview.SwipeMenu;
+import com.baoyz.swipemenulistview.SwipeMenuCreator;
+import com.baoyz.swipemenulistview.SwipeMenuItem;
+import com.baoyz.swipemenulistview.SwipeMenuListView;
 import com.deanlib.lordshunter.R;
 import com.deanlib.lordshunter.Utils;
 import com.deanlib.lordshunter.app.Constant;
@@ -29,6 +32,7 @@ import com.deanlib.lordshunter.event.CollectTaskEvent;
 import com.deanlib.lordshunter.service.CollectTaskService;
 import com.deanlib.lordshunter.ui.adapter.ReportAdapter;
 import com.deanlib.ootblite.data.SharedPUtils;
+import com.deanlib.ootblite.utils.DeviceUtils;
 import com.deanlib.ootblite.utils.PopupUtils;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
@@ -59,9 +63,9 @@ public class SavaActivity extends BaseActivity {
     String text;
     ArrayList<Uri> images;
     @BindView(R.id.listView)
-    ListView listView;
+    SwipeMenuListView listView;
     List<Report> mReportList;
-    List<Report> mDataReportList;
+    List<Report> mDataReportList;//从通知传过来的数据
     ReportAdapter mReportAdapter;
     @BindView(R.id.btnSave)
     Button btnSave;
@@ -114,6 +118,36 @@ public class SavaActivity extends BaseActivity {
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 mClickPosition = (int) id;
                 ViewJump.toReportDetail(SavaActivity.this, mReportList.get(mClickPosition));
+            }
+        });
+        listView.setMenuCreator(new SwipeMenuCreator() {
+            @Override
+            public void create(SwipeMenu menu) {
+                SwipeMenuItem deleteItem = new SwipeMenuItem(SavaActivity.this);
+                deleteItem.setBackground(R.color.colorAccent);
+                deleteItem.setWidth(DeviceUtils.dp2px(100));
+                deleteItem.setTitle(R.string.delete);
+                deleteItem.setTitleSize(20);
+                deleteItem.setTitleColor(getResources().getColor(R.color.textWhite));
+                menu.addMenuItem(deleteItem);
+            }
+        });
+        listView.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
+                switch (index){
+                    case 0:
+                        new AlertDialog.Builder(SavaActivity.this).setTitle(R.string.attention)
+                                .setMessage(R.string.delete_item_tag).setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                mReportList.remove(position);
+                                mReportAdapter.notifyDataSetChanged();
+                            }
+                        }).setNegativeButton(R.string.cancel,null).show();
+                        break;
+                }
+                return true;// false : close the menu; true : not close the menu
             }
         });
     }

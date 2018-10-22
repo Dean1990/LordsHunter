@@ -6,6 +6,8 @@ import android.support.annotation.Nullable;
 import android.widget.TextView;
 
 import com.deanlib.lordshunter.R;
+import com.deanlib.ootblite.data.SharedPUtils;
+import com.deanlib.ootblite.utils.FormatUtils;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
@@ -45,6 +47,11 @@ public class AdActivity extends BaseActivity {
                 .build();
         adView.loadAd(adRequest);
         cdt.start();
+
+        SharedPUtils sharedPUtils = new SharedPUtils();
+        sharedPUtils.setCache("ad_show_date",
+                FormatUtils.convertDateTimestampToString(System.currentTimeMillis(),FormatUtils.DATE_FORMAT_YMD));
+
 
     }
 

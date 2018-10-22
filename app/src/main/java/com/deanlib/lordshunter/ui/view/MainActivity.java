@@ -149,7 +149,15 @@ public class MainActivity extends BaseActivity {
             }).show();
         }
 
-        //startActivity(new Intent(this,AdActivity.class));
+        OotbConfig.task().post(new Runnable() {
+            @Override
+            public void run() {
+                //广告
+                String adShowDate = sharedPUtils.getCache("ad_show_date");
+                if (!FormatUtils.convertDateTimestampToString(System.currentTimeMillis(),FormatUtils.DATE_FORMAT_YMD).equals(adShowDate))
+                    startActivity(new Intent(MainActivity.this,AdActivity.class));
+            }
+        });
 
     }
 
@@ -498,6 +506,7 @@ public class MainActivity extends BaseActivity {
                                     if (granted){
                                         Realm realm = Realm.getDefaultInstance();
                                         FilePicker picker = new FilePicker(MainActivity.this,FilePicker.FILE);
+                                        picker.setAllowExtensions(new String[]{"lhdata"});
                                         picker.setFillScreen(true);
                                         picker.setOnFilePickListener(new FilePicker.OnFilePickListener() {
                                             @Override

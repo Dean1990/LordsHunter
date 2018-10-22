@@ -11,6 +11,8 @@ import com.deanlib.lordshunter.app.Constant;
 import com.deanlib.lordshunter.data.entity.ImageInfo;
 import com.deanlib.lordshunter.data.entity.Prey;
 import com.deanlib.lordshunter.data.entity.Report;
+import com.deanlib.ootblite.data.FileUtils;
+import com.deanlib.ootblite.data.ImageUtils;
 import com.deanlib.ootblite.utils.DLog;
 import com.deanlib.ootblite.utils.MD5;
 import com.googlecode.tesseract.android.TessBaseAPI;
@@ -21,6 +23,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -179,16 +182,35 @@ public class Utils {
             float h = bitmap.getHeight();
             bitmap = Bitmap.createBitmap(bitmap, (int) (w * 0.1), (int) (h * 0.12), (int) (w * 0.4), (int) (h * 0.05), null, false);
 
+//            ImageUtils.saveImageFile(bitmap, FileUtils.createDir("_abc"), System.currentTimeMillis() + ".png", new FileUtils.FileCallback() {
+//                @Override
+//                public void onSuccess(File file) {
+//
+//                }
+//
+//                @Override
+//                public void onFail(Exception e) {
+//
+//                }
+//            });
+
             tess.setImage(bitmap);
             String result = tess.getUTF8Text();
             bitmap = null;
             DLog.d(result);
             //清洗信息
-            Pattern pattern = Pattern.compile("[\\S\\s]*(\\d)[ ]*(\\S+)");
+            String[] lvLikes= {"1JjLlIi","2Zz","3B","4HqPpg","5Ssb"};//识别存在误差，将相识，可能被识别成的字符列举出来
+            //[\S\s]*([1JjLlIi2Zz3B4HqPpg5Ssb])[ ]*(\S+)
+            Pattern pattern = Pattern.compile("[\\S\\s]*("+ Arrays.toString(lvLikes).replaceAll("[,\\s]","")+")[ ]*(\\S+)");
             Matcher matcher = pattern.matcher(result);
             if (matcher.find()) {
                 report.getImage().setPreyName(correctPreyName(matcher.group(2)));
-                report.getImage().setPreyLevel(Integer.valueOf(matcher.group(1)));
+                for (int i = 0;i<lvLikes.length;i++){
+                    if(lvLikes[i].contains(matcher.group(1))){
+                        report.getImage().setPreyLevel(i+1);
+                        break;
+                    }
+                }
                 report.getImage().setKill(true);//默认 true
             }
         }
