@@ -73,7 +73,9 @@ public class MainActivity extends BaseActivity {
     int mSpanPosition = 2;//默认 周
     long startTime, endTime;
     long grain = 60 * 60 * 1000 * 24;//颗粒度 默认 周的颗粒度是 一天
-    SimpleDateFormat mDateFormat3 = new SimpleDateFormat("yyyy/M/d");
+    SimpleDateFormat mDateFormat5 = new SimpleDateFormat("yyyy/MM");
+    SimpleDateFormat mDateFormat4 = new SimpleDateFormat("MM/dd");
+    SimpleDateFormat mDateFormat3 = new SimpleDateFormat("yyyy/MM/dd");
     SimpleDateFormat mDateFormat2 = new SimpleDateFormat("M");
     SimpleDateFormat mDateFormat1 = new SimpleDateFormat("d");
     SimpleDateFormat mDateFormat0 = new SimpleDateFormat("H:mm");
@@ -186,41 +188,42 @@ public class MainActivity extends BaseActivity {
                 mCalendar.set(year, 0, 1);
                 startTime = mCalendar.getTimeInMillis();
                 mCalendar.add(Calendar.YEAR, 1);
-                endTime = mCalendar.getTimeInMillis();
+                endTime = mCalendar.getTimeInMillis()-1;
                 grain = 60 * 60 * 1000 * 24 * 30L;
+                tvDate.setText(mDateFormat5.format(new Date(startTime)) + " - " + mDateFormat5.format(new Date(endTime)));
                 break;
             case 1:
                 //月
                 mCalendar.set(year, month, 1);
                 startTime = mCalendar.getTimeInMillis();
                 mCalendar.add(Calendar.MONTH, 1);
-                mCalendar.add(Calendar.DATE, -1);
-                endTime = mCalendar.getTimeInMillis();
+                endTime = mCalendar.getTimeInMillis() - 1;
                 grain = 60 * 60 * 1000 * 24L;
+                tvDate.setText(mDateFormat4.format(new Date(startTime)) + " - " + mDateFormat4.format(new Date(endTime)));
                 break;
             case 2:
                 //周
                 mCalendar.set(year, month, date);
                 mCalendar.add(Calendar.DATE, -week + 1);
                 startTime = mCalendar.getTimeInMillis();
-                mCalendar.add(Calendar.DATE, 6);
-                endTime = mCalendar.getTimeInMillis();
+                mCalendar.add(Calendar.DATE, 7);
+                endTime = mCalendar.getTimeInMillis()-1;
                 grain = 60 * 60 * 1000 * 24L;
+                tvDate.setText(mDateFormat4.format(new Date(startTime)) + " - " + mDateFormat4.format(new Date(endTime)));
                 break;
             case 3:
                 //日
                 mCalendar.set(year, month, date, 0, 0, 0);
                 startTime = mCalendar.getTimeInMillis();
                 mCalendar.add(Calendar.DATE, 1);
-                endTime = mCalendar.getTimeInMillis();
+                endTime = mCalendar.getTimeInMillis()-1;
                 grain = 60 * 60 * 1000L;
+                tvDate.setText(mDateFormat3.format(new Date(startTime)));
                 break;
         }
 
         //还原成初始日期
         mCalendar.set(year, month, date, 0, 0, 0);
-
-        tvDate.setText(mDateFormat3.format(new Date(startTime)) + (mSpanPosition != 3 ? (" - " + mDateFormat3.format(new Date(endTime))) : ""));
 
         scrollViewContainer.removeAllViews();
         lineChart = null;
