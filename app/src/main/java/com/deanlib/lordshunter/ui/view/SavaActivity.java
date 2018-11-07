@@ -200,10 +200,15 @@ public class SavaActivity extends BaseActivity {
         } else if (!TextUtils.isEmpty(text) && images != null && images.size() > 0) {
             File traineddata = Constant.APP_FILE_OCR_TRAINEDDATA;
             if (traineddata.exists()) {
-                Intent intent = new Intent(this, CollectTaskService.class);
-                intent.putExtra("text", text);
-                intent.putExtra("images", images);
-                startService(intent);
+                RxPermissions rxPermissions = new RxPermissions(this);
+                rxPermissions.request(Manifest.permission.FOREGROUND_SERVICE).subscribe(granted->{
+                    if (granted){
+                        Intent intent = new Intent(this, CollectTaskService.class);
+                        intent.putExtra("text", text);
+                        intent.putExtra("images", images);
+                        startService(intent);
+                    }
+                });
             } else {
                 //不存在，去下载
                 PopupUtils.sendToast(R.string.data_package_not_exist);

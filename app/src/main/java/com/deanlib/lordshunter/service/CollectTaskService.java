@@ -38,6 +38,9 @@ import io.reactivex.schedulers.Schedulers;
 public class CollectTaskService extends Service {
 
     NotificationCompat.Builder mNotificationBuilder;
+    String CHANNEL_ID = "com.deanlib.lordshunter.service";
+    String CHANNEL_NAME = "Service";
+
     @Nullable
     @Override
     public IBinder onBind(Intent intent) {
@@ -46,17 +49,17 @@ public class CollectTaskService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        if (intent!=null) {
+        if (intent != null) {
             DLog.d("onStartCommand");
 
             int notifiyId = (int) System.currentTimeMillis();
-//        NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-//        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//            NotificationChannel channel = new NotificationChannel("1", "Notifiy", NotificationManager.IMPORTANCE_DEFAULT);
-//            mNotificationManager.createNotificationChannel(channel);
-//        }
+            NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                NotificationChannel channel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+                mNotificationManager.createNotificationChannel(channel);
+            }
 
-            mNotificationBuilder = new NotificationCompat.Builder(CollectTaskService.this, "1");
+            mNotificationBuilder = new NotificationCompat.Builder(CollectTaskService.this, CHANNEL_ID);
             mNotificationBuilder.setSmallIcon(R.mipmap.notify_icon);
             //builder.setSmallIcon(android.os.Build.VERSION.SDK_INT>20?R.drawable.ic_launcher_round:R.drawable.ic_launcher);
             //builder.setColor(context.getResources().getColor(R.color.icon_blue));
@@ -121,7 +124,7 @@ public class CollectTaskService extends Service {
                                     int notifiyId = (int) System.currentTimeMillis();
                                     NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                        NotificationChannel channel = new NotificationChannel("1", "Notifiy", NotificationManager.IMPORTANCE_DEFAULT);
+                                        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
                                         mNotificationManager.createNotificationChannel(channel);
                                     }
 
