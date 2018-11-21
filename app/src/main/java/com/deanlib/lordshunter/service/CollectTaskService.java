@@ -18,7 +18,7 @@ import com.deanlib.lordshunter.R;
 import com.deanlib.lordshunter.Utils;
 import com.deanlib.lordshunter.data.entity.Report;
 import com.deanlib.lordshunter.event.CollectTaskEvent;
-import com.deanlib.lordshunter.ui.view.SavaActivity;
+import com.deanlib.lordshunter.ui.view.SaveActivity;
 import com.deanlib.lordshunter.ui.view.ViewJump;
 import com.deanlib.ootblite.data.SharedPUtils;
 import com.deanlib.ootblite.utils.DLog;
@@ -116,9 +116,9 @@ public class CollectTaskService extends Service {
 
                                 EventBus.getDefault().post(new CollectTaskEvent(CollectTaskEvent.ACTION_UPDATE_UI, reports));
 
-                                DLog.d("SavaActivity.isRunForeground ：" + SavaActivity.isRunForeground);
+                                DLog.d("SavaActivity.isRunForeground ：" + SaveActivity.isRunForeground);
                                 //如果不是运行在前台的，发通知
-                                if (!SavaActivity.isRunForeground) {
+                                if (!SaveActivity.isRunForeground) {
                                     DLog.d("send notification");
                                     //发通知
                                     int notifiyId = (int) System.currentTimeMillis();

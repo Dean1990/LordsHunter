@@ -86,9 +86,6 @@ public class MainActivity extends BaseActivity {
     PieChart pieChart;
 
     File mTraineddata;
-    AlertDialog mDownloadDialog;
-    ProgressBar mDownloadProgressBar;
-    TextView tvProgressInfo;
     Calendar mCalendar;
     long selectTime;//选中日期
 
@@ -127,7 +124,7 @@ public class MainActivity extends BaseActivity {
                                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        checkWifi2DownloadDataPackage();
+                                        ViewJump.toSettings(MainActivity.this,true);
                                     }
                                 }).setNegativeButton(R.string.cancel, null).show();
                     }
@@ -252,7 +249,7 @@ public class MainActivity extends BaseActivity {
             long killCount = realm.where(Report.class).between("timestamp", start, end).count();
             kills.add(new Entry(x, killCount));
 
-            long memberCount = realm.where(Report.class).between("timestamp", start, end).distinct("name").count();
+            long memberCount = realm.where(Report.class).between("timestamp", start, end).distinct("name","group").count();
             members.add(new Entry(x, memberCount));
 
             long euivalentCount = 0;
@@ -415,7 +412,7 @@ public class MainActivity extends BaseActivity {
                 break;
             case R.id.btnShareData:
                 Realm realm = Realm.getDefaultInstance();
-                long memberNum = realm.where(Report.class).between("timestamp", startTime, endTime).distinct("name").count();
+                long memberNum = realm.where(Report.class).between("timestamp", startTime, endTime).distinct("name","group").count();
                 if (memberNum != 0) {
                     StringBuilder data = new StringBuilder(getString(R.string.share_data_template_1, tvDate.getText().toString(), memberNum) + ",");
                     long equalLv1 = 0;
@@ -446,8 +443,8 @@ public class MainActivity extends BaseActivity {
                 ViewJump.toMemberReportList(this, startTime, endTime);
                 break;
             case R.id.layoutSettings:
-
-                PopupMenu menu = new PopupMenu(this, view);
+                ViewJump.toSettings(this);
+                /*PopupMenu menu = new PopupMenu(this, view);
                 menu.getMenuInflater().inflate(R.menu.menu_settings, menu.getMenu());
                 menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
@@ -592,105 +589,14 @@ public class MainActivity extends BaseActivity {
                         return true;
                     }
                 });
-                menu.show();
+                menu.show();*/
 
                 break;
         }
 
     }
 
-    private void checkWifi2DownloadDataPackage() {
-        if (NetworkManager.getAPNType(this) != NetworkManager.TYPE_WIFI) {
-            new AlertDialog.Builder(this).setTitle(R.string.attention)
-                    .setMessage(R.string.attention_not_wifi)
-                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            downloadDataPackage();
-                        }
-                    }).setNegativeButton(R.string.cancel, null)
-                    .show();
-        } else {
-            downloadDataPackage();
-        }
-    }
 
-    private void downloadDataPackage() {
-        FileDownloader.setup(MainActivity.this);
-        FileDownloader.getImpl().create("http://file2001552359.nos-eastchina1.126.net/tessdata/" + Constant.OCR_LANGUAGE + ".traineddata")
-                .setPath(mTraineddata.getAbsolutePath()).setListener(new FileDownloadListener() {
-            @Override
-            protected void pending(BaseDownloadTask task, int soFarBytes, int totalBytes) {
-                DLog.d("FileDownloadListener.pending");
-                View progressView = View.inflate(MainActivity.this, R.layout.layout_progress2, null);
-                mDownloadProgressBar = progressView.findViewById(R.id.progress);
-                tvProgressInfo = progressView.findViewById(R.id.tvProgressInfo);
-                mDownloadDialog = new AlertDialog.Builder(MainActivity.this)
-                        .setTitle(getString(R.string.download_data_package)).setView(progressView)
-                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                //取消
-                                FileDownloader.getImpl().pauseAll();
-
-                                dialog.dismiss();
-                            }
-                        }).setCancelable(false).show();
-            }
-
-            @Override
-            protected void progress(BaseDownloadTask task, int soFarBytes, int totalBytes) {
-                DLog.d("FileDownloadListener.progress ->" + soFarBytes + "   total:" + totalBytes);
-                if (mDownloadDialog != null && mDownloadDialog.isShowing()
-                        && mDownloadProgressBar != null && tvProgressInfo != null) {
-                    tvProgressInfo.setText(getString(R.string.doalowning_info_,
-                            FormatUtils.formatFileSize(totalBytes),
-                            FormatUtils.formatFileSize(soFarBytes),
-                            task.getSpeed() + "KB/s"));
-                    mDownloadProgressBar.setMax(totalBytes);
-                    mDownloadProgressBar.setProgress(soFarBytes);
-                }
-            }
-
-            @Override
-            protected void completed(BaseDownloadTask task) {
-                DLog.d("FileDownloadListener.completed");
-                FileDownloader.getImpl().clearAllTaskData();
-                if (mDownloadDialog != null && mDownloadDialog.isShowing()) {
-                    PopupUtils.sendToast(R.string.download_completed);
-                    mDownloadDialog.dismiss();
-                }
-            }
-
-            @Override
-            protected void paused(BaseDownloadTask task, int soFarBytes, int totalBytes) {
-                DLog.d("FileDownloadListener.paused");
-                if (mTraineddata.exists()) {
-                    mTraineddata.delete();
-                }
-                FileDownloader.getImpl().clearAllTaskData();
-            }
-
-            @Override
-            protected void error(BaseDownloadTask task, Throwable e) {
-                e.printStackTrace();
-                DLog.d("FileDownloadListener.error");
-                if (mTraineddata.exists()) {
-                    mTraineddata.delete();
-                }
-                FileDownloader.getImpl().clearAllTaskData();
-                PopupUtils.sendToast(R.string.download_error);
-                if (mDownloadDialog != null && mDownloadDialog.isShowing()) {
-                    mDownloadDialog.dismiss();
-                }
-            }
-
-            @Override
-            protected void warn(BaseDownloadTask task) {
-                DLog.d("FileDownloadListener.warn");
-            }
-        }).start();
-    }
 
 
 }

@@ -1,6 +1,7 @@
 package com.deanlib.lordshunter.app;
 
 import com.deanlib.lordshunter.BuildConfig;
+import com.deanlib.lordshunter.data.entity.Member;
 import com.deanlib.lordshunter.data.entity.Prey;
 
 import java.io.File;
@@ -21,5 +22,7 @@ public class Constant {
     public static File APP_FILE_OCR_TRAINEDDATA;//字库文件
     public static String OCR_LANGUAGE;//OCR 语言
     public static String README_URL_HEADER = "http://deanlib.com/app/lords_hunter/";//使用说明的地址前部分
+
+    public static List<Member> hideMemberList;//隐藏成员列表
 
 }

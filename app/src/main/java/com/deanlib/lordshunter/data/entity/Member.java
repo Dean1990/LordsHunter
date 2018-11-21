@@ -13,6 +13,7 @@ public class Member implements Comparable<Member> {
     String name;
     long count;
     String group;
+    boolean isHide;
 
     public String getGroup() {
         return group;
@@ -36,6 +37,14 @@ public class Member implements Comparable<Member> {
 
     public void setCount(long count) {
         this.count = count;
+    }
+
+    public boolean isHide() {
+        return isHide;
+    }
+
+    public void setHide(boolean hide) {
+        isHide = hide;
     }
 
     @Override

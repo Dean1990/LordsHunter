@@ -56,7 +56,7 @@ import io.realm.Realm;
  * @author dean
  * @time 2018/9/4 下午5:26
  */
-public class SavaActivity extends BaseActivity {
+public class SaveActivity extends BaseActivity {
 
     public static boolean isRunForeground = false;
 
@@ -76,7 +76,7 @@ public class SavaActivity extends BaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sava);
+        setContentView(R.layout.activity_save);
         ButterKnife.bind(this);
 
         getData(getIntent());
@@ -117,13 +117,13 @@ public class SavaActivity extends BaseActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 mClickPosition = (int) id;
-                ViewJump.toReportDetail(SavaActivity.this, mReportList.get(mClickPosition));
+                ViewJump.toReportDetail(SaveActivity.this, mReportList.get(mClickPosition));
             }
         });
         listView.setMenuCreator(new SwipeMenuCreator() {
             @Override
             public void create(SwipeMenu menu) {
-                SwipeMenuItem deleteItem = new SwipeMenuItem(SavaActivity.this);
+                SwipeMenuItem deleteItem = new SwipeMenuItem(SaveActivity.this);
                 deleteItem.setBackground(R.color.colorAccent);
                 deleteItem.setWidth(DeviceUtils.dp2px(100));
                 deleteItem.setTitle(R.string.delete);
@@ -137,7 +137,7 @@ public class SavaActivity extends BaseActivity {
             public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
                 switch (index){
                     case 0:
-                        new AlertDialog.Builder(SavaActivity.this).setTitle(R.string.attention)
+                        new AlertDialog.Builder(SaveActivity.this).setTitle(R.string.attention)
                                 .setMessage(R.string.delete_item_tag).setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
@@ -246,7 +246,7 @@ public class SavaActivity extends BaseActivity {
                             .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                                 @Override
                                 public void onClick(DialogInterface dialog, int which) {
-                                    ProgressDialog dialog1 = ProgressDialog.show(SavaActivity.this, "", getString(R.string.save_data));
+                                    ProgressDialog dialog1 = ProgressDialog.show(SaveActivity.this, "", getString(R.string.save_data));
                                     Realm realm = Realm.getDefaultInstance();
                                     realm.executeTransaction(new Realm.Transaction() {
                                         @Override
@@ -262,7 +262,7 @@ public class SavaActivity extends BaseActivity {
                                     });
                                     dialog1.dismiss();
                                     PopupUtils.sendToast(R.string.save_success);
-                                    ViewJump.toMain(SavaActivity.this);
+                                    ViewJump.toMain(SaveActivity.this);
                                     finish();
                                 }
                             }).setNegativeButton(R.string.cancel, null).show();

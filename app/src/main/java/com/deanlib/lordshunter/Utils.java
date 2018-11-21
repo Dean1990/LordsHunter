@@ -9,6 +9,7 @@ import android.text.TextUtils;
 
 import com.deanlib.lordshunter.app.Constant;
 import com.deanlib.lordshunter.data.entity.ImageInfo;
+import com.deanlib.lordshunter.data.entity.Member;
 import com.deanlib.lordshunter.data.entity.Prey;
 import com.deanlib.lordshunter.data.entity.Report;
 import com.deanlib.ootblite.data.FileUtils;
@@ -305,6 +306,24 @@ public class Utils {
         } else {
             return context.getCacheDir().getPath();
         }
+    }
+
+    /**
+     * 筛选成员 隐藏与否
+     * @param member
+     * @return
+     */
+    public static Member memberFiler(Member member) {
+        member.setHide(false);
+        if (Constant.hideMemberList!=null)
+            for (Member m : Constant.hideMemberList) {
+                if (m.getName().equals(member.getName())
+                        && m.getGroup().equals(member.getGroup())) {
+                    member.setHide(true);
+                    break;
+                }
+            }
+        return member;
     }
 
 }

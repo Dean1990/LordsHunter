@@ -48,7 +48,7 @@ public class ViewJump {
     public static Intent getSaveIntent(Context context, List<Report> reports){
         Intent intent = new Intent();
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.setClass(context, SavaActivity.class);
+        intent.setClass(context, SaveActivity.class);
         intent.putParcelableArrayListExtra("reports", (ArrayList<? extends Parcelable>) reports);
         return intent;
     }
@@ -57,6 +57,21 @@ public class ViewJump {
         Intent intent = new Intent(activity,MemberReportListActivity.class);
         intent.putExtra("startTime",startTime);
         intent.putExtra("endTime",endTime);
+        activity.startActivity(intent);
+    }
+
+    public static void toSettings(Activity activity){
+        toSettings(activity,false);
+    }
+
+    public static void toSettings(Activity activity,boolean autoDownloadOCRData){
+        Intent intent = new Intent(activity,SettingsActivity.class);
+        intent.putExtra("autoDownloadOCRData",autoDownloadOCRData);
+        activity.startActivity(intent);
+    }
+
+    public static void toMemberManage(Activity activity){
+        Intent intent = new Intent(activity,MemberManageActivity.class);
         activity.startActivity(intent);
     }
 }

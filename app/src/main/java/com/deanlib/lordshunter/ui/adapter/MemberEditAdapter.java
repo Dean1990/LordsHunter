@@ -3,6 +3,9 @@ package com.deanlib.lordshunter.ui.adapter;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -14,22 +17,17 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class MemberReportAdapter extends BaseAdapter {
+public class MemberEditAdapter extends BaseAdapter {
 
     List<Member> mMemberList;
-    boolean isShow;
 
-    public MemberReportAdapter(List<Member> mMemberList) {
+    public MemberEditAdapter(List<Member> mMemberList) {
         this.mMemberList = mMemberList;
     }
 
     @Override
     public int getCount() {
         return mMemberList.size();
-    }
-
-    public void setShowHided(boolean isShow){
-        this.isShow = isShow;
     }
 
     @Override
@@ -46,7 +44,7 @@ public class MemberReportAdapter extends BaseAdapter {
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
         if (convertView == null) {
-            convertView = View.inflate(parent.getContext(), R.layout.layout_member_report_item, null);
+            convertView = View.inflate(parent.getContext(), R.layout.layout_member_item, null);
             holder = new ViewHolder(convertView);
             convertView.setTag(holder);
         }else {
@@ -55,21 +53,26 @@ public class MemberReportAdapter extends BaseAdapter {
 
         holder.tvName.setText(mMemberList.get(position).getName());
         holder.tvGroup.setText(mMemberList.get(position).getGroup());
-        holder.tvCount.setText(mMemberList.get(position).getCount()+"");
+        holder.checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
 
-        if (mMemberList.get(position).isHide())
-            holder.layoutView.setVisibility(View.GONE);
+            }
+        });
+        holder.imgState.setImageResource(mMemberList.get(position).isHide()?R.drawable.hide:R.drawable.show);
 
         return convertView;
     }
 
     static class ViewHolder {
+        @BindView(R.id.checkbox)
+        CheckBox checkbox;
         @BindView(R.id.tvName)
         TextView tvName;
         @BindView(R.id.tvGroup)
         TextView tvGroup;
-        @BindView(R.id.tvCount)
-        TextView tvCount;
+        @BindView(R.id.imgState)
+        ImageView imgState;
         @BindView(R.id.layoutView)
         LinearLayout layoutView;
 

@@ -21,7 +21,7 @@
         <activity android:name=".ui.view.AdActivity"
             android:screenOrientation="portrait"
             />
-        <activity android:name=".ui.view.SavaActivity"
+        <activity android:name=".ui.view.SaveActivity"
             android:screenOrientation="portrait"
             android:launchMode="singleInstance"
             >
@@ -50,6 +50,12 @@
             android:screenOrientation="portrait"
             />
         <activity android:name=".ui.view.MemberReportListActivity"
+            android:screenOrientation="portrait"
+            />
+        <activity android:name=".ui.view.SettingsActivity"
+            android:screenOrientation="portrait"
+            />
+        <activity android:name=".ui.view.MemberManageActivity"
             android:screenOrientation="portrait"
             />
 
