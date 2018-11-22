@@ -41,6 +41,16 @@ public class MemberEditAdapter extends BaseAdapter {
     }
 
     @Override
+    public int getViewTypeCount() {
+        return 2;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return mMemberList.get(position).isHide()?Member.STATE_HIDE:Member.STATE_SHOW;
+    }
+
+    @Override
     public View getView(int position, View convertView, ViewGroup parent) {
         ViewHolder holder;
         if (convertView == null) {
@@ -56,10 +66,18 @@ public class MemberEditAdapter extends BaseAdapter {
         holder.checkbox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-
+                mMemberList.get(position).setChecked(isChecked);
             }
         });
         holder.imgState.setImageResource(mMemberList.get(position).isHide()?R.drawable.hide:R.drawable.show);
+
+        if (mMemberList.get(position).isHide()){
+            holder.tvName.setTextColor(parent.getContext().getResources().getColor(R.color.textGray));
+            holder.tvGroup.setTextColor(parent.getContext().getResources().getColor(R.color.textGrayTint));
+        }else {
+            holder.tvName.setTextColor(parent.getContext().getResources().getColor(R.color.textBlack));
+            holder.tvGroup.setTextColor(parent.getContext().getResources().getColor(R.color.textGray));
+        }
 
         return convertView;
     }

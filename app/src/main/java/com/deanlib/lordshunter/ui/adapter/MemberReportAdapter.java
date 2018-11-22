@@ -17,7 +17,6 @@ import butterknife.ButterKnife;
 public class MemberReportAdapter extends BaseAdapter {
 
     List<Member> mMemberList;
-    boolean isShow;
 
     public MemberReportAdapter(List<Member> mMemberList) {
         this.mMemberList = mMemberList;
@@ -28,10 +27,6 @@ public class MemberReportAdapter extends BaseAdapter {
         return mMemberList.size();
     }
 
-    public void setShowHided(boolean isShow){
-        this.isShow = isShow;
-    }
-
     @Override
     public Object getItem(int position) {
         return mMemberList.get(position);
@@ -40,6 +35,16 @@ public class MemberReportAdapter extends BaseAdapter {
     @Override
     public long getItemId(int position) {
         return position;
+    }
+
+    @Override
+    public int getViewTypeCount() {
+        return 2;
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        return mMemberList.get(position).isHide()?Member.STATE_HIDE:Member.STATE_SHOW;
     }
 
     @Override
@@ -57,8 +62,15 @@ public class MemberReportAdapter extends BaseAdapter {
         holder.tvGroup.setText(mMemberList.get(position).getGroup());
         holder.tvCount.setText(mMemberList.get(position).getCount()+"");
 
-        if (mMemberList.get(position).isHide())
-            holder.layoutView.setVisibility(View.GONE);
+        if (mMemberList.get(position).isHide()){
+            holder.tvName.setTextColor(parent.getContext().getResources().getColor(R.color.textGray));
+            holder.tvGroup.setTextColor(parent.getContext().getResources().getColor(R.color.textGrayTint));
+            holder.tvCount.setTextColor(parent.getContext().getResources().getColor(R.color.textBlueTint));
+        }else {
+            holder.tvName.setTextColor(parent.getContext().getResources().getColor(R.color.textBlack));
+            holder.tvGroup.setTextColor(parent.getContext().getResources().getColor(R.color.textGray));
+            holder.tvCount.setTextColor(parent.getContext().getResources().getColor(R.color.textBlue));
+        }
 
         return convertView;
     }

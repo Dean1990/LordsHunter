@@ -127,7 +127,7 @@ public class SaveActivity extends BaseActivity {
                 deleteItem.setBackground(R.color.colorAccent);
                 deleteItem.setWidth(DeviceUtils.dp2px(100));
                 deleteItem.setTitle(R.string.delete);
-                deleteItem.setTitleSize(20);
+                deleteItem.setTitleSize(18);
                 deleteItem.setTitleColor(getResources().getColor(R.color.textWhite));
                 menu.addMenuItem(deleteItem);
             }

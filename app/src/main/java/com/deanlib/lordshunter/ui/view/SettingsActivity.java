@@ -394,14 +394,9 @@ public class SettingsActivity extends AppCompatActivity {
                     calendar.set(endTimeEntity.year, endTimeEntity.month, endTimeEntity.day, 0, 0, 0);
                     calendar.add(Calendar.DAY_OF_MONTH, 1);
                     endTime = calendar.getTimeInMillis();
-                    tag = getString(R.string._y_m_d, startTimeEntity.year, startTimeEntity.month, startTimeEntity.day)
-                            + " - " + getString(R.string._y_m_d, endTimeEntity.year, endTimeEntity.month, endTimeEntity.day) ;
+                    tag = getString(R.string._y_m_d, startTimeEntity.year, startTimeEntity.month+1, startTimeEntity.day)
+                            + " - " + getString(R.string._y_m_d, endTimeEntity.year, endTimeEntity.month+1, endTimeEntity.day) ;
                 }
-
-            SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            Date date = new Date(startTime);
-                String s = dateFormat.format(date);
-                DLog.d(s);
 
         }
 

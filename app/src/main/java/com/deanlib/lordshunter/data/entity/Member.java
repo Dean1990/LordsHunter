@@ -4,6 +4,14 @@ import android.support.annotation.NonNull;
 
 public class Member implements Comparable<Member> {
 
+    //0 隐藏；1 显示
+    public static final int STATE_HIDE = 0;
+    public static final int STATE_SHOW = 1;
+
+    public Member(){
+
+    }
+
     public Member(String name,String group, long count) {
         this.name = name;
         this.group = group;
@@ -14,6 +22,7 @@ public class Member implements Comparable<Member> {
     long count;
     String group;
     boolean isHide;
+    boolean isChecked;
 
     public String getGroup() {
         return group;
@@ -45,6 +54,14 @@ public class Member implements Comparable<Member> {
 
     public void setHide(boolean hide) {
         isHide = hide;
+    }
+
+    public boolean isChecked() {
+        return isChecked;
+    }
+
+    public void setChecked(boolean checked) {
+        isChecked = checked;
     }
 
     @Override

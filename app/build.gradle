@@ -116,6 +116,12 @@ dependencies {
 
     //SwipeMenuListView https://github.com/baoyongzhang/SwipeMenuListView
     implementation 'com.baoyz.swipemenulistview:library:1.3.0'
+
+    //多选日历
     implementation 'com.richzjc:calendar_select:1.0.0'
     implementation 'com.android.support:recyclerview-v7:28.0.0-rc02'
+
+    //小红点
+    //BadgeView https://github.com/qstumn/BadgeView
+    implementation 'q.rorbin:badgeview:1.1.3'
 }
