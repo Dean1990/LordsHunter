@@ -70,7 +70,7 @@
             android:visibility="gone"
             android:id="@+id/imgShow"
             android:padding="5dp"
-            android:src="@drawable/show"
+            android:src="@drawable/show_white"
             android:layout_width="40dp"
             android:layout_height="40dp" />
         <ImageView
@@ -78,7 +78,7 @@
             android:id="@+id/imgHide"
             android:layout_marginTop="5dp"
             android:padding="5dp"
-            android:src="@drawable/hide"
+            android:src="@drawable/hide_white"
             android:layout_width="40dp"
             android:layout_height="40dp" />
         <ImageView

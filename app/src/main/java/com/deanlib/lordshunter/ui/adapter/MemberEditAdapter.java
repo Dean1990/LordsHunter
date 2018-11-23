@@ -7,8 +7,10 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.TextView;
 
+import com.baoyz.swipemenulistview.SwipeMenuListView;
 import com.deanlib.lordshunter.R;
 import com.deanlib.lordshunter.data.entity.Member;
 
@@ -69,7 +71,13 @@ public class MemberEditAdapter extends BaseAdapter {
                 mMemberList.get(position).setChecked(isChecked);
             }
         });
-        holder.imgState.setImageResource(mMemberList.get(position).isHide()?R.drawable.hide:R.drawable.show);
+        holder.imgState.setImageResource(mMemberList.get(position).isHide()?R.drawable.hide_black :R.drawable.show_black);
+        holder.imgState.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ((SwipeMenuListView)parent).smoothOpenMenu(position);
+            }
+        });
 
         if (mMemberList.get(position).isHide()){
             holder.tvName.setTextColor(parent.getContext().getResources().getColor(R.color.textGray));

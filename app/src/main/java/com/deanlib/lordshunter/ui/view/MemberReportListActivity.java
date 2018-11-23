@@ -234,12 +234,12 @@ public class MemberReportListActivity extends BaseActivity {
                             mShowMemberList.add(member);
                         }
                     }
-                    imgHide.setImageResource(R.drawable.hide);
+                    imgHide.setImageResource(R.drawable.hide_white);
                     PopupUtils.sendToast(R.string.hide);
                 }else {
                     //显示
                     mShowMemberList.addAll(mMemberList);
-                    imgHide.setImageResource(R.drawable.show);
+                    imgHide.setImageResource(R.drawable.show_white);
                     PopupUtils.sendToast(R.string.show);
                 }
 

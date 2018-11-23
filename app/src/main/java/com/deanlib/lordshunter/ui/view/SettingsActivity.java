@@ -325,6 +325,7 @@ public class SettingsActivity extends AppCompatActivity {
                 if (mDownloadDialog != null && mDownloadDialog.isShowing()) {
                     PopupUtils.sendToast(R.string.download_completed);
                     mDownloadDialog.dismiss();
+                    init();
                 }
             }
 
