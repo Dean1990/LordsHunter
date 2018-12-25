@@ -9,12 +9,12 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.CheckBox;
-import android.widget.DatePicker;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.deanlib.lordshunter.R;
+import com.deanlib.lordshunter.Utils;
 import com.deanlib.lordshunter.app.Constant;
 import com.deanlib.lordshunter.data.Persistence;
 import com.deanlib.lordshunter.data.entity.ImageInfo;
@@ -33,9 +33,7 @@ import com.rich.library.DayTimeEntity;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -53,14 +51,9 @@ import io.realm.RealmResults;
  */
 public class SettingsActivity extends AppCompatActivity {
 
-    @BindView(R.id.cbOCRData)
-    CheckBox cbOCRData;
     @BindView(R.id.tvVersion)
     TextView tvVersion;
-    File mTraineddata;
-    AlertDialog mDownloadDialog;
-    ProgressBar mDownloadProgressBar;
-    TextView tvProgressInfo;
+
     AlertDialog mDateDialog;
 
     @Override
@@ -68,19 +61,11 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
         ButterKnife.bind(this);
-        boolean autoDownloadOCRData = getIntent().getBooleanExtra("autoDownloadOCRData", false);
+
         init();
-        if (autoDownloadOCRData) {
-            checkWifi2DownloadDataPackage();
-        }
     }
 
     private void init() {
-        //字库文件
-        mTraineddata = Constant.APP_FILE_OCR_TRAINEDDATA;
-        if (mTraineddata.exists()) {
-            cbOCRData.setChecked(true);
-        }
         tvVersion.setText(VersionUtils.getAppVersionName() + "(" + VersionUtils.getAppVersionCode() + ")");
     }
 
@@ -91,12 +76,8 @@ public class SettingsActivity extends AppCompatActivity {
                 finish();
                 break;
             case R.id.layoutDownloadOCRData:
-                //下载字库文件
-                if (!mTraineddata.exists()) {
-                    checkWifi2DownloadDataPackage();
-                } else {
-                    PopupUtils.sendToast(R.string.data_package_exist);
-                }
+                //管理OCR
+                ViewJump.toOCRManage(this);
                 break;
             case R.id.layoutMemberManage:
                 //成员管理
@@ -232,10 +213,13 @@ public class SettingsActivity extends AppCompatActivity {
                                                 @Override
                                                 public void execute(Realm realm) {
                                                     for (Report report : reports) {
-                                                        ImageInfo imageInfo = realm.where(ImageInfo.class)
-                                                                .equalTo("md5", report.getImage().getMd5())
-                                                                .findFirst();
-                                                        imageInfo.deleteFromRealm();
+                                                        if(report!=null && report.getImage()!=null) {
+                                                            ImageInfo imageInfo = realm.where(ImageInfo.class)
+                                                                    .equalTo("md5", report.getImage().getMd5())
+                                                                    .findFirst();
+                                                            if (imageInfo!=null)
+                                                                imageInfo.deleteFromRealm();
+                                                        }
                                                     }
                                                     reports.deleteAllFromRealm();
                                                     PopupUtils.sendToast(R.string.delete_success);
@@ -263,100 +247,6 @@ public class SettingsActivity extends AppCompatActivity {
                 startActivity(Intent.createChooser(share, getString(R.string.share_app)));
                 break;
         }
-    }
-
-    private void checkWifi2DownloadDataPackage() {
-        if (NetworkManager.getAPNType(this) != NetworkManager.TYPE_WIFI) {
-            new AlertDialog.Builder(this).setTitle(R.string.attention)
-                    .setMessage(R.string.attention_not_wifi)
-                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            downloadDataPackage();
-                        }
-                    }).setNegativeButton(R.string.cancel, null)
-                    .show();
-        } else {
-            downloadDataPackage();
-        }
-    }
-
-    private void downloadDataPackage() {
-        FileDownloader.setup(SettingsActivity.this);
-        FileDownloader.getImpl().create("http://file2001552359.nos-eastchina1.126.net/tessdata/" + Constant.OCR_LANGUAGE + ".traineddata")
-                .setPath(mTraineddata.getAbsolutePath()).setListener(new FileDownloadListener() {
-            @Override
-            protected void pending(BaseDownloadTask task, int soFarBytes, int totalBytes) {
-                DLog.d("FileDownloadListener.pending");
-                View progressView = View.inflate(SettingsActivity.this, R.layout.layout_progress2, null);
-                mDownloadProgressBar = progressView.findViewById(R.id.progress);
-                tvProgressInfo = progressView.findViewById(R.id.tvProgressInfo);
-                mDownloadDialog = new AlertDialog.Builder(SettingsActivity.this)
-                        .setTitle(getString(R.string.download_data_package)).setView(progressView)
-                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                //取消
-                                FileDownloader.getImpl().pauseAll();
-
-                                dialog.dismiss();
-                            }
-                        }).setCancelable(false).show();
-            }
-
-            @Override
-            protected void progress(BaseDownloadTask task, int soFarBytes, int totalBytes) {
-                DLog.d("FileDownloadListener.progress ->" + soFarBytes + "   total:" + totalBytes);
-                if (mDownloadDialog != null && mDownloadDialog.isShowing()
-                        && mDownloadProgressBar != null && tvProgressInfo != null) {
-                    tvProgressInfo.setText(getString(R.string.doalowning_info_,
-                            FormatUtils.formatFileSize(totalBytes),
-                            FormatUtils.formatFileSize(soFarBytes),
-                            task.getSpeed() + "KB/s"));
-                    mDownloadProgressBar.setMax(totalBytes);
-                    mDownloadProgressBar.setProgress(soFarBytes);
-                }
-            }
-
-            @Override
-            protected void completed(BaseDownloadTask task) {
-                DLog.d("FileDownloadListener.completed");
-                FileDownloader.getImpl().clearAllTaskData();
-                if (mDownloadDialog != null && mDownloadDialog.isShowing()) {
-                    PopupUtils.sendToast(R.string.download_completed);
-                    mDownloadDialog.dismiss();
-                    init();
-                }
-            }
-
-            @Override
-            protected void paused(BaseDownloadTask task, int soFarBytes, int totalBytes) {
-                DLog.d("FileDownloadListener.paused");
-                if (mTraineddata.exists()) {
-                    mTraineddata.delete();
-                }
-                FileDownloader.getImpl().clearAllTaskData();
-            }
-
-            @Override
-            protected void error(BaseDownloadTask task, Throwable e) {
-                e.printStackTrace();
-                DLog.d("FileDownloadListener.error");
-                if (mTraineddata.exists()) {
-                    mTraineddata.delete();
-                }
-                FileDownloader.getImpl().clearAllTaskData();
-                PopupUtils.sendToast(R.string.download_error);
-                if (mDownloadDialog != null && mDownloadDialog.isShowing()) {
-                    mDownloadDialog.dismiss();
-                }
-            }
-
-            @Override
-            protected void warn(BaseDownloadTask task) {
-                DLog.d("FileDownloadListener.warn");
-            }
-        }).start();
     }
 
     /**

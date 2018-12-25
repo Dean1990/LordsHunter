@@ -58,6 +58,9 @@
         <activity android:name=".ui.view.MemberManageActivity"
             android:screenOrientation="portrait"
             />
+        <activity android:name=".ui.view.OCRManageActivity"
+            android:screenOrientation="portrait"
+            />
 
         <service android:name=".service.CollectTaskService"/>
 

@@ -93,4 +93,10 @@ public class UtilsTest {
 //        list.add(report);
 //        Utils.ocr(this,list);
     }
+
+    @Test
+    public void test111(){
+        long t = Utils.equivalentLv1(5,1);
+        System.out.println(t);
+    }
 }

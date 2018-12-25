@@ -93,4 +93,8 @@
     <string name="member_merge_tag1">合并需要至少选中两名成员</string>
     <string name="member_merge_tag2">请选择合并后要使用的成员名</string>
     <string name="merge_complete">合并完成</string>
+    <string name="manual">手动添加</string>
+    <string name="equivalent_lv1_">等效Lv.1</string>
+    <string name="zhi">只</string>
+    <string name="ocr_data_manage">OCR数据管理</string>
 </resources>

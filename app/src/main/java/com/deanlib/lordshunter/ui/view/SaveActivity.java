@@ -198,7 +198,7 @@ public class SaveActivity extends BaseActivity {
 //            });
 
         } else if (!TextUtils.isEmpty(text) && images != null && images.size() > 0) {
-            File traineddata = Constant.APP_FILE_OCR_TRAINEDDATA;
+            File traineddata = Utils.getOCR(Constant.OCR_LANGUAGE).getFile();
             if (traineddata.exists()) {
                 RxPermissions rxPermissions = new RxPermissions(this);
                 rxPermissions.request(Manifest.permission.FOREGROUND_SERVICE).subscribe(granted->{

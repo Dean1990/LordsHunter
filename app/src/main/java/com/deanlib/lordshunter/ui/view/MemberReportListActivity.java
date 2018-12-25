@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -17,17 +18,23 @@ import com.baoyz.swipemenulistview.SwipeMenuListView;
 import com.deanlib.lordshunter.R;
 import com.deanlib.lordshunter.Utils;
 import com.deanlib.lordshunter.app.Constant;
+import com.deanlib.lordshunter.data.entity.ImageInfo;
 import com.deanlib.lordshunter.data.entity.Member;
 import com.deanlib.lordshunter.data.entity.Report;
 import com.deanlib.lordshunter.ui.adapter.MemberReportAdapter;
 import com.deanlib.ootblite.data.SharedPUtils;
 import com.deanlib.ootblite.utils.DLog;
 import com.deanlib.ootblite.utils.DeviceUtils;
+import com.deanlib.ootblite.utils.FormatUtils;
 import com.deanlib.ootblite.utils.PopupUtils;
+import com.deanlib.ootblite.utils.ValidUtils;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -55,10 +62,12 @@ public class MemberReportListActivity extends BaseActivity {
     ImageView imgHide;
     @BindView(R.id.layoutHide)
     LinearLayout layoutHide;
+    @BindView(R.id.tvDate)
+    TextView tvDate;
 
     long startTime, endTime;
     List<Member> mMemberList;//总列表
-    List<Member> mShowMemberList;//显示用的列表
+    List<Member> mShowMemberList;//显示用的列表 这里的显示于用户的显示和隐藏状态不是一回事
     MemberReportAdapter mMemberReportAdapter;
 
     boolean isDescSort = true;//降序
@@ -79,6 +88,10 @@ public class MemberReportListActivity extends BaseActivity {
     }
 
     private void init() {
+
+        SimpleDateFormat format = new SimpleDateFormat("yyyy/MM/dd");
+        tvDate.setText(format.format(new Date(startTime)) + " - " + format.format(new Date(endTime)));
+
         mMemberList = new ArrayList<>();
         listView.setAdapter(mMemberReportAdapter = new MemberReportAdapter(mShowMemberList = new ArrayList<>()));
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -90,6 +103,13 @@ public class MemberReportListActivity extends BaseActivity {
         listView.setMenuCreator(new SwipeMenuCreator() {
             @Override
             public void create(SwipeMenu menu) {
+                SwipeMenuItem addItem = new SwipeMenuItem(MemberReportListActivity.this);
+                addItem.setBackground(R.color.colorGray);
+                addItem.setWidth(DeviceUtils.dp2px(100));
+                addItem.setTitle(R.string.manual);
+                addItem.setTitleSize(18);
+                addItem.setTitleColor(getResources().getColor(R.color.textWhite));
+                menu.addMenuItem(addItem);
                 SwipeMenuItem hideItem = new SwipeMenuItem(MemberReportListActivity.this);
                 hideItem.setBackground(R.color.colorAccent);
                 hideItem.setWidth(DeviceUtils.dp2px(100));
@@ -104,8 +124,62 @@ public class MemberReportListActivity extends BaseActivity {
             public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
                 switch (index) {
                     case 0:
+                        //手动添加
+                        View view = View.inflate(MemberReportListActivity.this, R.layout.layout_input, null);
+                        EditText etNum = view.findViewById(R.id.etNum);
+                        new AlertDialog.Builder(MemberReportListActivity.this).setTitle(R.string.manual)
+                                .setView(view).setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                //添加
+                                String numStr = etNum.getText().toString().trim();
+                                if (ValidUtils.isInteger(numStr)) {
+                                    int num = Integer.valueOf(numStr);
+                                    if (num > 0) {
+                                        Member member = mShowMemberList.get(position);
+                                        //这样写影响排序 还是使用重新加载的方式比较方便
+//                                        long count = member.getCount() + num;
+//                                        member.setCount(count);
+//                                        mMemberReportAdapter.notifyDataSetChanged();
+                                        Realm realm = Realm.getDefaultInstance();
+                                        //插入数据库
+                                        realm.executeTransaction(new Realm.Transaction() {
+                                            @Override
+                                            public void execute(Realm realm) {
+                                                for (int i = 0; i < num; i++) {
+                                                    Report report = new Report();
+                                                    report.setId(UUID.randomUUID().toString());
+                                                    report.setGroup(member.getGroup());
+                                                    long timestamp = System.currentTimeMillis();
+                                                    report.setDate(FormatUtils.convertDateTimestampToString(timestamp,FormatUtils.DATE_FORMAT_YMD));
+                                                    report.setTime(FormatUtils.convertDateTimestampToString(timestamp,"HH:mm"));
+                                                    report.setTimestamp(timestamp);
+                                                    report.setName(member.getName());
+                                                    ImageInfo imageInfo = new ImageInfo();
+                                                    imageInfo.setId(UUID.randomUUID().toString());
+                                                    imageInfo.setPreyName("Manual");
+                                                    imageInfo.setPreyLevel(1);
+                                                    imageInfo.setDataTime(report.getDate() + " " + report.getTime());
+                                                    imageInfo.setUri("");
+                                                    imageInfo.setMd5("00010002000300040005000600070008");
+                                                    imageInfo.setKill(true);
+                                                    report.setImage(imageInfo);
+                                                    realm.copyToRealm(report);
+                                                }
+                                            }
+                                        });
+
+                                        dialog.dismiss();
+                                        init();
+                                        loadData();
+                                    }
+                                }
+                            }
+                        }).setNegativeButton(R.string.cancel, null).show();
+                        break;
+                    case 1:
                         new AlertDialog.Builder(MemberReportListActivity.this).setTitle(R.string.attention)
-                                .setMessage(menu.getViewType() == Member.STATE_HIDE?R.string.show_item_tag:R.string.hide_item_tag).setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                                .setMessage(menu.getViewType() == Member.STATE_HIDE ? R.string.show_item_tag : R.string.hide_item_tag).setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 if (menu.getViewType() == Member.STATE_HIDE) {
@@ -180,14 +254,14 @@ public class MemberReportListActivity extends BaseActivity {
             mMemberList.add(Utils.memberFiler(member));
         }
 
-        if (mMemberList.size() != 0){
+        if (mMemberList.size() != 0) {
             if (isHided) {
                 for (Member member : mMemberList) {
                     if (!member.isHide()) {
                         mShowMemberList.add(member);
                     }
                 }
-            }else {
+            } else {
                 mShowMemberList.addAll(mMemberList);
             }
         }
@@ -202,7 +276,7 @@ public class MemberReportListActivity extends BaseActivity {
     }
 
 
-    @OnClick({R.id.layoutBack, R.id.layoutSort,R.id.layoutHide})
+    @OnClick({R.id.layoutBack, R.id.layoutSort, R.id.layoutHide})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.layoutBack:
@@ -227,7 +301,7 @@ public class MemberReportListActivity extends BaseActivity {
                 //隐藏/显示
                 mShowMemberList.clear();
                 isHided = !isHided;
-                if (isHided){
+                if (isHided) {
                     //隐藏
                     for (Member member : mMemberList) {
                         if (!member.isHide()) {
@@ -236,7 +310,7 @@ public class MemberReportListActivity extends BaseActivity {
                     }
                     imgHide.setImageResource(R.drawable.hide_white);
                     PopupUtils.sendToast(R.string.hide);
-                }else {
+                } else {
                     //显示
                     mShowMemberList.addAll(mMemberList);
                     imgHide.setImageResource(R.drawable.show_white);
@@ -254,16 +328,17 @@ public class MemberReportListActivity extends BaseActivity {
     }
 
     Badge mHideBadge;
+
     /**
      * 检查当前参加活动的成员中是否带隐藏属性的
      */
-    private void checkHideMemberHaveData(){
+    private void checkHideMemberHaveData() {
         if (mHideBadge == null) {
             mHideBadge = new QBadgeView(this).bindTarget(imgHide);
         }
         boolean isHideMemberHaveData = false;//隐藏成员有数据时
-        for (Member member : mMemberList){
-            if (member.isHide() && member.getCount()!=0){
+        for (Member member : mMemberList) {
+            if (member.isHide() && member.getCount() != 0) {
                 isHideMemberHaveData = true;
                 break;
             }

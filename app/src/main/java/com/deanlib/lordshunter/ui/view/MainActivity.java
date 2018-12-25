@@ -6,28 +6,21 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.PopupMenu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
-import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.alibaba.fastjson.JSON;
 import com.deanlib.lordshunter.R;
 import com.deanlib.lordshunter.Utils;
 import com.deanlib.lordshunter.app.Constant;
-import com.deanlib.lordshunter.data.Persistence;
-import com.deanlib.lordshunter.data.entity.ImageInfo;
 import com.deanlib.lordshunter.data.entity.Report;
 import com.deanlib.ootblite.OotbConfig;
 import com.deanlib.ootblite.data.SharedPUtils;
 import com.deanlib.ootblite.utils.DLog;
 import com.deanlib.ootblite.utils.FormatUtils;
 import com.deanlib.ootblite.utils.PopupUtils;
-import com.deanlib.ootblite.utils.network.NetworkManager;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -42,9 +35,6 @@ import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.ViewPortHandler;
-import com.liulishuo.filedownloader.BaseDownloadTask;
-import com.liulishuo.filedownloader.FileDownloadListener;
-import com.liulishuo.filedownloader.FileDownloader;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import java.io.File;
@@ -53,12 +43,10 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
-import cn.qqtheme.framework.picker.FilePicker;
 import io.realm.Realm;
 import io.realm.RealmResults;
 
@@ -98,7 +86,7 @@ public class MainActivity extends BaseActivity {
         selectTime = System.currentTimeMillis();
 
         //字库文件
-        mTraineddata = Constant.APP_FILE_OCR_TRAINEDDATA;
+        mTraineddata = Utils.getOCR(Constant.OCR_LANGUAGE).getFile();
 
         if (!mTraineddata.exists()) {
             //第一次使用
@@ -124,7 +112,7 @@ public class MainActivity extends BaseActivity {
                                 .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        ViewJump.toSettings(MainActivity.this,true);
+                                        ViewJump.toOCRManage(MainActivity.this,true);
                                     }
                                 }).setNegativeButton(R.string.cancel, null).show();
                     }

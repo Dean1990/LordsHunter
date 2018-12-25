@@ -36,4 +36,9 @@
         <item>一</item>
     </string-array>
 
+    <string-array name="ocr_languages">
+        <item>chi_sim</item>
+        <item>chi_tra</item>
+    </string-array>
+
 </resources>

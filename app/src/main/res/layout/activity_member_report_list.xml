@@ -61,6 +61,17 @@
 
     </RelativeLayout>
 
+    <TextView
+        android:id="@+id/tvDate"
+        android:gravity="center"
+        android:textStyle="italic"
+        android:padding="10dp"
+        android:textColor="@color/textWhite"
+        android:background="@color/colorBlueTint"
+        android:textSize="@dimen/text_size_normal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
     <FrameLayout
         android:layout_marginTop="6dp"
         android:layout_width="match_parent"

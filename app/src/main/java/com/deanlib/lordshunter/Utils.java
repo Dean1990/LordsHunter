@@ -10,10 +10,9 @@ import android.text.TextUtils;
 import com.deanlib.lordshunter.app.Constant;
 import com.deanlib.lordshunter.data.entity.ImageInfo;
 import com.deanlib.lordshunter.data.entity.Member;
+import com.deanlib.lordshunter.data.entity.OCR;
 import com.deanlib.lordshunter.data.entity.Prey;
 import com.deanlib.lordshunter.data.entity.Report;
-import com.deanlib.ootblite.data.FileUtils;
-import com.deanlib.ootblite.data.ImageUtils;
 import com.deanlib.ootblite.utils.DLog;
 import com.deanlib.ootblite.utils.MD5;
 import com.googlecode.tesseract.android.TessBaseAPI;
@@ -175,7 +174,7 @@ public class Utils {
         TessBaseAPI tess = new TessBaseAPI();
 
         //字库文件怎么办
-        File traineddata = Constant.APP_FILE_OCR_TRAINEDDATA;
+        File traineddata = Utils.getOCR(Constant.OCR_LANGUAGE).getFile();
         tess.init(traineddata.getParentFile().getParent(), Constant.OCR_LANGUAGE);
         for (Report report : list) {
             Bitmap bitmap = BitmapFactory.decodeFile(report.getImage().getUri());
@@ -279,14 +278,14 @@ public class Utils {
      * 计算折合一级怪
      *
      * @param level
-     * @param count
+     * @param count 怪只数
      * @return
      */
     public static long equivalentLv1(int level, long count) {
         if (level != 1) {
             count *= 3;
             level--;
-            equivalentLv1(level, count);
+            count = equivalentLv1(level, count);
         }
         return count;
     }
@@ -326,4 +325,11 @@ public class Utils {
         return member;
     }
 
+    public static OCR getOCR(String name){
+        OCR ocr = new OCR();
+        ocr.setName(name);
+        ocr.setFile(new File(Constant.APP_FILE_OCR_DIR,name + ".traineddata"));
+        ocr.setExist(ocr.getFile().exists());
+        return ocr;
+    }
 }

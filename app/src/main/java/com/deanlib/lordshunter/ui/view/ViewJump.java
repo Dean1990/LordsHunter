@@ -61,11 +61,16 @@ public class ViewJump {
     }
 
     public static void toSettings(Activity activity){
-        toSettings(activity,false);
+        Intent intent = new Intent(activity,SettingsActivity.class);
+        activity.startActivity(intent);
     }
 
-    public static void toSettings(Activity activity,boolean autoDownloadOCRData){
-        Intent intent = new Intent(activity,SettingsActivity.class);
+    public static void toOCRManage(Activity activity){
+        toOCRManage(activity,false);
+    }
+
+    public static void toOCRManage(Activity activity,boolean autoDownloadOCRData){
+        Intent intent = new Intent(activity,OCRManageActivity.class);
         intent.putExtra("autoDownloadOCRData",autoDownloadOCRData);
         activity.startActivity(intent);
     }

@@ -93,4 +93,7 @@
     <string name="member_merge_tag1">合並需要至少選中兩名成員</string>
     <string name="member_merge_tag2">請選擇合並後要使用的成員名</string>
     <string name="merge_complete">合並完成</string>
+    <string name="manual">手動添加</string>
+    <string name="equivalent_lv1_">等效Lv.1</string>
+    <string name="zhi">只</string>
 </resources>

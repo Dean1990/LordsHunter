@@ -52,7 +52,6 @@ public class AdActivity extends BaseActivity {
         sharedPUtils.setCache("ad_show_date",
                 FormatUtils.convertDateTimestampToString(System.currentTimeMillis(),FormatUtils.DATE_FORMAT_YMD));
 
-
     }
 
     @OnClick(R.id.tvJump)

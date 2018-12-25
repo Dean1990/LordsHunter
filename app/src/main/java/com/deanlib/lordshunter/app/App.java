@@ -64,8 +64,8 @@ public class App extends MultiDexApplication {
         UMConfigure.setLogEnabled(Constant.isDebug);
 
         Constant.OCR_LANGUAGE =getString(R.string.ocr_language);
-        Constant.APP_FILE_OCR_TRAINEDDATA = new File(Utils.getDiskCachePath(this)
-                +"/lordshunter/datapath/tessdata/"+Constant.OCR_LANGUAGE+".traineddata");
+        Constant.APP_FILE_OCR_DIR = new File(Utils.getDiskCachePath(this)
+                +"/lordshunter/datapath/tessdata/");
 
         SharedPUtils sharedP = new SharedPUtils();
         String hideMember = sharedP.getCache("hideMember");
