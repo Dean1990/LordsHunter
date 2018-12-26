@@ -163,20 +163,16 @@ public class Utils {
 
     /**
      * 文字识别
-     *
-     * @param list
+     * @param report
+     * @param lang 要使用的字库名
+     * @param usedLangs 已经用过的字库列表
      * @return
      */
-    public static List<Report> ocr(List<Report> list) {
-        DLog.d("ocr");
-        if (list == null || list.size() == 0)
-            return list;
-        TessBaseAPI tess = new TessBaseAPI();
-
-        //字库文件怎么办
-        File traineddata = Utils.getOCR(Constant.OCR_LANGUAGE).getFile();
-        tess.init(traineddata.getParentFile().getParent(), Constant.OCR_LANGUAGE);
-        for (Report report : list) {
+    public static String ocr(Report report,String lang,List<String> usedLangs){
+            TessBaseAPI tess = new TessBaseAPI();
+            //字库文件
+            File traineddata = Utils.getOCR(lang).getFile();
+            tess.init(traineddata.getParentFile().getParent(), Constant.OCR_LANGUAGE);
             Bitmap bitmap = BitmapFactory.decodeFile(report.getImage().getUri());
             float w = bitmap.getWidth();
             float h = bitmap.getHeight();
@@ -197,22 +193,57 @@ public class Utils {
             tess.setImage(bitmap);
             String result = tess.getUTF8Text();
             bitmap = null;
+            if (usedLangs == null)
+                usedLangs = new ArrayList<>();
+            usedLangs.add(lang);
+
             DLog.d(result);
             //清洗信息
-            String[] lvLikes= {"1JjLlIi","2Zz","3B","4HqPpg","5Ssb"};//识别存在误差，将相识，可能被识别成的字符列举出来
+            String[] lvLikes = {"1JjLlIi", "2Zz", "3B8", "4HqPpg", "5Ssb"};//识别存在误差，将相识，可能被识别成的字符列举出来
             //[\S\s]*([1JjLlIi2Zz3B4HqPpg5Ssb])[ ]*(\S+)
-            Pattern pattern = Pattern.compile("[\\S\\s]*("+ Arrays.toString(lvLikes).replaceAll("[,\\s]","")+")[ ]*(\\S+)");
+            Pattern pattern = Pattern.compile("[\\S\\s]*(" + Arrays.toString(lvLikes).replaceAll("[,\\s]", "") + ")[ ]*(\\S+)");
             Matcher matcher = pattern.matcher(result);
             if (matcher.find()) {
                 report.getImage().setPreyName(correctPreyName(matcher.group(2)));
-                for (int i = 0;i<lvLikes.length;i++){
-                    if(lvLikes[i].contains(matcher.group(1))){
-                        report.getImage().setPreyLevel(i+1);
+                for (int i = 0; i < lvLikes.length; i++) {
+                    if (lvLikes[i].contains(matcher.group(1))) {
+                        report.getImage().setPreyLevel(i + 1);
                         break;
                     }
                 }
                 report.getImage().setKill(true);//默认 true
+            } else {
+                DLog.d("change ocr");
+                //使用 Constant.OCR_LANGUAGE 本地字库没有识别成功的
+                //尝试使用其他字库
+                //查看当前存在的字库包
+                if (Constant.OCR_LANGUAGES!=null) {
+                    for (String l : Constant.OCR_LANGUAGES) {
+                        OCR ocr = getOCR(l);
+                        if (ocr.isExist() && !usedLangs.contains(l)) {
+                            result = ocr(report, l,usedLangs);
+                        }
+                    }
+                }
             }
+
+            return result;
+
+    }
+
+    /**
+     * 文字识别
+     *
+     * @param list
+     * @return
+     */
+    public static List<Report> ocr(List<Report> list) {
+        DLog.d("ocr");
+        if (list == null || list.size() == 0)
+            return list;
+
+        for (Report report : list) {
+            ocr(report,Constant.OCR_LANGUAGE,null);
         }
 
         return list;
@@ -325,6 +356,11 @@ public class Utils {
         return member;
     }
 
+    /**
+     * 得到OCR信息
+     * @param name 语言的名字，描述形式使用OCR形式
+     * @return
+     */
     public static OCR getOCR(String name){
         OCR ocr = new OCR();
         ocr.setName(name);

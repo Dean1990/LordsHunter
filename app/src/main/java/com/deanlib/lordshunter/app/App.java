@@ -75,6 +75,8 @@ public class App extends MultiDexApplication {
             Constant.hideMemberList = new ArrayList<>();
         }
 
+        Constant.OCR_LANGUAGES = getResources().getStringArray(R.array.ocr_languages);
+
         String[] preyNames = getResources().getStringArray(R.array.prey_name);
         String[] preyNamesChiSim = getResources().getStringArray(R.array.prey_name_chi_sim);
         String[] preyNamesChiTra = getResources().getStringArray(R.array.prey_name_chi_tra);

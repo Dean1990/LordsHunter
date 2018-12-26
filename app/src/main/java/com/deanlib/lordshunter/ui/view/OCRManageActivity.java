@@ -84,8 +84,8 @@ public class OCRManageActivity extends BaseActivity {
     }
 
     private void loadData(){
-        String[] ocrLanguages = getResources().getStringArray(R.array.ocr_languages);
-        for (String lang : ocrLanguages){
+
+        for (String lang : Constant.OCR_LANGUAGES){
             mOCRList.add(Utils.getOCR(lang));
         }
         mOCRListAdapter.notifyDataSetChanged();

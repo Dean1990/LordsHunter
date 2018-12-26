@@ -92,9 +92,8 @@ public class CollectTaskService extends Service {
 
                     //文字识别
                     EventBus.getDefault().post(new CollectTaskEvent(CollectTaskEvent.ACTION_SERVICE_MESSAGE, getString(R.string.text_extraction)));
-                    List<Report> reports2 = Utils.ocr(reports);
-
-                    emitter.onNext(reports2);
+                    Utils.ocr(reports);
+                    emitter.onNext(reports);
                     emitter.onComplete();
                 }
             }).subscribeOn(Schedulers.newThread())
