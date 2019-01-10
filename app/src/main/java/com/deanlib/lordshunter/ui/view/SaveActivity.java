@@ -198,8 +198,9 @@ public class SaveActivity extends BaseActivity {
 //            });
 
         } else if (!TextUtils.isEmpty(text) && images != null && images.size() > 0) {
+            SharedPUtils sharedPUtils = new SharedPUtils();
             File traineddata = Utils.getOCR(Constant.OCR_LANGUAGE).getFile();
-            if (traineddata.exists()) {
+            if (traineddata.exists() || "true".equals(sharedPUtils.getCache("cloudocr"))) {
                 RxPermissions rxPermissions = new RxPermissions(this);
                 rxPermissions.request(Manifest.permission.FOREGROUND_SERVICE).subscribe(granted->{
                     if (granted){
@@ -232,7 +233,10 @@ public class SaveActivity extends BaseActivity {
                 //保存数据到数据库
                 int unidentificationPosition = -1;//未识别的list的位置
                 for (int i = 0;i < mReportList.size();i++) {
-                    if (mReportList.get(i).getStatus() == Report.STATUS_NEW && (mReportList.get(i).getImage().getPreyLevel() == 0 || mReportList.get(i).getImage().getPreyName() == null)) {
+                    if (mReportList.get(i).getStatus() == Report.STATUS_NEW
+                            && (mReportList.get(i).getImage().getPreyLevel() == 0
+                            || mReportList.get(i).getImage().getPreyName() == null
+                            || "Undefined".equals(mReportList.get(i).getImage().getPreyName()))) {
                         unidentificationPosition = i;
                         break;
                     }
@@ -363,5 +367,30 @@ public class SaveActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mReportList != null && !mReportList.isEmpty()) {
+            new AlertDialog.Builder(this).setTitle(R.string.attention)
+                    .setMessage(R.string.save_exit)
+                    .setNeutralButton(R.string.cancel, null)
+                    .setNegativeButton(R.string.exit, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    //清缓存
+                    SharedPUtils sharedPUtils = new SharedPUtils();
+                    sharedPUtils.remove("unsavareports");
+                    dialog.dismiss();
+                    finish();
+                }
+            }).setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    btnSave.performClick();
+                }
+            }).show();
+        }
     }
 }

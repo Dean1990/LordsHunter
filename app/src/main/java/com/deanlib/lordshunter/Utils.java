@@ -11,18 +11,26 @@ import android.os.Environment;
 import android.support.v4.content.FileProvider;
 import android.text.TextUtils;
 
+import com.baidu.ocr.sdk.OnResultListener;
+import com.baidu.ocr.sdk.exception.OCRError;
+import com.baidu.ocr.sdk.model.GeneralBasicParams;
+import com.baidu.ocr.sdk.model.GeneralResult;
+import com.baidu.ocr.sdk.model.WordSimple;
 import com.deanlib.lordshunter.app.Constant;
 import com.deanlib.lordshunter.data.entity.ImageInfo;
 import com.deanlib.lordshunter.data.entity.Member;
 import com.deanlib.lordshunter.data.entity.OCR;
 import com.deanlib.lordshunter.data.entity.Prey;
 import com.deanlib.lordshunter.data.entity.Report;
+import com.deanlib.ootblite.data.FileUtils;
 import com.deanlib.ootblite.utils.DLog;
 import com.deanlib.ootblite.utils.MD5;
 import com.googlecode.tesseract.android.TessBaseAPI;
 
 import java.io.File;
 
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.text.ParseException;
@@ -35,6 +43,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.CountDownLatch;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -92,11 +101,11 @@ public class Utils {
                         for (Uri uri : images) {
                             if (uri.toString().endsWith(reportMatcher.group(3))) {
                                 ImageInfo image = new ImageInfo();
-                                if(uri.toString().startsWith("file:///")) {
+                                if (uri.toString().startsWith("file:///")) {
                                     image.setUri(uri.toString().substring(7));
-                                }else {
+                                } else {
                                     //适配新版本微信 Version.7.0.0
-                                    image.setUri(getFPUriToPath(context,uri));
+                                    image.setUri(getFPUriToPath(context, uri));
                                 }
                                 image.setDataTime(report.getDate() + " " + report.getTime());
                                 report.setImage(image);
@@ -133,19 +142,19 @@ public class Utils {
             return null;
         Realm realm = Realm.getDefaultInstance();
         //对同一批次(此时未保存到数据库)的MD5保存，用以判断同一批次重复图片的问题
-        Map<String,Report> md5Map = new HashMap<>();
+        Map<String, Report> md5Map = new HashMap<>();
         for (Report report : list) {
             DLog.d(report.toString());
             try {
                 String md5 = MD5.md5(new File(report.getImage().getUri()));
-                DLog.d("md5:"+md5);
+                DLog.d("md5:" + md5);
                 report.getImage().setMd5(md5);
                 //判断重复性
                 //本批次判断
-                if(md5Map.containsKey(md5)){
+                if (md5Map.containsKey(md5)) {
                     //重复
                     report.setStatus(Report.STATUS_REPET);
-                }else {
+                } else {
                     md5Map.put(md5, report);
                     //数据库判断
                     ImageInfo find = realm.where(ImageInfo.class)
@@ -173,17 +182,125 @@ public class Utils {
     }
 
     /**
-     * 文字识别
+     * 云OCR服务
+     *
      * @param report
-     * @param lang 要使用的字库名
+     * @return
+     */
+    public static void cloudOCR(Context context, Report report, OnResultListener<GeneralResult> listener) {
+        if (report != null && report.getImage() != null
+                && !TextUtils.isEmpty(report.getImage().getUri())) {
+            try {
+//                BitmapFactory.Options options = new BitmapFactory.Options();
+//                options.inJustDecodeBounds = true;
+//                int scale = (int)(options.outHeight/(float)200);//我们只用高度或宽度计算均可
+//                if(scale<=0){
+//                    scale = 1;
+//                }
+//                options.inSampleSize = scale;
+//                Bitmap bitmap = BitmapFactory.decodeFile(report.getImage().getUri(),options);
+                Bitmap bitmap = BitmapFactory.decodeFile(report.getImage().getUri());
+                float w = bitmap.getWidth();
+                float h = bitmap.getHeight();
+                bitmap = Bitmap.createBitmap(bitmap, (int) (w * 0.1), (int) (h * 0.12), (int) (w * 0.4), (int) (h * 0.05), null, false);
+                File file = new File(FileUtils.createDir("LordsHunter"), System.currentTimeMillis() + ".temp");
+                FileOutputStream fos = new FileOutputStream(file);
+                bitmap.compress(Bitmap.CompressFormat.PNG, 90, fos);
+                if(bitmap!=null && !bitmap.isRecycled()){
+                    bitmap.recycle();
+                    bitmap = null;
+                }
+                System.gc();
+
+
+                GeneralBasicParams params = new GeneralBasicParams();
+                params.setDetectDirection(true);
+//                params.setImageFile(new File(report.getImage().getUri()));
+                params.setImageFile(file);
+
+                com.baidu.ocr.sdk.OCR.getInstance(context).recognizeGeneralBasic(params, listener);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    /**
+     * 文字识别
+     *
+     * @param list
+     * @return
+     */
+    public static List<Report> cloudOCR(Context context, List<Report> list) {
+        DLog.d("cloud ocr");
+        if (list == null || list.size() == 0)
+            return list;
+        try {
+            CountDownLatch countDownLatch = new CountDownLatch(list.size());
+            for (Report report : list) {
+
+                cloudOCR(context, report, new OnResultListener<GeneralResult>() {
+                    @Override
+                    public void onResult(GeneralResult generalResult) {
+                        StringBuilder sb = new StringBuilder();
+                        for (WordSimple wordSimple : generalResult.getWordList()) {
+                            // wordSimple不包含位置信息
+                            WordSimple word = wordSimple;
+                            sb.append(word.getWords());
+                            sb.append("\n");
+                        }
+                        DLog.d("Baidu OCR Result:" + sb.toString());
+                        Pattern pattern = Pattern.compile("L\\S*([1-5])[ ]*(\\S+)");
+                        Matcher matcher = pattern.matcher(sb.toString());
+                        if (matcher.find()) {
+                            report.getImage().setPreyName(correctPreyName(matcher.group(2)));
+                            report.getImage().setPreyLevel(Integer.valueOf(matcher.group(1)));
+                            report.getImage().setKill(true);//默认 true
+                        }
+                        countDownLatch.countDown();
+                    }
+
+                    @Override
+                    public void onError(OCRError ocrError) {
+                        DLog.d("Baidu OCR Result Error:" + report.getImage().getUri());
+                        ocrError.printStackTrace();
+                        DLog.d("Change to localOCR");
+                        localOCR(report, Constant.OCR_LANGUAGE, null);
+                        countDownLatch.countDown();
+                    }
+                });
+
+            }
+            countDownLatch.await();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        return list;
+    }
+
+    /**
+     * 文字识别
+     *
+     * @param report
+     * @param lang      要使用的字库名
      * @param usedLangs 已经用过的字库列表
      * @return
      */
-    public static String ocr(Report report,String lang,List<String> usedLangs){
-            TessBaseAPI tess = new TessBaseAPI();
-            //字库文件
-            File traineddata = Utils.getOCR(lang).getFile();
+    public static String localOCR(Report report, String lang, List<String> usedLangs) {
+        TessBaseAPI tess = new TessBaseAPI();
+        //字库文件
+        File traineddata = Utils.getOCR(lang).getFile();
+        if (traineddata.exists()) {
             tess.init(traineddata.getParentFile().getParent(), Constant.OCR_LANGUAGE);
+//            BitmapFactory.Options options = new BitmapFactory.Options();
+//            options.inJustDecodeBounds = true;
+//            int scale = (int)(options.outHeight/(float)200);//我们只用高度或宽度计算均可
+//            if(scale<=0){
+//                scale = 1;
+//            }
+//            options.inSampleSize = scale;
+//            Bitmap bitmap = BitmapFactory.decodeFile(report.getImage().getUri(),options);
             Bitmap bitmap = BitmapFactory.decodeFile(report.getImage().getUri());
             float w = bitmap.getWidth();
             float h = bitmap.getHeight();
@@ -203,12 +320,19 @@ public class Utils {
 
             tess.setImage(bitmap);
             String result = tess.getUTF8Text();
-            bitmap = null;
+            if(bitmap!=null && !bitmap.isRecycled()){
+                bitmap.recycle();
+                bitmap = null;
+            }
+            tess = null;
+            System.gc();
+
+
             if (usedLangs == null)
                 usedLangs = new ArrayList<>();
             usedLangs.add(lang);
 
-            DLog.d(result);
+            DLog.d("local ocr result : " + result);
             //清洗信息
             String[] lvLikes = {"1JjLlIi", "2Zz", "3B8", "4HqPpg", "5Ssb"};//识别存在误差，将相识，可能被识别成的字符列举出来
             //[\S\s]*([1JjLlIi2Zz3B4HqPpg5Ssb])[ ]*(\S+)
@@ -224,22 +348,24 @@ public class Utils {
                 }
                 report.getImage().setKill(true);//默认 true
             } else {
-                DLog.d("change ocr");
+                DLog.d("change local ocr");
                 //使用 Constant.OCR_LANGUAGE 本地字库没有识别成功的
                 //尝试使用其他字库
                 //查看当前存在的字库包
-                if (Constant.OCR_LANGUAGES!=null) {
+                if (Constant.OCR_LANGUAGES != null) {
                     for (String l : Constant.OCR_LANGUAGES) {
                         OCR ocr = getOCR(l);
                         if (ocr.isExist() && !usedLangs.contains(l)) {
-                            result = ocr(report, l,usedLangs);
+                            result = localOCR(report, l, usedLangs);
                         }
                     }
                 }
             }
 
             return result;
+        }
 
+        return "";
     }
 
     /**
@@ -248,13 +374,13 @@ public class Utils {
      * @param list
      * @return
      */
-    public static List<Report> ocr(List<Report> list) {
-        DLog.d("ocr");
+    public static List<Report> localOCR(List<Report> list) {
+        DLog.d("local ocr");
         if (list == null || list.size() == 0)
             return list;
 
         for (Report report : list) {
-            ocr(report,Constant.OCR_LANGUAGE,null);
+            localOCR(report, Constant.OCR_LANGUAGE, null);
         }
 
         return list;
@@ -351,12 +477,13 @@ public class Utils {
 
     /**
      * 筛选成员 隐藏与否
+     *
      * @param member
      * @return
      */
     public static Member memberFiler(Member member) {
         member.setHide(false);
-        if (Constant.hideMemberList!=null)
+        if (Constant.hideMemberList != null)
             for (Member m : Constant.hideMemberList) {
                 if (m.getName().equals(member.getName())
                         && m.getGroup().equals(member.getGroup())) {
@@ -369,13 +496,14 @@ public class Utils {
 
     /**
      * 得到OCR信息
+     *
      * @param name 语言的名字，描述形式使用OCR形式
      * @return
      */
-    public static OCR getOCR(String name){
+    public static OCR getOCR(String name) {
         OCR ocr = new OCR();
         ocr.setName(name);
-        ocr.setFile(new File(Constant.APP_FILE_OCR_DIR,name + ".traineddata"));
+        ocr.setFile(new File(Constant.APP_FILE_OCR_DIR, name + ".traineddata"));
         ocr.setExist(ocr.getFile().exists());
         return ocr;
     }

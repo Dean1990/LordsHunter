@@ -5,12 +5,17 @@ import android.support.multidex.MultiDexApplication;
 import android.text.TextUtils;
 
 import com.alibaba.fastjson.JSON;
+import com.baidu.ocr.sdk.OCR;
+import com.baidu.ocr.sdk.OnResultListener;
+import com.baidu.ocr.sdk.exception.OCRError;
+import com.baidu.ocr.sdk.model.AccessToken;
 import com.deanlib.lordshunter.R;
 import com.deanlib.lordshunter.Utils;
 import com.deanlib.lordshunter.data.entity.Member;
 import com.deanlib.lordshunter.data.entity.Prey;
 import com.deanlib.ootblite.OotbConfig;
 import com.deanlib.ootblite.data.SharedPUtils;
+import com.deanlib.ootblite.utils.DLog;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.DefaultRefreshFooterCreator;
 import com.scwang.smartrefresh.layout.api.DefaultRefreshHeaderCreator;
@@ -88,6 +93,19 @@ public class App extends MultiDexApplication {
             initNameIndex(preyNamesChiSim[i].toCharArray(),prey);
             initNameIndex(preyNamesChiTra[i].toCharArray(),prey);
         }
+
+        //百度OCR
+        OCR.getInstance(this).initAccessToken(new OnResultListener<AccessToken>() {
+            @Override
+            public void onResult(AccessToken accessToken) {
+                DLog.d("Baidu OCR AccessToken : "+accessToken);
+            }
+
+            @Override
+            public void onError(OCRError ocrError) {
+                ocrError.printStackTrace();
+            }
+        },getApplicationContext());
 
     }
 

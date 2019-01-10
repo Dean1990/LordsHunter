@@ -40,10 +40,10 @@
     <string name="attention_not_wifi">非WIFI網絡環境，是否直接下載？</string>
 
     <string name="guide">指導</string>
-    <string name="guide_download_data_package">應用需要下載OCR支撐數據包才能正常使用，是否要現在下載？</string>
+    <string name="guide_download_data_package">應用需要開啟雲識別或者下載OCR支撐數據包才能正常使用，是否要開啟或者下載？</string>
 
     <string name="data_package_exist">OCR支撐數據包是存在的</string>
-    <string name="data_package_not_exist">OCR支撐數據包不存在，請前往首頁設置中下載OCR支撐數據包</string>
+    <string name="data_package_not_exist">未開啟雲識別或者OCR支撐數據包不存在</string>
 
     <string name="share_data_empty">無數據可分享</string>
     <string name="share_data_template_1">%s ,共 %d 人上傳獵魔記錄</string>
@@ -96,4 +96,8 @@
     <string name="manual">手動添加</string>
     <string name="equivalent_lv1_">等效Lv.1</string>
     <string name="zhi">只</string>
+    <string name="ocr_data_manage">OCR數據管理</string>
+    <string name="save_exit">是否保存當前數據再退出</string>
+    <string name="exit">退出</string>
+    <string name="use_cloud_ocr">開啟雲識別</string>
 </resources>

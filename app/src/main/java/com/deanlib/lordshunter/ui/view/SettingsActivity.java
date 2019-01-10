@@ -19,6 +19,7 @@ import com.deanlib.lordshunter.app.Constant;
 import com.deanlib.lordshunter.data.Persistence;
 import com.deanlib.lordshunter.data.entity.ImageInfo;
 import com.deanlib.lordshunter.data.entity.Report;
+import com.deanlib.ootblite.data.SharedPUtils;
 import com.deanlib.ootblite.utils.DLog;
 import com.deanlib.ootblite.utils.FormatUtils;
 import com.deanlib.ootblite.utils.PopupUtils;
@@ -53,6 +54,10 @@ public class SettingsActivity extends AppCompatActivity {
 
     @BindView(R.id.tvVersion)
     TextView tvVersion;
+    @BindView(R.id.tvDownloadOCRData)
+    TextView tvDownloadOCRData;
+    @BindView(R.id.cbCloudOCR)
+    CheckBox cbCloudOCR;
 
     AlertDialog mDateDialog;
 
@@ -66,18 +71,28 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     private void init() {
+        SharedPUtils sharedPUtils = new SharedPUtils();
+        cbCloudOCR.setChecked("true".equals(sharedPUtils.getCache("cloudocr")));
+        tvDownloadOCRData.setEnabled(!cbCloudOCR.isChecked());
         tvVersion.setText(VersionUtils.getAppVersionName() + "(" + VersionUtils.getAppVersionCode() + ")");
     }
 
-    @OnClick({R.id.layoutBack, R.id.layoutDownloadOCRData, R.id.layoutMemberManage, R.id.tvExportData, R.id.tvImportData, R.id.tvDeleteData, R.id.tvSpecification, R.id.tvShareApp})
+    @OnClick({R.id.layoutBack, R.id.tvDownloadOCRData, R.id.layoutCloudOCR, R.id.layoutMemberManage, R.id.tvExportData, R.id.tvImportData, R.id.tvDeleteData, R.id.tvSpecification, R.id.tvShareApp})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.layoutBack:
                 finish();
                 break;
-            case R.id.layoutDownloadOCRData:
+            case R.id.tvDownloadOCRData:
                 //管理OCR
                 ViewJump.toOCRManage(this);
+                break;
+            case R.id.layoutCloudOCR:
+                //使用在线OCR
+                cbCloudOCR.setChecked(!cbCloudOCR.isChecked());
+                tvDownloadOCRData.setEnabled(!cbCloudOCR.isChecked());
+                SharedPUtils sharedPUtils = new SharedPUtils();
+                sharedPUtils.setCache("cloudocr", cbCloudOCR.isChecked()+"");
                 break;
             case R.id.layoutMemberManage:
                 //成员管理
@@ -96,14 +111,14 @@ public class SettingsActivity extends AppCompatActivity {
 
                             @Override
                             public void selectMultDate(DayTimeEntity startTimeEntity, DayTimeEntity endTimeEntity) {
-                                DLog.d(startTimeEntity.year + "/"+startTimeEntity.month+"/"+startTimeEntity.day +"/"+startTimeEntity.listPosition+"/"+startTimeEntity.monthPosition);
-                                DLog.d(endTimeEntity.year + "/"+endTimeEntity.month+"/"+endTimeEntity.day +"/"+endTimeEntity.listPosition+"/"+endTimeEntity.monthPosition);
-                                if (startTimeEntity.day == 0 && endTimeEntity.day == 0){
+                                DLog.d(startTimeEntity.year + "/" + startTimeEntity.month + "/" + startTimeEntity.day + "/" + startTimeEntity.listPosition + "/" + startTimeEntity.monthPosition);
+                                DLog.d(endTimeEntity.year + "/" + endTimeEntity.month + "/" + endTimeEntity.day + "/" + endTimeEntity.listPosition + "/" + endTimeEntity.monthPosition);
+                                if (startTimeEntity.day == 0 && endTimeEntity.day == 0) {
                                     //没有选择日期
                                     PopupUtils.sendToast(R.string.select_date);
-                                }else {
+                                } else {
                                     mDateDialog.dismiss();
-                                    SelectDate date = new SelectDate(startTimeEntity,endTimeEntity);
+                                    SelectDate date = new SelectDate(startTimeEntity, endTimeEntity);
                                     new AlertDialog.Builder(SettingsActivity.this).setTitle(R.string.attention)
                                             .setMessage(getString(R.string.export_data_date_, date.getTag()))
                                             .setPositiveButton(R.string.export, new DialogInterface.OnClickListener() {
@@ -196,10 +211,10 @@ public class SettingsActivity extends AppCompatActivity {
 
                     @Override
                     public void selectMultDate(DayTimeEntity startTimeEntity, DayTimeEntity endTimeEntity) {
-                        if (startTimeEntity.day == 0 && endTimeEntity.day == 0){
+                        if (startTimeEntity.day == 0 && endTimeEntity.day == 0) {
                             //没有选择日期
                             PopupUtils.sendToast(R.string.select_date);
-                        }else {
+                        } else {
                             mDateDialog.dismiss();
                             SelectDate date = new SelectDate(startTimeEntity, endTimeEntity);
                             new AlertDialog.Builder(SettingsActivity.this).setTitle(R.string.attention)
@@ -213,11 +228,11 @@ public class SettingsActivity extends AppCompatActivity {
                                                 @Override
                                                 public void execute(Realm realm) {
                                                     for (Report report : reports) {
-                                                        if(report!=null && report.getImage()!=null) {
+                                                        if (report != null && report.getImage() != null) {
                                                             ImageInfo imageInfo = realm.where(ImageInfo.class)
                                                                     .equalTo("md5", report.getImage().getMd5())
                                                                     .findFirst();
-                                                            if (imageInfo!=null)
+                                                            if (imageInfo != null)
                                                                 imageInfo.deleteFromRealm();
                                                         }
                                                     }
@@ -260,34 +275,34 @@ public class SettingsActivity extends AppCompatActivity {
         return new AlertDialog.Builder(this).setView(dateLayout).show();
     }
 
-    class SelectDate{
+    class SelectDate {
         long startTime;
         long endTime;
         String tag;
 
-        public SelectDate(DayTimeEntity startTimeEntity,DayTimeEntity endTimeEntity){
+        public SelectDate(DayTimeEntity startTimeEntity, DayTimeEntity endTimeEntity) {
 
             Calendar calendar = Calendar.getInstance();
-                if (startTimeEntity.day == 0 ^ endTimeEntity.day == 0) {
-                    //只选择了一个日期 就只取一天的数据
-                    DayTimeEntity dayTime = startTimeEntity;
-                    if (startTimeEntity.day == 0){
-                        dayTime = endTimeEntity;
-                    }
-                    calendar.set(dayTime.year, dayTime.month, dayTime.day, 0, 0, 0);
-                    startTime = calendar.getTimeInMillis();
-                    calendar.add(Calendar.DAY_OF_MONTH, 1);
-                    endTime = calendar.getTimeInMillis();
-                    tag = getString(R.string._y_m_d, dayTime.year, dayTime.month, dayTime.day);
-                } else {
-                    calendar.set(startTimeEntity.year, startTimeEntity.month , startTimeEntity.day, 0, 0, 0);
-                    startTime = calendar.getTimeInMillis();
-                    calendar.set(endTimeEntity.year, endTimeEntity.month, endTimeEntity.day, 0, 0, 0);
-                    calendar.add(Calendar.DAY_OF_MONTH, 1);
-                    endTime = calendar.getTimeInMillis();
-                    tag = getString(R.string._y_m_d, startTimeEntity.year, startTimeEntity.month+1, startTimeEntity.day)
-                            + " - " + getString(R.string._y_m_d, endTimeEntity.year, endTimeEntity.month+1, endTimeEntity.day) ;
+            if (startTimeEntity.day == 0 ^ endTimeEntity.day == 0) {
+                //只选择了一个日期 就只取一天的数据
+                DayTimeEntity dayTime = startTimeEntity;
+                if (startTimeEntity.day == 0) {
+                    dayTime = endTimeEntity;
                 }
+                calendar.set(dayTime.year, dayTime.month, dayTime.day, 0, 0, 0);
+                startTime = calendar.getTimeInMillis();
+                calendar.add(Calendar.DAY_OF_MONTH, 1);
+                endTime = calendar.getTimeInMillis();
+                tag = getString(R.string._y_m_d, dayTime.year, dayTime.month, dayTime.day);
+            } else {
+                calendar.set(startTimeEntity.year, startTimeEntity.month, startTimeEntity.day, 0, 0, 0);
+                startTime = calendar.getTimeInMillis();
+                calendar.set(endTimeEntity.year, endTimeEntity.month, endTimeEntity.day, 0, 0, 0);
+                calendar.add(Calendar.DAY_OF_MONTH, 1);
+                endTime = calendar.getTimeInMillis();
+                tag = getString(R.string._y_m_d, startTimeEntity.year, startTimeEntity.month + 1, startTimeEntity.day)
+                        + " - " + getString(R.string._y_m_d, endTimeEntity.year, endTimeEntity.month + 1, endTimeEntity.day);
+            }
 
         }
 

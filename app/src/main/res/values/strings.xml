@@ -40,10 +40,10 @@
     <string name="attention_not_wifi">非WIFI网络环境，是否直接下载？</string>
 
     <string name="guide">指导</string>
-    <string name="guide_download_data_package">应用需要下载OCR支撑数据包才能正常使用，是否要现在下载？</string>
+    <string name="guide_download_data_package">应用需要开启云识别或者下载OCR支撑数据包才能正常使用，是否要开启或者下载？</string>
 
     <string name="data_package_exist">OCR支撑数据包是存在的</string>
-    <string name="data_package_not_exist">OCR支撑数据包不存在，请前往首页设置中下载OCR支撑数据包</string>
+    <string name="data_package_not_exist">未开启云识别或者OCR支撑数据包不存在</string>
 
     <string name="share_data_empty">无数据可分享</string>
     <string name="share_data_template_1">%s ,共 %d 人上传猎魔记录</string>
@@ -97,4 +97,7 @@
     <string name="equivalent_lv1_">等效Lv.1</string>
     <string name="zhi">只</string>
     <string name="ocr_data_manage">OCR数据管理</string>
+    <string name="save_exit">是否保存当前数据再退出</string>
+    <string name="exit">退出</string>
+    <string name="use_cloud_ocr">开启云识别</string>
 </resources>

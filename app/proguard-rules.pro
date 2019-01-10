@@ -30,3 +30,5 @@
 -keep public class com.deanlib.lordshunter.R$*{
 public static final int *;
 }
+-keep class com.baidu.ocr.sdk.**{*;}
+-dontwarn com.baidu.ocr.**

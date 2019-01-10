@@ -32,16 +32,45 @@
     </RelativeLayout>
 
     <LinearLayout
-        android:id="@+id/layoutDownloadOCRData"
         android:elevation="1dp"
         android:layout_marginTop="10dp"
         android:background="@color/colorWhite"
         android:gravity="center_vertical"
-        android:orientation="horizontal"
+        android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+        <LinearLayout
+            android:id="@+id/layoutCloudOCR"
+            android:gravity="center_vertical"
+            android:descendantFocusability="blocksDescendants"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:padding="10dp"
+                android:textColor="@color/textBlack"
+                android:textSize="@dimen/text_size_normal_x"
+                android:layout_weight="1"
+                android:text="@string/use_cloud_ocr"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <CheckBox
+                android:clickable="false"
+                android:id="@+id/cbCloudOCR"
+                android:layout_marginLeft="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <View
+            android:background="@color/colorGrayTint"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"/>
 
         <TextView
+            android:background="@drawable/selector_background"
+            android:id="@+id/tvDownloadOCRData"
             android:drawableRight="@mipmap/go_black"
             android:padding="10dp"
             android:textColor="@color/textBlack"

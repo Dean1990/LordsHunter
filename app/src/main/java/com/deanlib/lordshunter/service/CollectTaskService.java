@@ -92,7 +92,12 @@ public class CollectTaskService extends Service {
 
                     //文字识别
                     EventBus.getDefault().post(new CollectTaskEvent(CollectTaskEvent.ACTION_SERVICE_MESSAGE, getString(R.string.text_extraction)));
-                    Utils.ocr(reports);
+                    SharedPUtils sharedPUtils = new SharedPUtils();
+                    if("true".equals(sharedPUtils.getCache("cloudocr"))) {
+                        Utils.cloudOCR(CollectTaskService.this,reports);
+                    }else {
+                        Utils.localOCR(reports);
+                    }
                     emitter.onNext(reports);
                     emitter.onComplete();
                 }

@@ -18,6 +18,7 @@ import com.deanlib.lordshunter.app.Constant;
 import com.deanlib.lordshunter.data.entity.Report;
 import com.deanlib.ootblite.OotbConfig;
 import com.deanlib.ootblite.data.SharedPUtils;
+import com.deanlib.ootblite.utils.AppUtils;
 import com.deanlib.ootblite.utils.DLog;
 import com.deanlib.ootblite.utils.FormatUtils;
 import com.deanlib.ootblite.utils.PopupUtils;
@@ -87,15 +88,15 @@ public class MainActivity extends BaseActivity {
 
         //字库文件
         mTraineddata = Utils.getOCR(Constant.OCR_LANGUAGE).getFile();
-
-        if (!mTraineddata.exists()) {
+        SharedPUtils sharedPUtils = new SharedPUtils();
+        if (!mTraineddata.exists() && !"true".equals(sharedPUtils.getCache("cloudocr"))) {
             //第一次使用
             OotbConfig.task().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    ViewJump.toWebView(MainActivity.this, Constant.README_URL_HEADER + "readme_"+Constant.OCR_LANGUAGE+".html");
+                    ViewJump.toWebView(MainActivity.this, Constant.README_URL_HEADER + "readme_" + Constant.OCR_LANGUAGE + ".html");
                 }
-            },2000);
+            }, 2000);
         }
 
         RxPermissions permissions = new RxPermissions(this);
@@ -107,19 +108,25 @@ public class MainActivity extends BaseActivity {
 //                        PopupUtils.sendToast(R.string.permission_not_granted);
                     }
 
-                    if (!mTraineddata.exists()) {
+                    if (!mTraineddata.exists() && !"true".equals(sharedPUtils.getCache("cloudocr"))) {
                         new AlertDialog.Builder(MainActivity.this).setTitle(R.string.guide).setMessage(R.string.guide_download_data_package)
-                                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                                .setPositiveButton(R.string.use_cloud_ocr, new DialogInterface.OnClickListener() {
                                     @Override
                                     public void onClick(DialogInterface dialog, int which) {
-                                        ViewJump.toOCRManage(MainActivity.this,true);
+                                        dialog.dismiss();
+                                        sharedPUtils.setCache("cloudocr", "true");
                                     }
-                                }).setNegativeButton(R.string.cancel, null).show();
+                                }).setNegativeButton(R.string.download_data_package, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                ViewJump.toOCRManage(MainActivity.this, true);
+                            }
+                        }).setNeutralButton(R.string.cancel,null).show();
                     }
                 });
 
         //查看是否有缓存
-        SharedPUtils sharedPUtils = new SharedPUtils();
         List<Report> reports = JSON.parseArray(sharedPUtils.getCache("unsavareports"), Report.class);
         if (reports != null) {
             new AlertDialog.Builder(this).setTitle(R.string.attention).setMessage(R.string.data_not_save)
@@ -141,8 +148,8 @@ public class MainActivity extends BaseActivity {
             public void run() {
                 //广告
                 String adShowDate = sharedPUtils.getCache("ad_show_date");
-                if (!FormatUtils.convertDateTimestampToString(System.currentTimeMillis(),FormatUtils.DATE_FORMAT_YMD).equals(adShowDate))
-                    startActivity(new Intent(MainActivity.this,AdActivity.class));
+                if (!FormatUtils.convertDateTimestampToString(System.currentTimeMillis(), FormatUtils.DATE_FORMAT_YMD).equals(adShowDate))
+                    startActivity(new Intent(MainActivity.this, AdActivity.class));
             }
         });
 
@@ -173,7 +180,7 @@ public class MainActivity extends BaseActivity {
                 mCalendar.set(year, 0, 1);
                 startTime = mCalendar.getTimeInMillis();
                 mCalendar.add(Calendar.YEAR, 1);
-                endTime = mCalendar.getTimeInMillis()-1;
+                endTime = mCalendar.getTimeInMillis() - 1;
                 grain = 60 * 60 * 1000 * 24 * 30L;
                 tvDate.setText(mDateFormat5.format(new Date(startTime)) + " - " + mDateFormat5.format(new Date(endTime)));
                 break;
@@ -192,7 +199,7 @@ public class MainActivity extends BaseActivity {
                 mCalendar.add(Calendar.DATE, -week + 1);
                 startTime = mCalendar.getTimeInMillis();
                 mCalendar.add(Calendar.DATE, 7);
-                endTime = mCalendar.getTimeInMillis()-1;
+                endTime = mCalendar.getTimeInMillis() - 1;
                 grain = 60 * 60 * 1000 * 24L;
                 tvDate.setText(mDateFormat4.format(new Date(startTime)) + " - " + mDateFormat4.format(new Date(endTime)));
                 break;
@@ -201,7 +208,7 @@ public class MainActivity extends BaseActivity {
                 mCalendar.set(year, month, date, 0, 0, 0);
                 startTime = mCalendar.getTimeInMillis();
                 mCalendar.add(Calendar.DATE, 1);
-                endTime = mCalendar.getTimeInMillis()-1;
+                endTime = mCalendar.getTimeInMillis() - 1;
                 grain = 60 * 60 * 1000L;
                 tvDate.setText(mDateFormat3.format(new Date(startTime)));
                 break;
@@ -237,7 +244,7 @@ public class MainActivity extends BaseActivity {
             long killCount = realm.where(Report.class).between("timestamp", start, end).count();
             kills.add(new Entry(x, killCount));
 
-            long memberCount = realm.where(Report.class).between("timestamp", start, end).distinct("name","group").count();
+            long memberCount = realm.where(Report.class).between("timestamp", start, end).distinct("name", "group").count();
             members.add(new Entry(x, memberCount));
 
             long euivalentCount = 0;
@@ -250,7 +257,7 @@ public class MainActivity extends BaseActivity {
                     euivalentCount += Utils.equivalentLv1(level, count);
                 }
             }
-            equivalents.add(new Entry(x,euivalentCount));
+            equivalents.add(new Entry(x, euivalentCount));
 
         }
 
@@ -400,7 +407,7 @@ public class MainActivity extends BaseActivity {
                 break;
             case R.id.btnShareData:
                 Realm realm = Realm.getDefaultInstance();
-                long memberNum = realm.where(Report.class).between("timestamp", startTime, endTime).distinct("name","group").count();
+                long memberNum = realm.where(Report.class).between("timestamp", startTime, endTime).distinct("name", "group").count();
                 if (memberNum != 0) {
                     StringBuilder data = new StringBuilder(getString(R.string.share_data_template_1, tvDate.getText().toString(), memberNum) + ",");
                     long equalLv1 = 0;
@@ -584,7 +591,10 @@ public class MainActivity extends BaseActivity {
 
     }
 
-
+    @Override
+    public void onBackPressed() {
+        AppUtils.exit();
+    }
 
 
 }
