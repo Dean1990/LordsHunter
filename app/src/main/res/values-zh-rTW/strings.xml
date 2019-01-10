@@ -3,7 +3,7 @@
     <string name="error_data">不可識別的數據</string>
     <string name="parse_data">解析數據...</string>
     <string name="repet_data">檢查重復圖片...</string>
-    <string name="text_extraction">識別圖片中的文字比較耗時，請等待...</string>
+    <string name="text_extraction_">識別圖片中的文字比較耗時，請等待(%d/%d)</string>
     <string name="save">保存</string>
     <string name="prey_name_">獵物名稱：%s</string>
     <string name="prey_level_">獵物等級：%d 級</string>

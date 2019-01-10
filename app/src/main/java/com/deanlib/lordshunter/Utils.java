@@ -22,10 +22,13 @@ import com.deanlib.lordshunter.data.entity.Member;
 import com.deanlib.lordshunter.data.entity.OCR;
 import com.deanlib.lordshunter.data.entity.Prey;
 import com.deanlib.lordshunter.data.entity.Report;
+import com.deanlib.lordshunter.event.CollectTaskEvent;
 import com.deanlib.ootblite.data.FileUtils;
 import com.deanlib.ootblite.utils.DLog;
 import com.deanlib.ootblite.utils.MD5;
 import com.googlecode.tesseract.android.TessBaseAPI;
+
+import org.greenrobot.eventbus.EventBus;
 
 import java.io.File;
 
@@ -237,8 +240,9 @@ public class Utils {
             return list;
         try {
             CountDownLatch countDownLatch = new CountDownLatch(list.size());
-            for (Report report : list) {
-
+            for (int i = 0;i<list.size();i++) {
+                Report report = list.get(i);
+                int finalI = i;
                 cloudOCR(context, report, new OnResultListener<GeneralResult>() {
                     @Override
                     public void onResult(GeneralResult generalResult) {
@@ -257,6 +261,7 @@ public class Utils {
                             report.getImage().setPreyLevel(Integer.valueOf(matcher.group(1)));
                             report.getImage().setKill(true);//默认 true
                         }
+                        EventBus.getDefault().post(new CollectTaskEvent(CollectTaskEvent.ACTION_SERVICE_MESSAGE, context.getString(R.string.text_extraction_, finalI +1,list.size())));
                         countDownLatch.countDown();
                     }
 
@@ -266,10 +271,10 @@ public class Utils {
                         ocrError.printStackTrace();
                         DLog.d("Change to localOCR");
                         localOCR(report, Constant.OCR_LANGUAGE, null);
+                        EventBus.getDefault().post(new CollectTaskEvent(CollectTaskEvent.ACTION_SERVICE_MESSAGE, context.getString(R.string.text_extraction_, finalI +1,list.size())));
                         countDownLatch.countDown();
                     }
                 });
-
             }
             countDownLatch.await();
         } catch (InterruptedException e) {
@@ -374,13 +379,14 @@ public class Utils {
      * @param list
      * @return
      */
-    public static List<Report> localOCR(List<Report> list) {
+    public static List<Report> localOCR(Context context,List<Report> list) {
         DLog.d("local ocr");
         if (list == null || list.size() == 0)
             return list;
 
-        for (Report report : list) {
-            localOCR(report, Constant.OCR_LANGUAGE, null);
+        for (int i = 0;i<list.size() ; i++) {
+            localOCR(list.get(i), Constant.OCR_LANGUAGE, null);
+            EventBus.getDefault().post(new CollectTaskEvent(CollectTaskEvent.ACTION_SERVICE_MESSAGE, context.getString(R.string.text_extraction_,i+1,list.size())));
         }
 
         return list;

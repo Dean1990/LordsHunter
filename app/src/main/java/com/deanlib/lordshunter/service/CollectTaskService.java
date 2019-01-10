@@ -24,6 +24,8 @@ import com.deanlib.ootblite.data.SharedPUtils;
 import com.deanlib.ootblite.utils.DLog;
 
 import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.List;
 
@@ -40,6 +42,7 @@ public class CollectTaskService extends Service {
     NotificationCompat.Builder mNotificationBuilder;
     String CHANNEL_ID = "com.deanlib.lordshunter.service";
     String CHANNEL_NAME = "Service";
+    int mServiceNotifiyId;
 
     @Nullable
     @Override
@@ -51,8 +54,8 @@ public class CollectTaskService extends Service {
     public int onStartCommand(Intent intent, int flags, int startId) {
         if (intent != null) {
             DLog.d("onStartCommand");
-
-            int notifiyId = (int) System.currentTimeMillis();
+            EventBus.getDefault().register(this);
+            mServiceNotifiyId = (int) System.currentTimeMillis();
             NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
                 NotificationChannel channel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
@@ -75,7 +78,7 @@ public class CollectTaskService extends Service {
                     .bigText(getString(R.string.collection_working)));
 
 //        mNotificationManager.notify(notifiyId, builder.build());
-            startForeground(notifiyId, mNotificationBuilder.build());
+            startForeground(mServiceNotifiyId, mNotificationBuilder.build());
 
             String text = intent.getStringExtra("text");
             List<Uri> images = intent.getParcelableArrayListExtra("images");
@@ -91,12 +94,12 @@ public class CollectTaskService extends Service {
                     }
 
                     //文字识别
-                    EventBus.getDefault().post(new CollectTaskEvent(CollectTaskEvent.ACTION_SERVICE_MESSAGE, getString(R.string.text_extraction)));
+                    EventBus.getDefault().post(new CollectTaskEvent(CollectTaskEvent.ACTION_SERVICE_MESSAGE, getString(R.string.text_extraction_,0,reports.size())));
                     SharedPUtils sharedPUtils = new SharedPUtils();
                     if("true".equals(sharedPUtils.getCache("cloudocr"))) {
                         Utils.cloudOCR(CollectTaskService.this,reports);
                     }else {
-                        Utils.localOCR(reports);
+                        Utils.localOCR(CollectTaskService.this,reports);
                     }
                     emitter.onNext(reports);
                     emitter.onComplete();
@@ -160,6 +163,7 @@ public class CollectTaskService extends Service {
                             e.printStackTrace();
                             DLog.d("error:" + e.getMessage());
                             EventBus.getDefault().post(new CollectTaskEvent(CollectTaskEvent.ACTION_ERROR, e.getMessage()));
+                            EventBus.getDefault().unregister(CollectTaskService.this);
                             stopForeground(true);
                         }
 
@@ -167,6 +171,7 @@ public class CollectTaskService extends Service {
                         public void onComplete() {
                             DLog.d("complete");
                             EventBus.getDefault().post(new CollectTaskEvent(CollectTaskEvent.ACTION_COMPLETE, null));
+                            EventBus.getDefault().unregister(CollectTaskService.this);
                             stopForeground(true);
                         }
                     });
@@ -174,10 +179,24 @@ public class CollectTaskService extends Service {
         return super.onStartCommand(intent, flags, startId);
     }
 
+    @Subscribe(threadMode = ThreadMode.MAIN)
+    public void onCollectTaskEvent(CollectTaskEvent event) {
+       switch (event.getAction()){
+           case CollectTaskEvent.ACTION_SERVICE_MESSAGE:
+               String msg = (String) event.getObj();
+               mNotificationBuilder.setContentText(msg);
+               mNotificationBuilder.setStyle(new NotificationCompat.BigTextStyle()
+                       .bigText(msg));
+               startForeground(mServiceNotifiyId, mNotificationBuilder.build());
+               break;
+       }
+    }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
         DLog.d("onDestroy");
+        EventBus.getDefault().unregister(this);
         stopForeground(true);
     }
 }
