@@ -40,7 +40,7 @@
     <string name="attention_not_wifi">非WIFI網絡環境，是否直接下載？</string>
 
     <string name="guide">指導</string>
-    <string name="guide_download_data_package">應用需要開啟雲識別或者下載OCR支撐數據包才能正常使用，是否要開啟或者下載？</string>
+    <string name="guide_download_data_package">應用需要下載OCR支撐數據包才能正常使用</string>
 
     <string name="data_package_exist">OCR支撐數據包是存在的</string>
     <string name="data_package_not_exist">未開啟雲識別或者OCR支撐數據包不存在</string>
@@ -100,4 +100,7 @@
     <string name="save_exit">是否保存當前數據再退出</string>
     <string name="exit">退出</string>
     <string name="use_cloud_ocr">開啟雲識別</string>
+    <string name="open">開啟</string>
+    <string name="go_settings">去設置</string>
+    <string name="suggest_download_ocr_package">建議下載OCR支撐數據包提高識別率</string>
 </resources>

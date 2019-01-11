@@ -89,10 +89,30 @@ public class SettingsActivity extends AppCompatActivity {
                 break;
             case R.id.layoutCloudOCR:
                 //使用在线OCR
-                cbCloudOCR.setChecked(!cbCloudOCR.isChecked());
-                tvDownloadOCRData.setEnabled(!cbCloudOCR.isChecked());
-                SharedPUtils sharedPUtils = new SharedPUtils();
-                sharedPUtils.setCache("cloudocr", cbCloudOCR.isChecked()+"");
+                if (!Utils.getOCR(Constant.OCR_LANGUAGE).getFile().exists()){
+                    new AlertDialog.Builder(this).setTitle(R.string.attention)
+                            .setMessage(R.string.suggest_download_ocr_package).setPositiveButton(R.string.go_settings, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                            ViewJump.toOCRManage(SettingsActivity.this, true);
+                        }
+                    }).setNegativeButton(R.string.open, new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            cbCloudOCR.setChecked(!cbCloudOCR.isChecked());
+                            tvDownloadOCRData.setEnabled(!cbCloudOCR.isChecked());
+                            SharedPUtils sharedPUtils = new SharedPUtils();
+                            sharedPUtils.setCache("cloudocr", cbCloudOCR.isChecked() + "");
+                            dialog.dismiss();
+                        }
+                    }).show();
+                }else {
+                    cbCloudOCR.setChecked(!cbCloudOCR.isChecked());
+                    tvDownloadOCRData.setEnabled(!cbCloudOCR.isChecked());
+                    SharedPUtils sharedPUtils = new SharedPUtils();
+                    sharedPUtils.setCache("cloudocr", cbCloudOCR.isChecked() + "");
+                }
                 break;
             case R.id.layoutMemberManage:
                 //成员管理

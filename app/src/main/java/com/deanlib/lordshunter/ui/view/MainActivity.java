@@ -108,21 +108,15 @@ public class MainActivity extends BaseActivity {
 //                        PopupUtils.sendToast(R.string.permission_not_granted);
                     }
 
-                    if (!mTraineddata.exists() && !"true".equals(sharedPUtils.getCache("cloudocr"))) {
+                    if (!mTraineddata.exists()) {
                         new AlertDialog.Builder(MainActivity.this).setTitle(R.string.guide).setMessage(R.string.guide_download_data_package)
-                                .setPositiveButton(R.string.use_cloud_ocr, new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        dialog.dismiss();
-                                        sharedPUtils.setCache("cloudocr", "true");
-                                    }
-                                }).setNegativeButton(R.string.download_data_package, new DialogInterface.OnClickListener() {
+                                .setPositiveButton(R.string.download_data_package, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int which) {
                                 dialog.dismiss();
                                 ViewJump.toOCRManage(MainActivity.this, true);
                             }
-                        }).setNeutralButton(R.string.cancel,null).show();
+                        }).setNegativeButton(R.string.cancel,null).show();
                     }
                 });
 
