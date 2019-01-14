@@ -56,11 +56,11 @@ public class CollectTaskService extends Service {
             DLog.d("onStartCommand");
             EventBus.getDefault().register(this);
             mServiceNotifiyId = (int) System.currentTimeMillis();
-            NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                NotificationChannel channel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
-                mNotificationManager.createNotificationChannel(channel);
-            }
+//            NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+//                NotificationChannel channel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+//                mNotificationManager.createNotificationChannel(channel);
+//            }
 
             mNotificationBuilder = new NotificationCompat.Builder(CollectTaskService.this, CHANNEL_ID);
             mNotificationBuilder.setSmallIcon(R.mipmap.notify_icon);
@@ -76,6 +76,7 @@ public class CollectTaskService extends Service {
             mNotificationBuilder.setWhen(System.currentTimeMillis());
             mNotificationBuilder.setStyle(new NotificationCompat.BigTextStyle()
                     .bigText(getString(R.string.collection_working)));
+            mNotificationBuilder.setDefaults(NotificationCompat.FLAG_ONLY_ALERT_ONCE);
 
 //        mNotificationManager.notify(notifiyId, builder.build());
             startForeground(mServiceNotifiyId, mNotificationBuilder.build());
@@ -187,6 +188,7 @@ public class CollectTaskService extends Service {
                mNotificationBuilder.setContentText(msg);
                mNotificationBuilder.setStyle(new NotificationCompat.BigTextStyle()
                        .bigText(msg));
+               mNotificationBuilder.setSound(null);
                startForeground(mServiceNotifiyId, mNotificationBuilder.build());
                break;
        }
