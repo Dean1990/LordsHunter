@@ -16,6 +16,7 @@ import android.support.v4.app.NotificationCompat;
 
 import com.deanlib.lordshunter.R;
 import com.deanlib.lordshunter.Utils;
+import com.deanlib.lordshunter.app.Constant;
 import com.deanlib.lordshunter.data.entity.Report;
 import com.deanlib.lordshunter.event.CollectTaskEvent;
 import com.deanlib.lordshunter.ui.view.SaveActivity;
@@ -40,9 +41,9 @@ import io.reactivex.schedulers.Schedulers;
 public class CollectTaskService extends Service {
 
     NotificationCompat.Builder mNotificationBuilder;
-    String CHANNEL_ID = "com.deanlib.lordshunter.service";
-    String CHANNEL_NAME = "Service";
     int mServiceNotifiyId;
+    public static String CHANNEL_ID = "com.deanlib.lordshunter.service";
+    public static String CHANNEL_SERVICE = "Service";
 
     @Nullable
     @Override
@@ -56,19 +57,14 @@ public class CollectTaskService extends Service {
             DLog.d("onStartCommand");
             EventBus.getDefault().register(this);
             mServiceNotifiyId = (int) System.currentTimeMillis();
-//            NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-//            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-//                NotificationChannel channel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
-//                mNotificationManager.createNotificationChannel(channel);
-//            }
 
-            mNotificationBuilder = new NotificationCompat.Builder(CollectTaskService.this, CHANNEL_ID);
+            mNotificationBuilder = new NotificationCompat.Builder(CollectTaskService.this,CHANNEL_ID);
             mNotificationBuilder.setSmallIcon(R.mipmap.notify_icon);
             //builder.setSmallIcon(android.os.Build.VERSION.SDK_INT>20?R.drawable.ic_launcher_round:R.drawable.ic_launcher);
             //builder.setColor(context.getResources().getColor(R.color.icon_blue));
             mNotificationBuilder.setLargeIcon(BitmapFactory.decodeResource(CollectTaskService.this.getResources(), R.mipmap.icon));
             mNotificationBuilder.setAutoCancel(true);
-            mNotificationBuilder.setDefaults(Notification.DEFAULT_ALL);
+//            mNotificationBuilder.setDefaults(Notification.DEFAULT_ALL);
             mNotificationBuilder.setTicker(getString(R.string.collection_working));
             mNotificationBuilder.setContentTitle(getString(R.string.app_name));
             mNotificationBuilder.setContentText(getString(R.string.collection_working));
@@ -76,7 +72,15 @@ public class CollectTaskService extends Service {
             mNotificationBuilder.setWhen(System.currentTimeMillis());
             mNotificationBuilder.setStyle(new NotificationCompat.BigTextStyle()
                     .bigText(getString(R.string.collection_working)));
-            mNotificationBuilder.setDefaults(NotificationCompat.FLAG_ONLY_ALERT_ONCE);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                NotificationChannel channel = new NotificationChannel(CHANNEL_ID, CHANNEL_SERVICE, NotificationManager.IMPORTANCE_DEFAULT);
+                channel.setSound(null,null);
+                notificationManager.createNotificationChannel(channel);
+                mNotificationBuilder.setChannelId(CHANNEL_ID);
+            }else {
+                mNotificationBuilder.setSound(null);
+            }
 
 //        mNotificationManager.notify(notifiyId, builder.build());
             startForeground(mServiceNotifiyId, mNotificationBuilder.build());
@@ -132,7 +136,7 @@ public class CollectTaskService extends Service {
                                     int notifiyId = (int) System.currentTimeMillis();
                                     NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
                                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                                        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, CHANNEL_NAME, NotificationManager.IMPORTANCE_DEFAULT);
+                                        NotificationChannel channel = new NotificationChannel(CHANNEL_ID, CHANNEL_SERVICE, NotificationManager.IMPORTANCE_DEFAULT);
                                         mNotificationManager.createNotificationChannel(channel);
                                     }
 
@@ -152,6 +156,7 @@ public class CollectTaskService extends Service {
                                     builder.setContentIntent(pendingIntent);
                                     builder.setStyle(new NotificationCompat.BigTextStyle()
                                             .bigText(getString(R.string.collection_save)));
+                                    builder.setChannelId(CHANNEL_ID);
 
                                     mNotificationManager.notify(notifiyId, builder.build());
 
@@ -188,7 +193,6 @@ public class CollectTaskService extends Service {
                mNotificationBuilder.setContentText(msg);
                mNotificationBuilder.setStyle(new NotificationCompat.BigTextStyle()
                        .bigText(msg));
-               mNotificationBuilder.setSound(null);
                startForeground(mServiceNotifiyId, mNotificationBuilder.build());
                break;
        }
