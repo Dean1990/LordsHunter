@@ -27,6 +27,7 @@ import com.baoyz.swipemenulistview.SwipeMenuListView;
 import com.deanlib.lordshunter.R;
 import com.deanlib.lordshunter.Utils;
 import com.deanlib.lordshunter.app.Constant;
+import com.deanlib.lordshunter.data.entity.LikeReport;
 import com.deanlib.lordshunter.data.entity.Report;
 import com.deanlib.lordshunter.event.CollectTaskEvent;
 import com.deanlib.lordshunter.service.CollectTaskService;
@@ -261,8 +262,8 @@ public class SaveActivity extends BaseActivity {
                                                 if (report.getStatus() == Report.STATUS_NEW) {
                                                     if (report.getImage().getAttachReports()!=null
                                                     && !report.getImage().getAttachReports().isEmpty()){
-                                                        for (Report report1:report.getImage().getAttachReports()){
-                                                            createUUIDandSave(realm, report1);
+                                                        for (LikeReport report1:report.getImage().getAttachReports()){
+                                                            createUUIDandSave(realm, report1.toReport());
                                                         }
                                                     }else {
                                                         createUUIDandSave(realm, report);

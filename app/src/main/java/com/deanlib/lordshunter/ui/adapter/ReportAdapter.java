@@ -78,7 +78,10 @@ public class ReportAdapter extends BaseAdapter {
         switch (list.get(position).getStatus()) {
             case Report.STATUS_NEW:
                 holder.imgTag.setVisibility(View.GONE);
-                if (list.get(position).getImage().getPreyLevel() == 0 || list.get(position).getImage().getPreyName() == null){
+                if ((list.get(position).getImage().getPreyLevel() == 0
+                        || list.get(position).getImage().getPreyName() == null)
+                        && (list.get(position).getImage().getAttachReports()==null
+                        || list.get(position).getImage().getAttachReports().isEmpty())){
                     holder.layoutItem.setBackgroundResource(R.color.colorYellowAlpha);
                 }else {
                     holder.layoutItem.setBackgroundResource(R.color.colorWhite);

@@ -20,4 +20,12 @@
         android:id="@+id/layoutBlock"
         layout="@layout/layout_level_block"/>
 
+    <TextView
+        android:layout_marginTop="10dp"
+        android:gravity="center"
+        android:textSize="@dimen/text_size_normal_l"
+        android:textColor="@color/textGray"
+        android:text="@string/dialog_multiple_tip"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 </LinearLayout>

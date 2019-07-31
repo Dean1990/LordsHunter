@@ -11,21 +11,41 @@ import io.realm.annotations.Ignore;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 
-public class ImageInfo extends RealmObject implements Parcelable,Cloneable {
+public class LikeImageInfo implements Parcelable,Cloneable {
 
 
-    @PrimaryKey
     String id;
     String preyName;//猎物名称
     int preyLevel;//猎物等级
     String dataTime;//猎杀时间
     String uri;//截图地址
-    @Index
+
     String md5;
     boolean isKill;
 
-    @Ignore
-    List<LikeReport> attachReports;//一张图片中可能 有多条信息
+    public LikeImageInfo(ImageInfo imageInfo) {
+        if (imageInfo!=null){
+            id = imageInfo.id;
+            preyName = imageInfo.preyName;
+            preyLevel = imageInfo.preyLevel;
+            dataTime = imageInfo.dataTime;
+            uri = imageInfo.uri;
+            md5 = imageInfo.md5;
+            isKill = imageInfo.isKill;
+        }
+    }
+
+    public ImageInfo toImageInfo(){
+        ImageInfo imageInfo = new ImageInfo();
+        imageInfo.setId(id);
+        imageInfo.setPreyName(preyName);
+        imageInfo.setPreyLevel(preyLevel);
+        imageInfo.setDataTime(dataTime);
+        imageInfo.setUri(uri);
+        imageInfo.setMd5(md5);
+        imageInfo.setKill(isKill);
+        return imageInfo;
+    }
 
     public String getId() {
         return id;
@@ -83,15 +103,6 @@ public class ImageInfo extends RealmObject implements Parcelable,Cloneable {
         isKill = kill;
     }
 
-    public List<LikeReport> getAttachReports() {
-        return attachReports;
-    }
-
-    public void setAttachReports(List<LikeReport> attachReports) {
-        this.attachReports = attachReports;
-    }
-
-
     @Override
     public int describeContents() {
         return 0;
@@ -106,13 +117,12 @@ public class ImageInfo extends RealmObject implements Parcelable,Cloneable {
         dest.writeString(this.uri);
         dest.writeString(this.md5);
         dest.writeByte(this.isKill ? (byte) 1 : (byte) 0);
-        dest.writeTypedList(this.attachReports);
     }
 
-    public ImageInfo() {
+    public LikeImageInfo() {
     }
 
-    protected ImageInfo(Parcel in) {
+    protected LikeImageInfo(Parcel in) {
         this.id = in.readString();
         this.preyName = in.readString();
         this.preyLevel = in.readInt();
@@ -120,18 +130,17 @@ public class ImageInfo extends RealmObject implements Parcelable,Cloneable {
         this.uri = in.readString();
         this.md5 = in.readString();
         this.isKill = in.readByte() != 0;
-        this.attachReports = in.createTypedArrayList(LikeReport.CREATOR);
     }
 
-    public static final Creator<ImageInfo> CREATOR = new Creator<ImageInfo>() {
+    public static final Creator<LikeImageInfo> CREATOR = new Creator<LikeImageInfo>() {
         @Override
-        public ImageInfo createFromParcel(Parcel source) {
-            return new ImageInfo(source);
+        public LikeImageInfo createFromParcel(Parcel source) {
+            return new LikeImageInfo(source);
         }
 
         @Override
-        public ImageInfo[] newArray(int size) {
-            return new ImageInfo[size];
+        public LikeImageInfo[] newArray(int size) {
+            return new LikeImageInfo[size];
         }
     };
 
@@ -145,7 +154,6 @@ public class ImageInfo extends RealmObject implements Parcelable,Cloneable {
                 ", uri='" + uri + '\'' +
                 ", md5='" + md5 + '\'' +
                 ", isKill=" + isKill +
-                ", attachReports=" + attachReports +
                 '}';
     }
 

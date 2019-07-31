@@ -106,4 +106,5 @@
     <string name="multiple_input">多条数据录入</string>
     <string name="multiple_input_">多条数\n据录入</string>
     <string name="max_5">最多添加5条数据</string>
+    <string name="dialog_multiple_tip">点击相应的猎魔等级，最多可添加5条数据</string>
 </resources>
