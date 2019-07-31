@@ -587,7 +587,9 @@ public class MainActivity extends BaseActivity {
 
     @Override
     public void onBackPressed() {
-        AppUtils.exit();
+        if (AppUtils.exit()){
+            finish();
+        }
     }
 
 

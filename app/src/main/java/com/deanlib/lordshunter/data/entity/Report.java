@@ -8,7 +8,7 @@ import io.realm.RealmObject;
 import io.realm.annotations.Ignore;
 import io.realm.annotations.PrimaryKey;
 
-public class Report extends RealmObject implements Parcelable {
+public class Report extends RealmObject implements Parcelable,Cloneable {
 
     @Ignore
     public static final int STATUS_NEW = 0;//新增
@@ -148,5 +148,14 @@ public class Report extends RealmObject implements Parcelable {
                 ", timestamp=" + timestamp +
                 ", status=" + status +
                 '}';
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        //深拷贝
+        Object obj = super.clone();
+        ImageInfo i = ((Report)obj).getImage();
+        ((Report)obj).setImage((ImageInfo) i.clone());
+        return obj;
     }
 }

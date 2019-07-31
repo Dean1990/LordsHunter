@@ -54,6 +54,8 @@ import io.realm.Realm;
 
 public class Utils {
 
+    public static final String UNDEFINDE = "Undefined";
+
     /**
      * 解析微信以邮件形式发送过来的内容
      * 耗时
@@ -440,7 +442,7 @@ public class Utils {
             } else {
                 //没有权重记录时，preyName 将无法确定
                 //可以统一到一个名称
-                name = "Undefined";
+                name = UNDEFINDE;
             }
 
         }

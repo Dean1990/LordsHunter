@@ -4,11 +4,14 @@ package com.deanlib.lordshunter.data.entity;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import java.util.List;
+
 import io.realm.RealmObject;
+import io.realm.annotations.Ignore;
 import io.realm.annotations.Index;
 import io.realm.annotations.PrimaryKey;
 
-public class ImageInfo extends RealmObject implements Parcelable {
+public class ImageInfo extends RealmObject implements Parcelable,Cloneable {
 
 
     @PrimaryKey
@@ -20,6 +23,9 @@ public class ImageInfo extends RealmObject implements Parcelable {
     @Index
     String md5;
     boolean isKill;
+
+    @Ignore
+    List<Report> attachReports;//一张图片中可能 有多条信息
 
     public String getId() {
         return id;
@@ -77,6 +83,14 @@ public class ImageInfo extends RealmObject implements Parcelable {
         isKill = kill;
     }
 
+    public List<Report> getAttachReports() {
+        return attachReports;
+    }
+
+    public void setAttachReports(List<Report> attachReports) {
+        this.attachReports = attachReports;
+    }
+
 
     @Override
     public int describeContents() {
@@ -92,6 +106,7 @@ public class ImageInfo extends RealmObject implements Parcelable {
         dest.writeString(this.uri);
         dest.writeString(this.md5);
         dest.writeByte(this.isKill ? (byte) 1 : (byte) 0);
+        dest.writeTypedList(this.attachReports);
     }
 
     public ImageInfo() {
@@ -105,9 +120,10 @@ public class ImageInfo extends RealmObject implements Parcelable {
         this.uri = in.readString();
         this.md5 = in.readString();
         this.isKill = in.readByte() != 0;
+        this.attachReports = in.createTypedArrayList(Report.CREATOR);
     }
 
-    public static final Parcelable.Creator<ImageInfo> CREATOR = new Parcelable.Creator<ImageInfo>() {
+    public static final Creator<ImageInfo> CREATOR = new Creator<ImageInfo>() {
         @Override
         public ImageInfo createFromParcel(Parcel source) {
             return new ImageInfo(source);
@@ -129,6 +145,12 @@ public class ImageInfo extends RealmObject implements Parcelable {
                 ", uri='" + uri + '\'' +
                 ", md5='" + md5 + '\'' +
                 ", isKill=" + isKill +
+                ", attachReports=" + attachReports +
                 '}';
+    }
+
+    @Override
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 }

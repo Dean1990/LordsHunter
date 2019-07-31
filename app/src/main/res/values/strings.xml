@@ -103,4 +103,7 @@
     <string name="open">开启</string>
     <string name="go_settings">去设置</string>
     <string name="suggest_download_ocr_package">建议下载OCR支撑数据包提高识别率</string>
+    <string name="multiple_input">多条数据录入</string>
+    <string name="multiple_input_">多条数\n据录入</string>
+    <string name="max_5">最多添加5条数据</string>
 </resources>
