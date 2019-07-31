@@ -234,9 +234,11 @@ public class SaveActivity extends BaseActivity {
                 int unidentificationPosition = -1;//未识别的list的位置
                 for (int i = 0;i < mReportList.size();i++) {
                     if (mReportList.get(i).getStatus() == Report.STATUS_NEW
-                            && (mReportList.get(i).getImage().getPreyLevel() == 0
+                            &&(mReportList.get(i).getImage().getAttachReports()==null
+                            || mReportList.get(i).getImage().getAttachReports().isEmpty())
+                            &&(mReportList.get(i).getImage().getPreyLevel() == 0
                             || mReportList.get(i).getImage().getPreyName() == null
-                            || "Undefined".equals(mReportList.get(i).getImage().getPreyName()))) {
+                            || Utils.UNDEFINDE.equals(mReportList.get(i).getImage().getPreyName()))) {
                         unidentificationPosition = i;
                         break;
                     }
@@ -257,9 +259,14 @@ public class SaveActivity extends BaseActivity {
                                         public void execute(Realm realm) {
                                             for (Report report : mReportList) {
                                                 if (report.getStatus() == Report.STATUS_NEW) {
-                                                    report.setId(UUID.randomUUID().toString());
-                                                    report.getImage().setId(UUID.randomUUID().toString());
-                                                    realm.copyToRealm(report);
+                                                    if (report.getImage().getAttachReports()!=null
+                                                    && !report.getImage().getAttachReports().isEmpty()){
+                                                        for (Report report1:report.getImage().getAttachReports()){
+                                                            createUUIDandSave(realm, report1);
+                                                        }
+                                                    }else {
+                                                        createUUIDandSave(realm, report);
+                                                    }
                                                 }
                                             }
                                         }
@@ -278,6 +285,12 @@ public class SaveActivity extends BaseActivity {
                 }
                 break;
         }
+    }
+
+    private void createUUIDandSave(Realm realm, Report report) {
+        report.setId(UUID.randomUUID().toString());
+        report.getImage().setId(UUID.randomUUID().toString());
+        realm.copyToRealm(report);
     }
 
     @Override

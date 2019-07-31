@@ -9,6 +9,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
@@ -16,6 +17,8 @@ import com.bumptech.glide.request.RequestOptions;
 import com.bumptech.glide.request.target.CustomViewTarget;
 import com.bumptech.glide.request.transition.Transition;
 import com.deanlib.lordshunter.R;
+import com.deanlib.lordshunter.Utils;
+import com.deanlib.lordshunter.data.entity.ImageInfo;
 import com.deanlib.lordshunter.data.entity.Report;
 import com.deanlib.ootblite.utils.PopupUtils;
 import com.github.chrisbanes.photoview.PhotoView;
@@ -39,6 +42,10 @@ public class ReportDetailActivity extends BaseActivity {
     TextView tvDate;
     @BindView(R.id.tvGroup)
     TextView tvGroup;
+    @BindView(R.id.layoutLevelBlock)
+    LinearLayout layoutLevelBlock;
+    @BindView(R.id.layoutPreyInfo)
+    LinearLayout layoutPreyInfo;
 
     String mId;
     Report mReport;
@@ -101,12 +108,28 @@ public class ReportDetailActivity extends BaseActivity {
             tvGroup.setText(getString(R.string.group_,mReport.getGroup()));
             tvName.setText(getString(R.string.member_,mReport.getName()));
             tvDate.setText(mReport.getDate() + " " + mReport.getTime());
-            tvPreyName.setText(getString(R.string.prey_name_, mReport.getImage().getPreyName()));
-            tvPreyLevel.setText(getString(R.string.prey_level_, mReport.getImage().getPreyLevel()));
+
+            if (mReport.getImage().getAttachReports()!=null && !mReport.getImage().getAttachReports().isEmpty()){
+                layoutLevelBlock.setVisibility(View.VISIBLE);
+                layoutPreyInfo.setVisibility(View.GONE);
+                for (int i = 0;i < layoutLevelBlock.getChildCount();i++){
+                    if (i<mReport.getImage().getAttachReports().size()){
+                        layoutLevelBlock.getChildAt(i).setVisibility(View.VISIBLE);
+                        ((TextView)layoutLevelBlock.getChildAt(i)).setText(mReport.getImage().getAttachReports().get(i).getImage().getPreyLevel()+"");
+                    }else {
+                        layoutLevelBlock.getChildAt(i).setVisibility(View.INVISIBLE);
+                    }
+                }
+            }else {
+                layoutLevelBlock.setVisibility(View.GONE);
+                layoutPreyInfo.setVisibility(View.VISIBLE);
+                tvPreyName.setText(getString(R.string.prey_name_, mReport.getImage().getPreyName()));
+                tvPreyLevel.setText(getString(R.string.prey_level_, mReport.getImage().getPreyLevel()));
+            }
         }
     }
 
-    @OnClick({R.id.layoutBack, R.id.tvGroup,R.id.tvName, R.id.tvPreyName, R.id.tvPreyLevel, R.id.tvDate})
+    @OnClick({R.id.layoutBack, R.id.tvGroup,R.id.tvName, R.id.tvPreyName, R.id.tvPreyLevel, R.id.tvDate,R.id.btnMultipleInput})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.layoutBack:
@@ -158,6 +181,72 @@ public class ReportDetailActivity extends BaseActivity {
                 break;
             case R.id.tvDate:
                 break;
+            case R.id.btnMultipleInput:
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setTitle(R.string.multiple_input);
+                View view1 = View.inflate(this,R.layout.layout_dialog_multiple_input,null);
+                ViewHolder holder = new ViewHolder(view1);
+                for (int i = 0;i<holder.layoutBlock.getChildCount();i++){
+
+                    ((TextView)holder.layoutBlock.getChildAt(i)).setText((i+1)+"");
+                    int finalI = i;
+                    holder.layoutBlock.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            if (mReport.getImage().getAttachReports().size()<5) {
+                                //下方的框中的被点击时，在上方框中显示一个
+                                ((TextView)holder.layoutChecked.getChildAt(mReport.getImage().getAttachReports().size())).setText(finalI+"");
+                                holder.layoutChecked.getChildAt(mReport.getImage().getAttachReports().size()).setVisibility(View.VISIBLE);
+                                try {
+                                    //做一个深拷贝
+                                    Report report = (Report) mReport.clone();
+                                    report.getImage().setPreyName(Utils.UNDEFINDE);
+                                    report.getImage().setPreyLevel(finalI);
+                                    mReport.getImage().getAttachReports().add(report);
+                                } catch (CloneNotSupportedException e) {
+                                    e.printStackTrace();
+                                }
+                            }else {
+                                PopupUtils.sendToast(R.string.max_5);
+                            }
+                        }
+                    });
+
+                    //设置当前选中数目
+                    if (i<mReport.getImage().getAttachReports().size()){
+                        holder.layoutChecked.getChildAt(i).setVisibility(View.VISIBLE);
+                        ((TextView)holder.layoutChecked.getChildAt(i)).setText(mReport.getImage().getAttachReports().get(i).getImage().getPreyLevel()+"");
+                    }else {
+                        holder.layoutChecked.getChildAt(i).setVisibility(View.INVISIBLE);
+                    }
+                    holder.layoutChecked.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            //在选中框中的被点击，需要重新排序
+                            mReport.getImage().getAttachReports().remove(finalI);
+                            for (int j = 0;j<holder.layoutChecked.getChildCount();j++){
+                                if (j<mReport.getImage().getAttachReports().size()) {
+                                    ((TextView)holder.layoutChecked.getChildAt(j)).setText(mReport.getImage().getAttachReports().get(j).getImage().getPreyLevel()+"");
+                                    holder.layoutChecked.getChildAt(j).setVisibility(View.VISIBLE);
+                                }else {
+                                    holder.layoutChecked.getChildAt(j).setVisibility(View.INVISIBLE);
+                                }
+                            }
+                        }
+                    });
+                }
+
+                builder.setView(view1);
+                builder.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        //更新UI
+                        loadTextInfo();
+                    }
+                });
+                builder.setNegativeButton(R.string.cancel,null);
+                builder.show();
+                break;
         }
     }
 
@@ -167,5 +256,16 @@ public class ReportDetailActivity extends BaseActivity {
         data.putExtra("report",mReport);
         setResult(RESULT_OK,data);
         super.finish();
+    }
+
+    class ViewHolder{
+        @BindView(R.id.layoutChecked)
+        LinearLayout layoutChecked;
+        @BindView(R.id.layoutBlock)
+        LinearLayout layoutBlock;
+
+        public ViewHolder(View view){
+            ButterKnife.bind(this,view);
+        }
     }
 }

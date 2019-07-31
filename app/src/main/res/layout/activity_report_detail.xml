@@ -74,33 +74,63 @@
             android:background="@color/colorGrayTint"
             android:layout_width="match_parent"
             android:layout_height="1dp"/>
-        <TextView
-            android:drawablePadding="10dp"
-            android:drawableRight="@mipmap/go"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:singleLine="true"
-            android:textColor="@color/textWhite"
-            android:textSize="@dimen/text_size_normal"
-            android:id="@+id/tvPreyName"
+
+        <LinearLayout
+            android:gravity="center"
+            android:orientation="horizontal"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-        <View
-            android:background="@color/colorGrayTint"
-            android:layout_width="match_parent"
-            android:layout_height="1dp"/>
-        <TextView
-            android:drawablePadding="10dp"
-            android:drawableRight="@mipmap/go"
-            android:paddingTop="10dp"
-            android:paddingBottom="10dp"
-            android:singleLine="true"
-            android:textColor="@color/textWhite"
-            android:textSize="@dimen/text_size_normal"
-            android:layout_weight="1"
-            android:id="@+id/tvPreyLevel"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:id="@+id/layoutPreyInfo"
+                android:layout_weight="1"
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:drawablePadding="10dp"
+                    android:drawableRight="@mipmap/go"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:singleLine="true"
+                    android:textColor="@color/textWhite"
+                    android:textSize="@dimen/text_size_normal"
+                    android:id="@+id/tvPreyName"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content" />
+                <View
+                    android:background="@color/colorGrayTint"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"/>
+                <TextView
+                    android:drawablePadding="10dp"
+                    android:drawableRight="@mipmap/go"
+                    android:paddingTop="10dp"
+                    android:paddingBottom="10dp"
+                    android:singleLine="true"
+                    android:textColor="@color/textWhite"
+                    android:textSize="@dimen/text_size_normal"
+                    android:layout_weight="1"
+                    android:id="@+id/tvPreyLevel"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent" />
+            </LinearLayout>
+
+            <include
+                android:id="@+id/layoutLevelBlock"
+                android:visibility="gone"
+                layout="@layout/layout_level_block"
+                />
+
+            <Button
+                android:id="@+id/btnMultipleInput"
+                android:layout_marginLeft="15dp"
+                android:text="@string/multiple_input_"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+
+        </LinearLayout>
+
         <View
             android:background="@color/colorGrayTint"
             android:layout_width="match_parent"
