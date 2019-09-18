@@ -3,7 +3,7 @@
     <string name="error_data">不可识别的数据</string>
     <string name="parse_data">解析数据...</string>
     <string name="repet_data">检查重复图片...</string>
-    <string name="text_extraction">识别图片中的文字比较耗时，请等待...</string>
+    <string name="text_extraction_">收集数据中，请耐心等待(%d/%d)</string>
     <string name="save">保存</string>
     <string name="prey_name_">猎物名称：%s</string>
     <string name="prey_level_">猎物等级：%d 级</string>
@@ -30,7 +30,7 @@
     <string name="correction_prey">修正猎物</string>
     <string name="correction_level">修正等级</string>
 
-    <string name="download_data_package">下载数据包</string>
+    <string name="download_data_package">下载OCR支撑数据包</string>
     <string name="share_app">分享App</string>
     <string name="share_app_url">游戏《王国纪元》猎魔辅助工具，「 王国猎手App 」下载地址：https://fir.im/8xd2</string>
     <string name="download_completed">下载完成</string>
@@ -40,10 +40,10 @@
     <string name="attention_not_wifi">非WIFI网络环境，是否直接下载？</string>
 
     <string name="guide">指导</string>
-    <string name="guide_download_data_package">应用需要下载数据包才能正常使用，是否要现在下载？</string>
+    <string name="guide_download_data_package">应用需要下载OCR支撑数据包才能正常使用</string>
 
-    <string name="data_package_exist">数据包是存在的</string>
-    <string name="data_package_not_exist">数据包不存在，请前往首页设置中下载数据包</string>
+    <string name="data_package_exist">OCR支撑数据包是存在的</string>
+    <string name="data_package_not_exist">未开启云识别或者OCR支撑数据包不存在</string>
 
     <string name="share_data_empty">无数据可分享</string>
     <string name="share_data_template_1">%s ,共 %d 人上传猎魔记录</string>
@@ -60,4 +60,51 @@
     <string name="specification">使用说明</string>
     <string name="data_empty">没有数据~</string>
     <string name="data_not_save">上次采集数据未保存，是否现在保存</string>
+
+    <string name="equivalent_lv1">等效统计(Lv.1)</string>
+    <string name="esc_order">升序</string>
+    <string name="desc_order">降序</string>
+    <string name="export_data">导出猎魔数据</string>
+    <string name="export_data_success">导出成功，数据文件：%s</string>
+    <string name="export_data_fail">导出失败</string>
+    <string name="import_data">导入猎魔数据</string>
+    <string name="import_data_success">检索到数据 %d 条，成功导入 %d 条，重复未导入 %d 条</string>
+    <string name="import_data_fail">导入失败</string>
+    <string name="export_data_date_">导出当前数据：%s ，导出数据不会保存图片信息，以节省空间</string>
+    <string name="export">导出</string>
+    <string name="unidentification_tag">请帮我识别未能识别的图片～</string>
+    <string name="delete_data">清除数据</string>
+    <string name="delete_data_tag">确定要删除 %s 的数据吗?</string>
+    <string name="delete_success">删除成功</string>
+    <string name="list">列表</string>
+
+    <string name="delete">删除</string>
+    <string name="delete_item_tag">确定要删除该条吗？</string>
+    <string name="hide">隐藏</string>
+    <string name="hide_item_tag">确定要隐藏该成员吗？</string>
+    <string name="settings">设置</string>
+    <string name="current_version">当前版本</string>
+    <string name="member_manage">成员管理</string>
+    <string name="select_date">请选择日期</string>
+    <string name="_y_m_d">%d年%d月%d日</string>
+    <string name="show">显示</string>
+    <string name="show_item_tag">确定要显示该成员吗？</string>
+    <string name="merge">合并</string>
+    <string name="member_merge_tag1">合并需要至少选中两名成员</string>
+    <string name="member_merge_tag2">请选择合并后要使用的成员名</string>
+    <string name="merge_complete">合并完成</string>
+    <string name="manual">手动添加</string>
+    <string name="equivalent_lv1_">等效Lv.1</string>
+    <string name="zhi">只</string>
+    <string name="ocr_data_manage">OCR数据管理</string>
+    <string name="save_exit">是否保存当前数据再退出</string>
+    <string name="exit">退出</string>
+    <string name="use_cloud_ocr">开启云识别</string>
+    <string name="open">开启</string>
+    <string name="go_settings">去设置</string>
+    <string name="suggest_download_ocr_package">建议下载OCR支撑数据包提高识别率</string>
+    <string name="multiple_input">多条数据录入</string>
+    <string name="multiple_input_">多条数\n据录入</string>
+    <string name="max_5">最多添加5条数据</string>
+    <string name="dialog_multiple_tip">点击相应的猎魔等级，最多可添加5条数据</string>
 </resources>

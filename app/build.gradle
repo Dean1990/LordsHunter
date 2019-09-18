@@ -7,8 +7,8 @@ android {
         applicationId "com.deanlib.lordshunter"
         minSdkVersion 17
         targetSdkVersion 28
-        versionCode 11
-        versionName "1.3"
+        versionCode 21
+        versionName "1.13"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
         multiDexEnabled true
     }
@@ -48,43 +48,82 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
     implementation 'com.rmtheis:tess-two:9.0.0'
     implementation files('libs/commons-codec-1.11.jar')
-    implementation 'com.github.Dean1990:ootbLite:8b84eb950b'
+    implementation 'com.github.Dean1990:ootbLite:a470eda377'
+
     //implementation 'org.tensorflow:tensorflow-android:1.11.0-rc1'
 
     //Rx
+
     //RxJava https://github.com/ReactiveX/RxJava
-    implementation "io.reactivex.rxjava2:rxjava:2.2.2"
+    implementation 'io.reactivex.rxjava2:rxjava:2.2.2'
+
     //RxAndroid https://github.com/ReactiveX/RxAndroid
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.0'
+
     //控件注解
+
     //butterknife https://github.com/JakeWharton/butterknife
     implementation 'com.jakewharton:butterknife:8.8.1'
     annotationProcessor 'com.jakewharton:butterknife-compiler:8.8.1'
+
     //图片加载
+
     //Glide https://github.com/bumptech/glide
     implementation 'com.github.bumptech.glide:glide:4.8.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.8.0'
+
     //权限管理
+
     //RxPermissions https://github.com/tbruyelle/RxPermissions
     implementation 'com.github.tbruyelle:rxpermissions:0.10.2'
+
     //消息传递
+
     //EventBus https://github.com/greenrobot/EventBus
     implementation 'org.greenrobot:eventbus:3.1.1'
+
     //图表
+
     //MPAndroidChart https://github.com/PhilJay/MPAndroidChart
     implementation 'com.github.PhilJay:MPAndroidChart:v3.0.3'
+
     //上下拉刷新加载
+
     //SmartRefreshLayout https://github.com/scwang90/SmartRefreshLayout
     implementation 'com.scwang.smartrefresh:SmartRefreshLayout:1.1.0-alpha-14'
-    implementation 'com.scwang.smartrefresh:SmartRefreshHeader:1.1.0-alpha-14'//没有使用特殊Header，可以不加这行
+    implementation 'com.scwang.smartrefresh:SmartRefreshHeader:1.1.0-alpha-14'
+
+    //没有使用特殊Header，可以不加这行
+
     //图片查看
+
     //PhotoView https://github.com/chrisbanes/PhotoView
     implementation 'com.github.chrisbanes:PhotoView:2.1.4'
-
     implementation 'com.liulishuo.filedownloader:library:1.7.5'
     implementation 'com.google.android.gms:play-services-ads:15.0.1'
-
     implementation 'com.umeng.sdk:common:1.5.0'
     implementation 'com.umeng.sdk:analytics:7.5.0'
     implementation 'com.android.support:multidex:1.0.3'
+
+    //文件选择器
+
+    //AndroidPicker https://github.com/gzu-liyujiang/AndroidPicker
+    implementation('com.github.gzu-liyujiang.AndroidPicker:FilePicker:1.5.6') {
+        exclude group: 'com.android.support'
+    }
+
+    //ListView滑出菜单
+
+    //SwipeMenuListView https://github.com/baoyongzhang/SwipeMenuListView
+    implementation 'com.baoyz.swipemenulistview:library:1.3.0'
+
+    //多选日历
+    implementation 'com.richzjc:calendar_select:1.0.0'
+    implementation 'com.android.support:recyclerview-v7:28.0.0-rc02'
+
+    //小红点
+
+    //BadgeView https://github.com/qstumn/BadgeView
+    implementation 'q.rorbin:badgeview:1.1.3'
+    implementation files('libs/ocr-sdk.jar')
 }

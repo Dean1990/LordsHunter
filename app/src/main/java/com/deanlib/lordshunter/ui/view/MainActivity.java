@@ -6,11 +6,8 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.widget.PopupMenu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.DatePicker;
-import android.widget.ProgressBar;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
@@ -18,12 +15,13 @@ import com.alibaba.fastjson.JSON;
 import com.deanlib.lordshunter.R;
 import com.deanlib.lordshunter.Utils;
 import com.deanlib.lordshunter.app.Constant;
-import com.deanlib.lordshunter.entity.Report;
+import com.deanlib.lordshunter.data.entity.Report;
+import com.deanlib.ootblite.OotbConfig;
 import com.deanlib.ootblite.data.SharedPUtils;
+import com.deanlib.ootblite.utils.AppUtils;
 import com.deanlib.ootblite.utils.DLog;
 import com.deanlib.ootblite.utils.FormatUtils;
 import com.deanlib.ootblite.utils.PopupUtils;
-import com.deanlib.ootblite.utils.network.NetworkManager;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -38,9 +36,6 @@ import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.IValueFormatter;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.ViewPortHandler;
-import com.liulishuo.filedownloader.BaseDownloadTask;
-import com.liulishuo.filedownloader.FileDownloadListener;
-import com.liulishuo.filedownloader.FileDownloader;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
 import java.io.File;
@@ -67,7 +62,9 @@ public class MainActivity extends BaseActivity {
     int mSpanPosition = 2;//默认 周
     long startTime, endTime;
     long grain = 60 * 60 * 1000 * 24;//颗粒度 默认 周的颗粒度是 一天
-    SimpleDateFormat mDateFormat3 = new SimpleDateFormat("yyyy/M/d");
+    SimpleDateFormat mDateFormat5 = new SimpleDateFormat("yyyy/MM");
+    SimpleDateFormat mDateFormat4 = new SimpleDateFormat("MM/dd");
+    SimpleDateFormat mDateFormat3 = new SimpleDateFormat("yyyy/MM/dd");
     SimpleDateFormat mDateFormat2 = new SimpleDateFormat("M");
     SimpleDateFormat mDateFormat1 = new SimpleDateFormat("d");
     SimpleDateFormat mDateFormat0 = new SimpleDateFormat("H:mm");
@@ -78,9 +75,6 @@ public class MainActivity extends BaseActivity {
     PieChart pieChart;
 
     File mTraineddata;
-    AlertDialog mDownloadDialog;
-    ProgressBar mDownloadProgressBar;
-    TextView tvProgressInfo;
     Calendar mCalendar;
     long selectTime;//选中日期
 
@@ -93,11 +87,16 @@ public class MainActivity extends BaseActivity {
         selectTime = System.currentTimeMillis();
 
         //字库文件
-        mTraineddata = Constant.APP_FILE_OCR_TRAINEDDATA;
-
-        if (!mTraineddata.exists()) {
+        mTraineddata = Utils.getOCR(Constant.OCR_LANGUAGE).getFile();
+        SharedPUtils sharedPUtils = new SharedPUtils();
+        if (!mTraineddata.exists() && !"true".equals(sharedPUtils.getCache("cloudocr"))) {
             //第一次使用
-            ViewJump.toWebView(MainActivity.this, "http://file2001552359.nos-eastchina1.126.net/lordshunter/readme_" + Constant.OCR_LANGUAGE + "/readme.html");
+            OotbConfig.task().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    ViewJump.toWebView(MainActivity.this, Constant.README_URL_HEADER + "readme_" + Constant.OCR_LANGUAGE + ".html");
+                }
+            }, 2000);
         }
 
         RxPermissions permissions = new RxPermissions(this);
@@ -111,17 +110,17 @@ public class MainActivity extends BaseActivity {
 
                     if (!mTraineddata.exists()) {
                         new AlertDialog.Builder(MainActivity.this).setTitle(R.string.guide).setMessage(R.string.guide_download_data_package)
-                                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                                    @Override
-                                    public void onClick(DialogInterface dialog, int which) {
-                                        checkWifi2DownloadDataPackage();
-                                    }
-                                }).setNegativeButton(R.string.cancel, null).show();
+                                .setPositiveButton(R.string.download_data_package, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                ViewJump.toOCRManage(MainActivity.this, true);
+                            }
+                        }).setNegativeButton(R.string.cancel,null).show();
                     }
                 });
 
         //查看是否有缓存
-        SharedPUtils sharedPUtils = new SharedPUtils();
         List<Report> reports = JSON.parseArray(sharedPUtils.getCache("unsavareports"), Report.class);
         if (reports != null) {
             new AlertDialog.Builder(this).setTitle(R.string.attention).setMessage(R.string.data_not_save)
@@ -137,6 +136,16 @@ public class MainActivity extends BaseActivity {
                 }
             }).show();
         }
+
+        OotbConfig.task().post(new Runnable() {
+            @Override
+            public void run() {
+                //广告
+                String adShowDate = sharedPUtils.getCache("ad_show_date");
+                if (!FormatUtils.convertDateTimestampToString(System.currentTimeMillis(), FormatUtils.DATE_FORMAT_YMD).equals(adShowDate))
+                    startActivity(new Intent(MainActivity.this, AdActivity.class));
+            }
+        });
 
     }
 
@@ -165,41 +174,42 @@ public class MainActivity extends BaseActivity {
                 mCalendar.set(year, 0, 1);
                 startTime = mCalendar.getTimeInMillis();
                 mCalendar.add(Calendar.YEAR, 1);
-                endTime = mCalendar.getTimeInMillis();
+                endTime = mCalendar.getTimeInMillis() - 1;
                 grain = 60 * 60 * 1000 * 24 * 30L;
+                tvDate.setText(mDateFormat5.format(new Date(startTime)) + " - " + mDateFormat5.format(new Date(endTime)));
                 break;
             case 1:
                 //月
                 mCalendar.set(year, month, 1);
                 startTime = mCalendar.getTimeInMillis();
                 mCalendar.add(Calendar.MONTH, 1);
-                mCalendar.add(Calendar.DATE, -1);
-                endTime = mCalendar.getTimeInMillis();
+                endTime = mCalendar.getTimeInMillis() - 1;
                 grain = 60 * 60 * 1000 * 24L;
+                tvDate.setText(mDateFormat4.format(new Date(startTime)) + " - " + mDateFormat4.format(new Date(endTime)));
                 break;
             case 2:
                 //周
                 mCalendar.set(year, month, date);
                 mCalendar.add(Calendar.DATE, -week + 1);
                 startTime = mCalendar.getTimeInMillis();
-                mCalendar.add(Calendar.DATE, 6);
-                endTime = mCalendar.getTimeInMillis();
+                mCalendar.add(Calendar.DATE, 7);
+                endTime = mCalendar.getTimeInMillis() - 1;
                 grain = 60 * 60 * 1000 * 24L;
+                tvDate.setText(mDateFormat4.format(new Date(startTime)) + " - " + mDateFormat4.format(new Date(endTime)));
                 break;
             case 3:
                 //日
                 mCalendar.set(year, month, date, 0, 0, 0);
                 startTime = mCalendar.getTimeInMillis();
                 mCalendar.add(Calendar.DATE, 1);
-                endTime = mCalendar.getTimeInMillis();
+                endTime = mCalendar.getTimeInMillis() - 1;
                 grain = 60 * 60 * 1000L;
+                tvDate.setText(mDateFormat3.format(new Date(startTime)));
                 break;
         }
 
         //还原成初始日期
         mCalendar.set(year, month, date, 0, 0, 0);
-
-        tvDate.setText(mDateFormat3.format(new Date(startTime)) + (mSpanPosition != 3 ? (" - " + mDateFormat3.format(new Date(endTime))) : ""));
 
         scrollViewContainer.removeAllViews();
         lineChart = null;
@@ -218,31 +228,53 @@ public class MainActivity extends BaseActivity {
         //线性表
         List<Entry> kills = new ArrayList<>();
         List<Entry> members = new ArrayList<>();
+        List<Entry> equivalents = new ArrayList<>();//等效1级
+        String[] chiNum = getResources().getStringArray(R.array.chi_num);
         for (long i = startTime; i <= endTime; i = i + grain) {
             DLog.d("value:" + i);
             long start = i;
             long end = i + grain;
             float x = (int) (i / grain) + 1;
-            long killNum = realm.where(Report.class).between("timestamp", start, end).count();
-            kills.add(new Entry(x, killNum));
-            long memberNum = realm.where(Report.class).between("timestamp", start, end).distinct("name").count();
-            members.add(new Entry(x, memberNum));
+            long killCount = realm.where(Report.class).between("timestamp", start, end).count();
+            kills.add(new Entry(x, killCount));
+
+            long memberCount = realm.where(Report.class).between("timestamp", start, end).distinct("name", "group").count();
+            members.add(new Entry(x, memberCount));
+
+            long euivalentCount = 0;
+            for (int j = 0; j < chiNum.length; j++) {
+                int level = chiNum.length - j;
+                long count = realm.where(Report.class).between("timestamp", start, end)
+                        .and().equalTo("image.preyLevel", level)
+                        .count();
+                if (count != 0) {
+                    euivalentCount += Utils.equivalentLv1(level, count);
+                }
+            }
+            equivalents.add(new Entry(x, euivalentCount));
+
         }
 
         LineData lineData = new LineData();
         if (kills.size() > 0) {
 
             int killColor = Color.RED;
-            LineDataSet killSet = new LineDataSet(kills, "kill");
+            LineDataSet killSet = new LineDataSet(kills, "Kill");
             killSet.setColor(killColor);
             killSet.setValueTextColor(killColor);
             lineData.addDataSet(killSet);
 
             int memberColor = Color.BLUE;
-            LineDataSet memberSet = new LineDataSet(members, "member");
+            LineDataSet memberSet = new LineDataSet(members, "Member");
             memberSet.setColor(memberColor);
             memberSet.setValueTextColor(memberColor);
             lineData.addDataSet(memberSet);
+
+            int equivalentColor = Color.GREEN;
+            LineDataSet equivalentSet = new LineDataSet(equivalents, "Eq Lv.1");
+            equivalentSet.setColor(equivalentColor);
+            equivalentSet.setValueTextColor(equivalentColor);
+            lineData.addDataSet(equivalentSet);
 
         }
         lineData.setValueFormatter(new IValueFormatter() {
@@ -277,7 +309,6 @@ public class MainActivity extends BaseActivity {
         lineChart.getAxisLeft().setAxisMinimum(0f);
         lineChart.getAxisLeft().setGranularity(1f);
         lineChart.getAxisRight().setEnabled(false);
-
 
         lineChart.setDescription(null);
         lineChart.setData(lineData);
@@ -370,7 +401,7 @@ public class MainActivity extends BaseActivity {
                 break;
             case R.id.btnShareData:
                 Realm realm = Realm.getDefaultInstance();
-                long memberNum = realm.where(Report.class).between("timestamp", startTime, endTime).distinct("name").count();
+                long memberNum = realm.where(Report.class).between("timestamp", startTime, endTime).distinct("name", "group").count();
                 if (memberNum != 0) {
                     StringBuilder data = new StringBuilder(getString(R.string.share_data_template_1, tvDate.getText().toString(), memberNum) + ",");
                     long equalLv1 = 0;
@@ -398,11 +429,11 @@ public class MainActivity extends BaseActivity {
                 }
                 break;
             case R.id.btnDetail:
-                ViewJump.toReportList(this, startTime, endTime);
+                ViewJump.toMemberReportList(this, startTime, endTime);
                 break;
             case R.id.layoutSettings:
-
-                PopupMenu menu = new PopupMenu(this, view);
+                ViewJump.toSettings(this);
+                /*PopupMenu menu = new PopupMenu(this, view);
                 menu.getMenuInflater().inflate(R.menu.menu_settings, menu.getMenu());
                 menu.setOnMenuItemClickListener(new PopupMenu.OnMenuItemClickListener() {
                     @Override
@@ -416,10 +447,123 @@ public class MainActivity extends BaseActivity {
                                     PopupUtils.sendToast(R.string.data_package_exist);
                                 }
                                 break;
+                            case R.id.exportData:
+                                //导出猎魔数据
+                                RxPermissions rxPermissions1 = new RxPermissions(MainActivity.this);
+                                rxPermissions1.request(Manifest.permission.WRITE_EXTERNAL_STORAGE).subscribe(granted->{
+                                    if (granted){
+                                        new AlertDialog.Builder(MainActivity.this).setTitle(R.string.attention)
+                                                .setMessage(getString(R.string.export_data_date_,tvDate.getText().toString()))
+                                                .setPositiveButton(R.string.export, new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                Realm realm = Realm.getDefaultInstance();
+                                                RealmResults<Report> reports = realm.where(Report.class).between("timestamp", startTime, endTime).findAll();
+                                                if (reports == null || reports.size()==0){
+                                                    PopupUtils.sendToast(R.string.invalid_data);
+                                                }else {
+                                                    FilePicker picker = new FilePicker(MainActivity.this, FilePicker.DIRECTORY);
+                                                    picker.setFillScreen(true);
+                                                    picker.setOnFilePickListener(new FilePicker.OnFilePickListener() {
+                                                        @Override
+                                                        public void onFilePicked(String currentPath) {
+                                                            //realm 区分托管对象和非托管对象，托管对象及查询出的对象，自动更新，自动持久化
+                                                            //非托管对象及java new出的普通对象
+                                                            //二者可以通过Realm.copyToRealm和Realm.copyFromRealm相互转换
+                                                            //托管对象是不能直接访问成员变量的，会返回null,访问需要使用get方式，当Realm.close()的时候，托管对象失效，访问get方法会报错。
+                                                            List<Report> temp = realm.copyFromRealm(reports);
+                                                            String filepath = Persistence.exportData(temp, currentPath);
+                                                            if (filepath != null) {
+                                                                PopupUtils.sendToast(getString(R.string.export_data_success, filepath),Toast.LENGTH_LONG);
+                                                            } else {
+                                                                PopupUtils.sendToast(R.string.export_data_fail);
+                                                            }
+                                                        }
+                                                    });
+                                                    picker.show();
+                                                }
+                                            }
+                                        }).setNegativeButton(R.string.cancel,null).show();
+                                    }
+                                });
+
+                                break;
+                            case R.id.importData:
+                                //导入猎魔数据
+                                RxPermissions rxPermissions2 = new RxPermissions(MainActivity.this);
+                                rxPermissions2.request(Manifest.permission.READ_EXTERNAL_STORAGE).subscribe(granted->{
+                                    if (granted){
+                                        Realm realm = Realm.getDefaultInstance();
+                                        FilePicker picker = new FilePicker(MainActivity.this,FilePicker.FILE);
+                                        picker.setAllowExtensions(new String[]{"lhdata"});
+                                        picker.setFillScreen(true);
+                                        picker.setOnFilePickListener(new FilePicker.OnFilePickListener() {
+                                            @Override
+                                            public void onFilePicked(String currentPath) {
+                                                List<Report> reports = Persistence.importData(currentPath);
+                                                if (reports!=null && reports.size()>0){
+                                                    int insertCount = 0;
+                                                    int repetCount = 0;
+                                                    realm.beginTransaction();
+                                                    for (Report report : reports) {
+                                                        ImageInfo find = realm.where(ImageInfo.class)
+                                                                .equalTo("md5", report.getImage().getMd5())
+                                                                .findFirst();
+                                                        if (find==null) {
+//                                                                    report.setId(UUID.randomUUID().toString());
+//                                                                    report.getImage().setId(UUID.randomUUID().toString());
+                                                            realm.copyToRealm(report);
+                                                            insertCount++;
+                                                        }else {
+                                                            //重复
+                                                            DLog.d(report.getImage().toString());
+                                                            DLog.d(find.toString());
+                                                            repetCount++;
+                                                        }
+                                                    }
+                                                    realm.commitTransaction();
+                                                    init();
+                                                    loadData();
+                                                    PopupUtils.sendToast(getString(R.string.import_data_success,reports.size(),insertCount,repetCount), Toast.LENGTH_LONG);
+                                                }else {
+                                                    PopupUtils.sendToast(R.string.invalid_data);
+                                                }
+                                            }
+                                        });
+                                        picker.show();
+                                    }
+                                });
+                                break;
+                            case R.id.deleteData:
+                                new AlertDialog.Builder(MainActivity.this).setTitle(R.string.attention)
+                                        .setMessage(getString(R.string.delete_data_tag,tvDate.getText().toString()))
+                                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                Realm realm1 = Realm.getDefaultInstance();
+                                                RealmResults<Report> reports = realm1.where(Report.class).between("timestamp", startTime, endTime).findAll();
+                                                realm1.executeTransaction(new Realm.Transaction() {
+                                                    @Override
+                                                    public void execute(Realm realm) {
+                                                        for (Report report : reports){
+                                                            ImageInfo imageInfo = realm.where(ImageInfo.class)
+                                                                    .equalTo("md5", report.getImage().getMd5())
+                                                                    .findFirst();
+                                                            imageInfo.deleteFromRealm();
+                                                        }
+                                                        reports.deleteAllFromRealm();
+                                                        init();
+                                                        loadData();
+                                                        PopupUtils.sendToast(R.string.delete_success);
+                                                    }
+                                                });
+                                            }
+                                        }).setNegativeButton(R.string.cancel,null).show();
+                                break;
                             case R.id.specification:
                                 //使用说明
                                 //地址
-                                ViewJump.toWebView(MainActivity.this, "http://file2001552359.nos-eastchina1.126.net/lordshunter/readme_" + Constant.OCR_LANGUAGE + "/readme.html");
+                                ViewJump.toWebView(MainActivity.this, Constant.README_URL_HEADER + "readme_"+Constant.OCR_LANGUAGE+".html");
                                 break;
                             case R.id.shareApp:
                                 //分享应用
@@ -434,104 +578,18 @@ public class MainActivity extends BaseActivity {
                         return true;
                     }
                 });
-                menu.show();
+                menu.show();*/
 
                 break;
         }
 
     }
 
-    private void checkWifi2DownloadDataPackage() {
-        if (NetworkManager.getAPNType(this) != NetworkManager.TYPE_WIFI) {
-            new AlertDialog.Builder(this).setTitle(R.string.attention)
-                    .setMessage(R.string.attention_not_wifi)
-                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            downloadDataPackage();
-                        }
-                    }).setNegativeButton(R.string.cancel, null)
-                    .show();
-        } else {
-            downloadDataPackage();
+    @Override
+    public void onBackPressed() {
+        if (AppUtils.exit()){
+            finish();
         }
-    }
-
-    private void downloadDataPackage() {
-        FileDownloader.setup(MainActivity.this);
-        FileDownloader.getImpl().create("http://file2001552359.nos-eastchina1.126.net/tessdata/" + Constant.OCR_LANGUAGE + ".traineddata")
-                .setPath(mTraineddata.getAbsolutePath()).setListener(new FileDownloadListener() {
-            @Override
-            protected void pending(BaseDownloadTask task, int soFarBytes, int totalBytes) {
-                DLog.d("FileDownloadListener.pending");
-                View progressView = View.inflate(MainActivity.this, R.layout.layout_progress2, null);
-                mDownloadProgressBar = progressView.findViewById(R.id.progress);
-                tvProgressInfo = progressView.findViewById(R.id.tvProgressInfo);
-                mDownloadDialog = new AlertDialog.Builder(MainActivity.this)
-                        .setTitle(getString(R.string.download_data_package)).setView(progressView)
-                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                //取消
-                                FileDownloader.getImpl().pauseAll();
-
-                                dialog.dismiss();
-                            }
-                        }).setCancelable(false).show();
-            }
-
-            @Override
-            protected void progress(BaseDownloadTask task, int soFarBytes, int totalBytes) {
-                DLog.d("FileDownloadListener.progress ->" + soFarBytes + "   total:" + totalBytes);
-                if (mDownloadDialog != null && mDownloadDialog.isShowing()
-                        && mDownloadProgressBar != null && tvProgressInfo != null) {
-                    tvProgressInfo.setText(getString(R.string.doalowning_info_,
-                            FormatUtils.formatFileSize(totalBytes),
-                            FormatUtils.formatFileSize(soFarBytes),
-                            task.getSpeed() + "KB/s"));
-                    mDownloadProgressBar.setMax(totalBytes);
-                    mDownloadProgressBar.setProgress(soFarBytes);
-                }
-            }
-
-            @Override
-            protected void completed(BaseDownloadTask task) {
-                DLog.d("FileDownloadListener.completed");
-                FileDownloader.getImpl().clearAllTaskData();
-                if (mDownloadDialog != null && mDownloadDialog.isShowing()) {
-                    PopupUtils.sendToast(R.string.download_completed);
-                    mDownloadDialog.dismiss();
-                }
-            }
-
-            @Override
-            protected void paused(BaseDownloadTask task, int soFarBytes, int totalBytes) {
-                DLog.d("FileDownloadListener.paused");
-                if (mTraineddata.exists()) {
-                    mTraineddata.delete();
-                }
-                FileDownloader.getImpl().clearAllTaskData();
-            }
-
-            @Override
-            protected void error(BaseDownloadTask task, Throwable e) {
-                e.printStackTrace();
-                DLog.d("FileDownloadListener.error");
-                if (mTraineddata.exists()) {
-                    mTraineddata.delete();
-                }
-                FileDownloader.getImpl().clearAllTaskData();
-                PopupUtils.sendToast(R.string.download_error);
-                if (mDownloadDialog != null && mDownloadDialog.isShowing()) {
-                    mDownloadDialog.dismiss();
-                }
-            }
-
-            @Override
-            protected void warn(BaseDownloadTask task) {
-                DLog.d("FileDownloadListener.warn");
-            }
-        }).start();
     }
 
 

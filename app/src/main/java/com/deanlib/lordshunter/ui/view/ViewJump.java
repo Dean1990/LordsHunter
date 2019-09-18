@@ -5,8 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Parcelable;
 
-import com.deanlib.lordshunter.entity.Report;
-import com.deanlib.lordshunter.service.CollectTaskService;
+import com.deanlib.lordshunter.data.entity.Report;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,8 +18,10 @@ public class ViewJump {
         activity.startActivity(new Intent(activity,MainActivity.class));
     }
 
-    public static void toReportList(Activity activity,long startTime,long endTime){
+    public static void toReportList(Activity activity,String group,String name,long startTime,long endTime){
         Intent intent = new Intent(activity,ReportListActivity.class);
+        intent.putExtra("group",group);
+        intent.putExtra("name",name);
         intent.putExtra("startTime",startTime);
         intent.putExtra("endTime",endTime);
         activity.startActivity(intent);
@@ -47,8 +48,35 @@ public class ViewJump {
     public static Intent getSaveIntent(Context context, List<Report> reports){
         Intent intent = new Intent();
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-        intent.setClass(context, SavaActivity.class);
+        intent.setClass(context, SaveActivity.class);
         intent.putParcelableArrayListExtra("reports", (ArrayList<? extends Parcelable>) reports);
         return intent;
+    }
+
+    public static void toMemberReportList(Activity activity,long startTime,long endTime){
+        Intent intent = new Intent(activity,MemberReportListActivity.class);
+        intent.putExtra("startTime",startTime);
+        intent.putExtra("endTime",endTime);
+        activity.startActivity(intent);
+    }
+
+    public static void toSettings(Activity activity){
+        Intent intent = new Intent(activity,SettingsActivity.class);
+        activity.startActivity(intent);
+    }
+
+    public static void toOCRManage(Activity activity){
+        toOCRManage(activity,false);
+    }
+
+    public static void toOCRManage(Activity activity,boolean autoDownloadOCRData){
+        Intent intent = new Intent(activity,OCRManageActivity.class);
+        intent.putExtra("autoDownloadOCRData",autoDownloadOCRData);
+        activity.startActivity(intent);
+    }
+
+    public static void toMemberManage(Activity activity){
+        Intent intent = new Intent(activity,MemberManageActivity.class);
+        activity.startActivity(intent);
     }
 }

@@ -23,7 +23,7 @@
             android:layout_centerInParent="true"
             android:textColor="@color/textWhite"
             android:textSize="@dimen/text_size_normal_xx"
-            android:text="@string/report"
+            android:text="@string/list"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
     </RelativeLayout>

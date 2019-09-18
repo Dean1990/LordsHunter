@@ -47,6 +47,13 @@
                 android:background="@color/colorGrayTint"
                 android:layout_width="match_parent"
                 android:layout_height="1dp"/>
+
+            <include
+                android:id="@+id/layoutAttach"
+                android:visibility="gone"
+                layout="@layout/layout_level_block"
+                />
+
             <TextView
                 android:layout_marginTop="6dp"
                 android:singleLine="true"

@@ -7,6 +7,7 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
     <uses-permission android:name="android.permission.INTERNET"/>
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
 
     <application
         android:allowBackup="true"
@@ -15,16 +16,12 @@
         android:roundIcon="@mipmap/icon_c"
         android:supportsRtl="true"
         android:name=".app.App"
+        android:networkSecurityConfig="@xml/network_security_config"
         android:theme="@style/AppTheme">
-        <activity android:name=".ui.view.LaunchActivity"
+        <activity android:name=".ui.view.AdActivity"
             android:screenOrientation="portrait"
-            >
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity android:name=".ui.view.SavaActivity"
+            />
+        <activity android:name=".ui.view.SaveActivity"
             android:screenOrientation="portrait"
             android:launchMode="singleInstance"
             >
@@ -36,8 +33,13 @@
         </activity>
         <activity android:name=".ui.view.MainActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop"
-            />
+            android:launchMode="singleTask"
+            >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
         <activity android:name=".ui.view.ReportDetailActivity"
             android:screenOrientation="portrait"
             />
@@ -45,6 +47,18 @@
             android:screenOrientation="portrait"
             />
         <activity android:name=".ui.view.WebViewActivity"
+            android:screenOrientation="portrait"
+            />
+        <activity android:name=".ui.view.MemberReportListActivity"
+            android:screenOrientation="portrait"
+            />
+        <activity android:name=".ui.view.SettingsActivity"
+            android:screenOrientation="portrait"
+            />
+        <activity android:name=".ui.view.MemberManageActivity"
+            android:screenOrientation="portrait"
+            />
+        <activity android:name=".ui.view.OCRManageActivity"
             android:screenOrientation="portrait"
             />
 

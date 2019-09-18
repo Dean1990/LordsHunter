@@ -8,7 +8,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.deanlib.lordshunter.R;
-import com.deanlib.lordshunter.entity.Report;
+import com.deanlib.lordshunter.data.entity.Report;
 import com.deanlib.lordshunter.ui.adapter.ReportAdapter;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 
@@ -32,6 +32,7 @@ public class ReportListActivity extends BaseActivity {
     TextView tvEmpty;
 
     long startTime, endTime;
+    String name,group;
     ReportAdapter mReportAdapter;
     List<Report> mReportList;
     RealmResults<Report> mReports;
@@ -44,6 +45,8 @@ public class ReportListActivity extends BaseActivity {
         setContentView(R.layout.activity_report_list);
         ButterKnife.bind(this);
 
+        name = getIntent().getStringExtra("name");
+        group = getIntent().getStringExtra("group");
         startTime = getIntent().getLongExtra("startTime",0);
         endTime = getIntent().getLongExtra("endTime",0);
         init();
@@ -72,7 +75,8 @@ public class ReportListActivity extends BaseActivity {
     private void loadData(){
         if (mReports==null) {
             Realm realm = Realm.getDefaultInstance();
-            mReports = realm.where(Report.class).between("timestamp", startTime, endTime).findAll();
+            mReports = realm.where(Report.class).between("timestamp", startTime, endTime)
+                    .and().equalTo("name",name).and().equalTo("group",group).findAll();
             mReports.addChangeListener(new RealmChangeListener<RealmResults<Report>>() {
                 @Override
                 public void onChange(RealmResults<Report> reports) {

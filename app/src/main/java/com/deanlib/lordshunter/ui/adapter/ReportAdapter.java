@@ -10,7 +10,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.request.RequestOptions;
 import com.deanlib.lordshunter.R;
-import com.deanlib.lordshunter.entity.Report;
+import com.deanlib.lordshunter.data.entity.Report;
 
 import java.util.List;
 
@@ -55,13 +55,37 @@ public class ReportAdapter extends BaseAdapter {
         holder.tvGroup.setText(list.get(position).getGroup());
         holder.tvName.setText(list.get(position).getName());
         holder.tvDate.setText(list.get(position).getDate() + " " + list.get(position).getTime());
-        holder.tvPreyName.setText(parent.getContext().getString(R.string.prey_name_, list.get(position).getImage().getPreyName()));
-        holder.tvPreyLevel.setText(parent.getContext().getString(R.string.prey_level_, list.get(position).getImage().getPreyLevel()));
+        if (list.get(position).getImage().getAttachReports()!=null && !list.get(position).getImage().getAttachReports().isEmpty()){
+            holder.layoutAttach.setVisibility(View.VISIBLE);
+            holder.tvPreyName.setVisibility(View.GONE);
+            holder.tvPreyLevel.setVisibility(View.GONE);
+            for (int i = 0;i < holder.layoutAttach.getChildCount();i++){
+                if (i<list.get(position).getImage().getAttachReports().size()){
+                    holder.layoutAttach.getChildAt(i).setVisibility(View.VISIBLE);
+                    ((TextView)holder.layoutAttach.getChildAt(i)).setText(list.get(position).getImage().getAttachReports().get(i).getImage().getPreyLevel()+"");
+                }else {
+                    holder.layoutAttach.getChildAt(i).setVisibility(View.INVISIBLE);
+                }
+            }
+        }else {
+            holder.layoutAttach.setVisibility(View.GONE);
+            holder.tvPreyName.setVisibility(View.VISIBLE);
+            holder.tvPreyLevel.setVisibility(View.VISIBLE);
+            holder.tvPreyName.setText(parent.getContext().getString(R.string.prey_name_, list.get(position).getImage().getPreyName()));
+            holder.tvPreyLevel.setText(parent.getContext().getString(R.string.prey_level_, list.get(position).getImage().getPreyLevel()));
+        }
 
         switch (list.get(position).getStatus()) {
             case Report.STATUS_NEW:
                 holder.imgTag.setVisibility(View.GONE);
-                holder.layoutItem.setBackgroundResource(R.color.colorWhite);
+                if ((list.get(position).getImage().getPreyLevel() == 0
+                        || list.get(position).getImage().getPreyName() == null)
+                        && (list.get(position).getImage().getAttachReports()==null
+                        || list.get(position).getImage().getAttachReports().isEmpty())){
+                    holder.layoutItem.setBackgroundResource(R.color.colorYellowAlpha);
+                }else {
+                    holder.layoutItem.setBackgroundResource(R.color.colorWhite);
+                }
                 break;
             case Report.STATUS_EXIST:
                 holder.imgTag.setImageResource(R.mipmap.repeat);
@@ -95,6 +119,8 @@ public class ReportAdapter extends BaseAdapter {
         LinearLayout layoutItem;
         @BindView(R.id.imgTag)
         ImageView imgTag;
+        @BindView(R.id.layoutAttach)
+        LinearLayout layoutAttach;
 
         ViewHolder(View view) {
             ButterKnife.bind(this, view);

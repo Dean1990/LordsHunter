@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/colorGrayTint"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/app_bar_height"
+        android:background="@color/colorPrimary">
+
+        <LinearLayout
+            android:id="@+id/layoutBack"
+            android:layout_width="@dimen/app_bar_height"
+            android:layout_height="@dimen/app_bar_height"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@mipmap/back" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/equivalent_lv1"
+            android:textColor="@color/textWhite"
+            android:textSize="@dimen/text_size_normal_xx" />
+
+        <LinearLayout
+            android:layout_toLeftOf="@+id/layoutSort"
+            android:id="@+id/layoutHide"
+            android:layout_width="@dimen/app_bar_height"
+            android:layout_height="@dimen/app_bar_height"
+            android:gravity="center">
+
+            <ImageView
+                android:padding="7.5dp"
+                android:id="@+id/imgHide"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/hide_white" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_alignParentRight="true"
+            android:id="@+id/layoutSort"
+            android:layout_width="@dimen/app_bar_height"
+            android:layout_height="@dimen/app_bar_height"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/imgSort"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:src="@mipmap/desc" />
+        </LinearLayout>
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/tvDate"
+        android:gravity="center"
+        android:textStyle="italic"
+        android:padding="10dp"
+        android:textColor="@color/textWhite"
+        android:background="@color/colorBlueTint"
+        android:textSize="@dimen/text_size_normal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
+
+    <FrameLayout
+        android:layout_marginTop="6dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <com.baoyz.swipemenulistview.SwipeMenuListView
+            android:id="@+id/listView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@null"
+            android:dividerHeight="6dp" />
+
+        <TextView
+            android:id="@+id/tvEmpty"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="40dp"
+            android:text="@string/data_empty"
+            android:textSize="@dimen/text_size_normal" />
+    </FrameLayout>
+</LinearLayout>

@@ -1,13 +1,6 @@
 package com.deanlib.lordshunter;
 
-import com.deanlib.lordshunter.entity.Report;
-
 import org.junit.Test;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import static org.junit.Assert.*;
 
 public class UtilsTest {
 
@@ -99,5 +92,11 @@ public class UtilsTest {
 //        report.setImage("test/test1.jpg");
 //        list.add(report);
 //        Utils.ocr(this,list);
+    }
+
+    @Test
+    public void test111(){
+        long t = Utils.equivalentLv1(5,1);
+        System.out.println(t);
     }
 }

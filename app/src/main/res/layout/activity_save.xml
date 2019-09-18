@@ -28,7 +28,7 @@
             android:layout_height="wrap_content" />
     </RelativeLayout>
 
-    <ListView
+    <com.baoyz.swipemenulistview.SwipeMenuListView
         android:layout_weight="1"
         android:divider="@null"
         android:dividerHeight="10dp"

@@ -10,14 +10,18 @@
     <color name="colorGray">#999999</color>
     <color name="colorBlue">#0066CC</color>
     <color name="colorBlueDark">#003399</color>
+    <color name="colorBlueTint">#7DC5EB</color>
 
     <color name="colorRedAlpha">#55CC0033</color>
     <color name="colorBlueAlpha">#550066CC</color>
+    <color name="colorYellowAlpha">#55FFFF00</color>
     <color name="colorGrayAlpha">#99999999</color>
 
     <color name="textWhite">@color/colorWhite</color>
     <color name="textBlack">#333333</color>
     <color name="textBlackGray">#666666</color>
     <color name="textGray">@color/colorGray</color>
+    <color name="textGrayTint">@color/colorGrayTint</color>
     <color name="textBlue">@color/colorBlue</color>
+    <color name="textBlueTint">@color/colorBlueTint</color>
 </resources>

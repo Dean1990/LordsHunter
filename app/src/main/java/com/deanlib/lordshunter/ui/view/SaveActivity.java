@@ -18,17 +18,22 @@ import android.text.TextUtils;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.Button;
-import android.widget.ListView;
 
 
+import com.baoyz.swipemenulistview.SwipeMenu;
+import com.baoyz.swipemenulistview.SwipeMenuCreator;
+import com.baoyz.swipemenulistview.SwipeMenuItem;
+import com.baoyz.swipemenulistview.SwipeMenuListView;
 import com.deanlib.lordshunter.R;
 import com.deanlib.lordshunter.Utils;
 import com.deanlib.lordshunter.app.Constant;
-import com.deanlib.lordshunter.entity.Report;
+import com.deanlib.lordshunter.data.entity.LikeReport;
+import com.deanlib.lordshunter.data.entity.Report;
 import com.deanlib.lordshunter.event.CollectTaskEvent;
 import com.deanlib.lordshunter.service.CollectTaskService;
 import com.deanlib.lordshunter.ui.adapter.ReportAdapter;
 import com.deanlib.ootblite.data.SharedPUtils;
+import com.deanlib.ootblite.utils.DeviceUtils;
 import com.deanlib.ootblite.utils.PopupUtils;
 import com.tbruyelle.rxpermissions2.RxPermissions;
 
@@ -52,16 +57,16 @@ import io.realm.Realm;
  * @author dean
  * @time 2018/9/4 下午5:26
  */
-public class SavaActivity extends BaseActivity {
+public class SaveActivity extends BaseActivity {
 
     public static boolean isRunForeground = false;
 
     String text;
     ArrayList<Uri> images;
     @BindView(R.id.listView)
-    ListView listView;
+    SwipeMenuListView listView;
     List<Report> mReportList;
-    List<Report> mDataReportList;
+    List<Report> mDataReportList;//从通知传过来的数据
     ReportAdapter mReportAdapter;
     @BindView(R.id.btnSave)
     Button btnSave;
@@ -72,7 +77,7 @@ public class SavaActivity extends BaseActivity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_sava);
+        setContentView(R.layout.activity_save);
         ButterKnife.bind(this);
 
         getData(getIntent());
@@ -93,26 +98,8 @@ public class SavaActivity extends BaseActivity {
 
         //从通知传过来的数据
         mDataReportList = data.getParcelableArrayListExtra("reports");
-
-        RxPermissions permissions = new RxPermissions(this);
-//        todo 抓日志
-//        permissions.request(Manifest.permission.WRITE_EXTERNAL_STORAGE)
-//                .subscribe(granted -> {
-//                    if (granted) {
-//                        DLog log = DLog.getInstance();
-//                        try {
-//                            File file = FileUtils.createDir("/lordshunter");
-//                            log.openWriteLog(file.getAbsolutePath());
-//                            DLog.i("text:"+text);
-//                            DLog.i("images:"+images);
-//                            log.closeWriteLog();
-//                        } catch (Exception e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-//                });
-
         init();
+        RxPermissions permissions = new RxPermissions(this);
         permissions.request(Manifest.permission.READ_EXTERNAL_STORAGE)
                 .subscribe(granted -> {
                     if (granted) {
@@ -131,7 +118,37 @@ public class SavaActivity extends BaseActivity {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 mClickPosition = (int) id;
-                ViewJump.toReportDetail(SavaActivity.this, mReportList.get(mClickPosition));
+                ViewJump.toReportDetail(SaveActivity.this, mReportList.get(mClickPosition));
+            }
+        });
+        listView.setMenuCreator(new SwipeMenuCreator() {
+            @Override
+            public void create(SwipeMenu menu) {
+                SwipeMenuItem deleteItem = new SwipeMenuItem(SaveActivity.this);
+                deleteItem.setBackground(R.color.colorAccent);
+                deleteItem.setWidth(DeviceUtils.dp2px(100));
+                deleteItem.setTitle(R.string.delete);
+                deleteItem.setTitleSize(18);
+                deleteItem.setTitleColor(getResources().getColor(R.color.textWhite));
+                menu.addMenuItem(deleteItem);
+            }
+        });
+        listView.setOnMenuItemClickListener(new SwipeMenuListView.OnMenuItemClickListener() {
+            @Override
+            public boolean onMenuItemClick(int position, SwipeMenu menu, int index) {
+                switch (index){
+                    case 0:
+                        new AlertDialog.Builder(SaveActivity.this).setTitle(R.string.attention)
+                                .setMessage(R.string.delete_item_tag).setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                mReportList.remove(position);
+                                mReportAdapter.notifyDataSetChanged();
+                            }
+                        }).setNegativeButton(R.string.cancel,null).show();
+                        break;
+                }
+                return true;// false : close the menu; true : not close the menu
             }
         });
     }
@@ -182,12 +199,18 @@ public class SavaActivity extends BaseActivity {
 //            });
 
         } else if (!TextUtils.isEmpty(text) && images != null && images.size() > 0) {
-            File traineddata = Constant.APP_FILE_OCR_TRAINEDDATA;
-            if (traineddata.exists()) {
-                Intent intent = new Intent(this, CollectTaskService.class);
-                intent.putExtra("text", text);
-                intent.putExtra("images", images);
-                startService(intent);
+            SharedPUtils sharedPUtils = new SharedPUtils();
+            File traineddata = Utils.getOCR(Constant.OCR_LANGUAGE).getFile();
+            if (traineddata.exists() || "true".equals(sharedPUtils.getCache("cloudocr"))) {
+                RxPermissions rxPermissions = new RxPermissions(this);
+                rxPermissions.request(Manifest.permission.FOREGROUND_SERVICE).subscribe(granted->{
+                    if (granted){
+                        Intent intent = new Intent(this, CollectTaskService.class);
+                        intent.putExtra("text", text);
+                        intent.putExtra("images", images);
+                        startService(intent);
+                    }
+                });
             } else {
                 //不存在，去下载
                 PopupUtils.sendToast(R.string.data_package_not_exist);
@@ -209,38 +232,66 @@ public class SavaActivity extends BaseActivity {
                 break;
             case R.id.btnSave:
                 //保存数据到数据库
-                new AlertDialog.Builder(this).setTitle(R.string.save)
-                        .setMessage(R.string.save_tag)
-                        .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                ProgressDialog dialog1 = ProgressDialog.show(SavaActivity.this, "", getString(R.string.save_data));
-                                Realm realm = Realm.getDefaultInstance();
-                                realm.executeTransaction(new Realm.Transaction() {
-                                    @Override
-                                    public void execute(Realm realm) {
-                                        for (Report report : mReportList) {
-                                            if (report.getStatus() == Report.STATUS_NEW) {
-                                                report.setId(UUID.randomUUID().toString());
-                                                report.getImage().setId(UUID.randomUUID().toString());
-                                                realm.copyToRealm(report);
+                int unidentificationPosition = -1;//未识别的list的位置
+                for (int i = 0;i < mReportList.size();i++) {
+                    if (mReportList.get(i).getStatus() == Report.STATUS_NEW
+                            &&(mReportList.get(i).getImage().getAttachReports()==null
+                            || mReportList.get(i).getImage().getAttachReports().isEmpty())
+                            &&(mReportList.get(i).getImage().getPreyLevel() == 0
+                            || mReportList.get(i).getImage().getPreyName() == null
+                            || Utils.UNDEFINDE.equals(mReportList.get(i).getImage().getPreyName()))) {
+                        unidentificationPosition = i;
+                        break;
+                    }
+                }
+                if (unidentificationPosition>=0){
+                    listView.setSelection(unidentificationPosition);
+                    PopupUtils.sendToast(R.string.unidentification_tag);
+                }else {
+                    new AlertDialog.Builder(this).setTitle(R.string.save)
+                            .setMessage(R.string.save_tag)
+                            .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                                @Override
+                                public void onClick(DialogInterface dialog, int which) {
+                                    ProgressDialog dialog1 = ProgressDialog.show(SaveActivity.this, "", getString(R.string.save_data));
+                                    Realm realm = Realm.getDefaultInstance();
+                                    realm.executeTransaction(new Realm.Transaction() {
+                                        @Override
+                                        public void execute(Realm realm) {
+                                            for (Report report : mReportList) {
+                                                if (report.getStatus() == Report.STATUS_NEW) {
+                                                    if (report.getImage().getAttachReports()!=null
+                                                    && !report.getImage().getAttachReports().isEmpty()){
+                                                        for (LikeReport report1:report.getImage().getAttachReports()){
+                                                            createUUIDandSave(realm, report1.toReport());
+                                                        }
+                                                    }else {
+                                                        createUUIDandSave(realm, report);
+                                                    }
+                                                }
                                             }
                                         }
-                                    }
-                                });
-                                dialog1.dismiss();
-                                PopupUtils.sendToast(R.string.save_success);
-                                ViewJump.toMain(SavaActivity.this);
-                                finish();
-                            }
-                        }).setNegativeButton(R.string.cancel, null).show();
+                                    });
+                                    dialog1.dismiss();
+                                    PopupUtils.sendToast(R.string.save_success);
+                                    ViewJump.toMain(SaveActivity.this);
+                                    finish();
+                                }
+                            }).setNegativeButton(R.string.cancel, null).show();
 
-                //清缓存
-                SharedPUtils sharedPUtils = new SharedPUtils();
-                sharedPUtils.remove("unsavareports");
+                    //清缓存
+                    SharedPUtils sharedPUtils = new SharedPUtils();
+                    sharedPUtils.remove("unsavareports");
 
+                }
                 break;
         }
+    }
+
+    private void createUUIDandSave(Realm realm, Report report) {
+        report.setId(UUID.randomUUID().toString());
+        report.getImage().setId(UUID.randomUUID().toString());
+        realm.copyToRealm(report);
     }
 
     @Override
@@ -330,5 +381,30 @@ public class SavaActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mReportList != null && !mReportList.isEmpty()) {
+            new AlertDialog.Builder(this).setTitle(R.string.attention)
+                    .setMessage(R.string.save_exit)
+                    .setNeutralButton(R.string.cancel, null)
+                    .setNegativeButton(R.string.exit, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    //清缓存
+                    SharedPUtils sharedPUtils = new SharedPUtils();
+                    sharedPUtils.remove("unsavareports");
+                    dialog.dismiss();
+                    finish();
+                }
+            }).setPositiveButton(R.string.save, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                    btnSave.performClick();
+                }
+            }).show();
+        }
     }
 }

@@ -6,6 +6,8 @@ import android.support.annotation.Nullable;
 import android.widget.TextView;
 
 import com.deanlib.lordshunter.R;
+import com.deanlib.ootblite.data.SharedPUtils;
+import com.deanlib.ootblite.utils.FormatUtils;
 import com.google.android.gms.ads.AdRequest;
 import com.google.android.gms.ads.AdView;
 import com.google.android.gms.ads.MobileAds;
@@ -14,7 +16,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 
-public class LaunchActivity extends BaseActivity {
+public class AdActivity extends BaseActivity {
 
     @BindView(R.id.tvJump)
     TextView tvJump;
@@ -46,12 +48,16 @@ public class LaunchActivity extends BaseActivity {
         adView.loadAd(adRequest);
         cdt.start();
 
+        SharedPUtils sharedPUtils = new SharedPUtils();
+        sharedPUtils.setCache("ad_show_date",
+                FormatUtils.convertDateTimestampToString(System.currentTimeMillis(),FormatUtils.DATE_FORMAT_YMD));
+
     }
 
     @OnClick(R.id.tvJump)
     public void onViewClicked() {
         cdt.cancel();
-        ViewJump.toMain(this);
+//        ViewJump.toMain(this);
         finish();
     }
 }

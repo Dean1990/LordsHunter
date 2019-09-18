@@ -5,6 +5,18 @@
         android:title="@string/download_data_package"
         />
     <item
+        android:id="@+id/exportData"
+        android:title="@string/export_data"
+        />
+    <item
+        android:id="@+id/importData"
+        android:title="@string/import_data"
+        />
+    <item
+        android:id="@+id/deleteData"
+        android:title="@string/delete_data"
+        />
+    <item
         android:id="@+id/specification"
         android:title="@string/specification"
         />

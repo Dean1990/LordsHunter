@@ -1,15 +1,21 @@
 package com.deanlib.lordshunter.app;
 
-import android.app.Application;
 import android.content.Context;
 import android.support.multidex.MultiDexApplication;
+import android.text.TextUtils;
 
+import com.alibaba.fastjson.JSON;
+import com.baidu.ocr.sdk.OCR;
+import com.baidu.ocr.sdk.OnResultListener;
+import com.baidu.ocr.sdk.exception.OCRError;
+import com.baidu.ocr.sdk.model.AccessToken;
 import com.deanlib.lordshunter.R;
 import com.deanlib.lordshunter.Utils;
-import com.deanlib.lordshunter.entity.Prey;
+import com.deanlib.lordshunter.data.entity.Member;
+import com.deanlib.lordshunter.data.entity.Prey;
 import com.deanlib.ootblite.OotbConfig;
-import com.deanlib.ootblite.data.FileUtils;
-import com.google.android.gms.ads.MobileAds;
+import com.deanlib.ootblite.data.SharedPUtils;
+import com.deanlib.ootblite.utils.DLog;
 import com.scwang.smartrefresh.layout.SmartRefreshLayout;
 import com.scwang.smartrefresh.layout.api.DefaultRefreshFooterCreator;
 import com.scwang.smartrefresh.layout.api.DefaultRefreshHeaderCreator;
@@ -21,6 +27,7 @@ import com.scwang.smartrefresh.layout.header.ClassicsHeader;
 import com.umeng.commonsdk.UMConfigure;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -62,8 +69,18 @@ public class App extends MultiDexApplication {
         UMConfigure.setLogEnabled(Constant.isDebug);
 
         Constant.OCR_LANGUAGE =getString(R.string.ocr_language);
-        Constant.APP_FILE_OCR_TRAINEDDATA = new File(Utils.getDiskCachePath(this)
-                +"/lordshunter/datapath/tessdata/"+Constant.OCR_LANGUAGE+".traineddata");
+        Constant.APP_FILE_OCR_DIR = new File(Utils.getDiskCachePath(this)
+                +"/lordshunter/datapath/tessdata/");
+
+        SharedPUtils sharedP = new SharedPUtils();
+        String hideMember = sharedP.getCache("hideMember");
+        if (!TextUtils.isEmpty(hideMember))
+            Constant.hideMemberList = JSON.parseArray(hideMember, Member.class);
+        if (Constant.hideMemberList==null){
+            Constant.hideMemberList = new ArrayList<>();
+        }
+
+        Constant.OCR_LANGUAGES = getResources().getStringArray(R.array.ocr_languages);
 
         String[] preyNames = getResources().getStringArray(R.array.prey_name);
         String[] preyNamesChiSim = getResources().getStringArray(R.array.prey_name_chi_sim);
@@ -76,6 +93,19 @@ public class App extends MultiDexApplication {
             initNameIndex(preyNamesChiSim[i].toCharArray(),prey);
             initNameIndex(preyNamesChiTra[i].toCharArray(),prey);
         }
+
+        //百度OCR
+        OCR.getInstance(this).initAccessToken(new OnResultListener<AccessToken>() {
+            @Override
+            public void onResult(AccessToken accessToken) {
+                DLog.d("Baidu OCR AccessToken : "+accessToken);
+            }
+
+            @Override
+            public void onError(OCRError ocrError) {
+                ocrError.printStackTrace();
+            }
+        },getApplicationContext());
 
     }
 

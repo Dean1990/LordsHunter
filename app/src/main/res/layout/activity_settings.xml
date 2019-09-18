@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/app_bar_height"
+        android:background="@color/colorPrimary">
+
+        <LinearLayout
+            android:id="@+id/layoutBack"
+            android:layout_width="@dimen/app_bar_height"
+            android:layout_height="@dimen/app_bar_height"
+            android:gravity="center">
+
+            <ImageView
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:src="@mipmap/back" />
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/settings"
+            android:textColor="@color/textWhite"
+            android:textSize="@dimen/text_size_normal_xx" />
+
+    </RelativeLayout>
+
+    <LinearLayout
+        android:elevation="1dp"
+        android:layout_marginTop="10dp"
+        android:background="@color/colorWhite"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:id="@+id/layoutCloudOCR"
+            android:gravity="center_vertical"
+            android:descendantFocusability="blocksDescendants"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:padding="10dp"
+                android:textColor="@color/textBlack"
+                android:textSize="@dimen/text_size_normal_x"
+                android:layout_weight="1"
+                android:text="@string/use_cloud_ocr"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+            <CheckBox
+                android:clickable="false"
+                android:id="@+id/cbCloudOCR"
+                android:layout_marginLeft="10dp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+        <View
+            android:background="@color/colorGrayTint"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"/>
+
+        <TextView
+            android:background="@drawable/selector_background"
+            android:id="@+id/tvDownloadOCRData"
+            android:drawableRight="@mipmap/go_black"
+            android:padding="10dp"
+            android:textColor="@color/textBlack"
+            android:textSize="@dimen/text_size_normal_x"
+            android:layout_weight="1"
+            android:text="@string/download_data_package"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/layoutMemberManage"
+        android:layout_marginTop="10dp"
+        android:elevation="1dp"
+        android:background="@color/colorWhite"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:drawableRight="@mipmap/go_black"
+            android:padding="10dp"
+            android:textColor="@color/textBlack"
+            android:textSize="@dimen/text_size_normal_x"
+            android:text="@string/member_manage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:elevation="1dp"
+        android:background="@color/colorWhite"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:id="@+id/tvExportData"
+            android:padding="10dp"
+            android:textColor="@color/textBlack"
+            android:textSize="@dimen/text_size_normal_x"
+            android:text="@string/export_data"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <View
+            android:background="@color/colorGrayTint"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"/>
+
+        <TextView
+            android:id="@+id/tvImportData"
+            android:padding="10dp"
+            android:textColor="@color/textBlack"
+            android:textSize="@dimen/text_size_normal_x"
+            android:text="@string/import_data"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <View
+            android:background="@color/colorGrayTint"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"/>
+
+        <TextView
+            android:id="@+id/tvDeleteData"
+            android:padding="10dp"
+            android:textColor="@color/textBlack"
+            android:textSize="@dimen/text_size_normal_x"
+            android:text="@string/delete_data"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_marginTop="10dp"
+        android:elevation="1dp"
+        android:background="@color/colorWhite"
+        android:orientation="vertical"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:drawableRight="@mipmap/go_black"
+            android:id="@+id/tvSpecification"
+            android:padding="10dp"
+            android:textColor="@color/textBlack"
+            android:textSize="@dimen/text_size_normal_x"
+            android:text="@string/specification"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <View
+            android:background="@color/colorGrayTint"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"/>
+
+        <TextView
+            android:id="@+id/tvShareApp"
+            android:padding="10dp"
+            android:textColor="@color/textBlack"
+            android:textSize="@dimen/text_size_normal_x"
+            android:text="@string/share_app"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <View
+            android:background="@color/colorGrayTint"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"/>
+
+        <LinearLayout
+            android:padding="10dp"
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TextView
+                android:textColor="@color/textBlack"
+                android:textSize="@dimen/text_size_normal_x"
+                android:text="@string/current_version"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <TextView
+                android:id="@+id/tvVersion"
+                android:textColor="@color/textBlue"
+                android:textSize="@dimen/text_size_normal_x"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>
