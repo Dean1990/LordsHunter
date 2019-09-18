@@ -1,0 +1,9 @@
+/build
+*.iml
+/.idea
+local.properties
+/.gradle
+Thumbs.db
+.DS_Store
+*.apk
+/push_4.0.0/build
