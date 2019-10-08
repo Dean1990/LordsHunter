@@ -226,6 +226,7 @@ public class Utils {
                 com.baidu.ocr.sdk.OCR.getInstance(context).recognizeGeneralBasic(params, listener);
             } catch (Exception e) {
                 e.printStackTrace();
+                listener.onError(new OCRError(e.getMessage()));
             }
         }
     }
@@ -299,7 +300,8 @@ public class Utils {
         //字库文件
         File traineddata = Utils.getOCR(lang).getFile();
         if (traineddata.exists()) {
-            tess.init(traineddata.getParentFile().getParent(), Constant.OCR_LANGUAGE);
+            try {
+                tess.init(traineddata.getParentFile().getParent(), Constant.OCR_LANGUAGE);
 //            BitmapFactory.Options options = new BitmapFactory.Options();
 //            options.inJustDecodeBounds = true;
 //            int scale = (int)(options.outHeight/(float)200);//我们只用高度或宽度计算均可
@@ -308,10 +310,10 @@ public class Utils {
 //            }
 //            options.inSampleSize = scale;
 //            Bitmap bitmap = BitmapFactory.decodeFile(report.getImage().getUri(),options);
-            Bitmap bitmap = BitmapFactory.decodeFile(report.getImage().getUri());
-            float w = bitmap.getWidth();
-            float h = bitmap.getHeight();
-            bitmap = Bitmap.createBitmap(bitmap, (int) (w * 0.1), (int) (h * 0.12), (int) (w * 0.4), (int) (h * 0.05), null, false);
+                Bitmap bitmap = BitmapFactory.decodeFile(report.getImage().getUri());
+                float w = bitmap.getWidth();
+                float h = bitmap.getHeight();
+                bitmap = Bitmap.createBitmap(bitmap, (int) (w * 0.1), (int) (h * 0.12), (int) (w * 0.4), (int) (h * 0.05), null, false);
 
 //            ImageUtils.saveImageFile(bitmap, FileUtils.createDir("_abc"), System.currentTimeMillis() + ".png", new FileUtils.FileCallback() {
 //                @Override
@@ -325,51 +327,55 @@ public class Utils {
 //                }
 //            });
 
-            tess.setImage(bitmap);
-            String result = tess.getUTF8Text();
-            if(bitmap!=null && !bitmap.isRecycled()){
-                bitmap.recycle();
-                bitmap = null;
-            }
-            tess = null;
-            System.gc();
-
-
-            if (usedLangs == null)
-                usedLangs = new ArrayList<>();
-            usedLangs.add(lang);
-
-            DLog.d("local ocr result : " + result);
-            //清洗信息
-            String[] lvLikes = {"1JjLlIi", "2Zz", "3B8", "4HqPpg", "5Ssb"};//识别存在误差，将相识，可能被识别成的字符列举出来
-            //[\S\s]*([1JjLlIi2Zz3B4HqPpg5Ssb])[ ]*(\S+)
-            Pattern pattern = Pattern.compile("[\\S\\s]*(" + Arrays.toString(lvLikes).replaceAll("[,\\s]", "") + ")[ ]*(\\S+)");
-            Matcher matcher = pattern.matcher(result);
-            if (matcher.find()) {
-                report.getImage().setPreyName(correctPreyName(matcher.group(2)));
-                for (int i = 0; i < lvLikes.length; i++) {
-                    if (lvLikes[i].contains(matcher.group(1))) {
-                        report.getImage().setPreyLevel(i + 1);
-                        break;
-                    }
+                tess.setImage(bitmap);
+                String result = tess.getUTF8Text();
+                if (bitmap != null && !bitmap.isRecycled()) {
+                    bitmap.recycle();
+                    bitmap = null;
                 }
-                report.getImage().setKill(true);//默认 true
-            } else {
-                DLog.d("change local ocr");
-                //使用 Constant.OCR_LANGUAGE 本地字库没有识别成功的
-                //尝试使用其他字库
-                //查看当前存在的字库包
-                if (Constant.OCR_LANGUAGES != null) {
-                    for (String l : Constant.OCR_LANGUAGES) {
-                        OCR ocr = getOCR(l);
-                        if (ocr.isExist() && !usedLangs.contains(l)) {
-                            result = localOCR(report, l, usedLangs);
+                tess = null;
+                System.gc();
+
+
+                if (usedLangs == null)
+                    usedLangs = new ArrayList<>();
+                usedLangs.add(lang);
+
+                DLog.d("local ocr result : " + result);
+                //清洗信息
+                String[] lvLikes = {"1JjLlIi", "2Zz", "3B8", "4HqPpg", "5Ssb"};//识别存在误差，将相识，可能被识别成的字符列举出来
+                //[\S\s]*([1JjLlIi2Zz3B4HqPpg5Ssb])[ ]*(\S+)
+                Pattern pattern = Pattern.compile("[\\S\\s]*(" + Arrays.toString(lvLikes).replaceAll("[,\\s]", "") + ")[ ]*(\\S+)");
+                Matcher matcher = pattern.matcher(result);
+                if (matcher.find()) {
+                    report.getImage().setPreyName(correctPreyName(matcher.group(2)));
+                    for (int i = 0; i < lvLikes.length; i++) {
+                        if (lvLikes[i].contains(matcher.group(1))) {
+                            report.getImage().setPreyLevel(i + 1);
+                            break;
+                        }
+                    }
+                    report.getImage().setKill(true);//默认 true
+                } else {
+                    DLog.d("change local ocr");
+                    //使用 Constant.OCR_LANGUAGE 本地字库没有识别成功的
+                    //尝试使用其他字库
+                    //查看当前存在的字库包
+                    if (Constant.OCR_LANGUAGES != null) {
+                        for (String l : Constant.OCR_LANGUAGES) {
+                            OCR ocr = getOCR(l);
+                            if (ocr.isExist() && !usedLangs.contains(l)) {
+                                result = localOCR(report, l, usedLangs);
+                            }
                         }
                     }
                 }
-            }
 
-            return result;
+                return result;
+            }catch (Exception e){
+                e.printStackTrace();
+                return "";
+            }
         }
 
         return "";
